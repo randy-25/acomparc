@@ -1,0 +1,74 @@
+{
+  "elf": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/qproj/qproj_test.elf",
+  "elf_sha256": "41da09111ca2ed87cb541211525dc36ddeddae79c07ad17531100fe72851a9b4",
+  "trace": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/qproj/qproj_trace.log",
+  "isa_attribute": "rv64i2p1_m2p0_c2p0_zicsr2p0_zifencei2p0_zmmul1p0_zca1p0",
+  "functions": {
+    "qproj_accumulate": {
+      "start": "0x80000136",
+      "end_exclusive": "0x800001c2",
+      "symbol_bytes": 140
+    }
+  },
+  "kernel_instructions": 4247757,
+  "instruction_mix": {
+    "integer ALU": 2130092,
+    "load": 1048576,
+    "multiply": 528384,
+    "branch/jump": 536609,
+    "store": 4096
+  },
+  "mnemonic_counts": {
+    "c.li": 4097,
+    "lui": 1,
+    "addi": 4230,
+    "c.slli": 1,
+    "auipc": 35,
+    "c.mv": 8192,
+    "lb": 1048576,
+    "c.addi": 1056768,
+    "c.addiw": 524288,
+    "mulw": 524288,
+    "c.addw": 524288,
+    "bne": 528416,
+    "mul": 4096,
+    "c.add": 4096,
+    "c.srai": 4096,
+    "bge": 8192,
+    "sb": 4096,
+    "c.jr": 1
+  },
+  "macs": 524288,
+  "output_elements": 4096,
+  "macs_per_instruction": 0.12342702277931623,
+  "instructions_per_mac": 8.101953506469727,
+  "instructions_per_output": 1037.050048828125,
+  "loads_per_mac": 2.0,
+  "stores_per_mac": 0.0078125,
+  "memory_instructions": 1052672,
+  "memory_instructions_per_mac": 2.0078125,
+  "elf_size_bytes": {
+    "text_including_read_only_data": 27408,
+    "data": 72,
+    "bss": 4128
+  },
+  "regions": {},
+  "matched_trace_records": 4274404,
+  "scope": "Instructions directly inside selected function symbols; no cycle or cache measurements.",
+  "inner_loop": {
+    "start": "0x80000178",
+    "end_exclusive": "0x80000190",
+    "mac_instruction_pcs": [
+      "0x80000184"
+    ]
+  },
+  "inner_loop_instructions": 4194304,
+  "outside_inner_loop_instructions": 53453,
+  "inner_loop_percent": 98.74161822345299,
+  "observed_scalar_macs": 524288,
+  "scalar_macs_match_expected": true,
+  "requantization_pc": "0x80000190",
+  "requantizations": 4096,
+  "requantizations_match_expected_outputs": true,
+  "detection_notes": []
+}

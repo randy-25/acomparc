@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "FILL_IN",
+  "status": "planned",
+  "variant": "B0",
+  "purpose": "FILL_IN",
+  "workload": {},
+  "inputs": [],
+  "source_files": [],
+  "capture_make_settings": false,
+  "capture_cvw_runtime": false,
+  "commands": [],
+  "profile_filename": null,
+  "build_outputs": {},
+  "required_profile_checks": []
+}

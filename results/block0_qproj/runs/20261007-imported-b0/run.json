@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "experiment_id": "block0_qproj",
+  "run_id": "20261007-imported-b0",
+  "origin": "imported_from_user_archive",
+  "status": "imported_verified_profile",
+  "imported_at_utc": "2026-10-07T08:04:27.227729+00:00",
+  "executed_at_utc": null,
+  "git": {
+    "commit": "6b5d84ba4a252af96644555a6ce18e3a39203163",
+    "status_porcelain": "M .gitignore\n D OneTransformer.ipynb\n D block0_w8a8.tflite\n D exports/Makefile\n D exports/build/qproj/b0_profile.json\n D exports/build/qproj/crt.o\n D exports/build/qproj/qproj_acc_host\n D exports/build/qproj/qproj_acc_test.o\n D exports/build/qproj/qproj_histogram.txt\n D exports/build/qproj/qproj_test.elf\n D exports/build/qproj/qproj_test.elf.memfile\n D exports/build/qproj/qproj_test.elf.objdump.addr\n D exports/build/qproj/qproj_test.elf.objdump.lab\n D exports/build/qproj/syscalls.o\n D exports/q_proj_case0.npz\n D exports/qproj_acc_host\n D exports/qproj_acc_test.c\n D exports/qproj_acc_test.o\n D exports/qproj_data.h\n D exports/qproj_profile.py\n D exports/qproj_test.dis\n D exports/qproj_test.elf\n D exports/qproj_y_ref.h\n D inspect_model.ipynb\n D model_to_c.ipynb\n D models/tinystories_block0_fp32.tflite\n D models/tinystories_block0_w8a8.tflite\n D testoneTransformer.ipynb\n?? artifacts/\n?? docs/\n?? experiments/\n?? notebooks/\n?? requirements.txt\n?? results/\n?? scripts/\n?? src/",
+    "diff_stat": ".gitignore                                      |   31 +-\n OneTransformer.ipynb                            | 3294 ---------------------\n block0_w8a8.tflite                              |  Bin 233360 -> 0 bytes\n exports/Makefile                                |   85 -\n exports/build/qproj/b0_profile.json             |   74 -\n exports/build/qproj/crt.o                       |  Bin 2512 -> 0 bytes\n exports/build/qproj/qproj_acc_host              |  Bin 40768 -> 0 bytes\n exports/build/qproj/qproj_acc_test.o            |  Bin 28816 -> 0 bytes\n exports/build/qproj/qproj_histogram.txt         |  337 ---\n exports/build/qproj/qproj_test.elf              |  Bin 35960 -> 0 bytes\n exports/build/qproj/qproj_test.elf.memfile      | 3593 -----------------------\n exports/build/qproj/qproj_test.elf.objdump.addr |   34 -\n exports/build/qproj/qproj_test.elf.objdump.lab  |   34 -\n exports/build/qproj/syscalls.o                  |  Bin 17840 -> 0 bytes\n exports/q_proj_case0.npz                        |  Bin 60408 -> 0 bytes\n exports/qproj_acc_host                          |  Bin 40768 -> 0 bytes\n exports/qproj_acc_test.c                        |   79 -\n exports/qproj_acc_test.o                        |  Bin 28632 -> 0 bytes\n exports/qproj_data.h                            | 1550 ----------\n exports/qproj_profile.py                        |  336 ---\n exports/qproj_test.dis                          |  910 ------\n exports/qproj_test.elf                          |  Bin 36000 -> 0 bytes\n exports/qproj_y_ref.h                           |    5 -\n inspect_model.ipynb                             |  367 ---\n model_to_c.ipynb                                |  733 -----\n models/tinystories_block0_fp32.tflite           |  Bin 818532 -> 0 bytes\n models/tinystories_block0_w8a8.tflite           |  Bin 232432 -> 0 bytes\n testoneTransformer.ipynb                        | 1730 -----------\n 28 files changed, 29 insertions(+), 13163 deletions(-)"
+  },
+  "historical_git_source_evidence": {
+    "commit": "6b5d84ba4a252af96644555a6ce18e3a39203163",
+    "source_and_headers_match_HEAD_paths": "exports/qproj_acc_test.c, exports/qproj_data.h, exports/qproj_y_ref.h",
+    "elf_matches_HEAD_path": "exports/build/qproj/qproj_test.elf"
+  },
+  "source_files": {
+    "experiments/block0_qproj/qproj_acc_test.c": {
+      "sha256": "8ff85e52be5d084f6132fd890410d2620a6ae550cb61a706b73003786096692e",
+      "size_bytes": 1743
+    },
+    "experiments/block0_qproj/qproj_data.h": {
+      "sha256": "d044f1055a72f31ed5c41fe9119890a55b0dbb1f88157cb2cb9fd514afd6ad3f",
+      "size_bytes": 114949
+    },
+    "experiments/block0_qproj/qproj_y_ref.h": {
+      "sha256": "8a6d43ef2bde81141c750771c89883701b814b77a108f5a3d4143a74a6df0a05",
+      "size_bytes": 19224
+    },
+    "experiments/block0_qproj/qproj_profile.py": {
+      "sha256": "92e5653685814e478b678ca6d7e79f3d9797506023d9170be11e628c894108ef",
+      "size_bytes": 15820
+    },
+    "experiments/block0_qproj/Makefile": {
+      "sha256": "1de3423b6b5f3fd37a44d38a1d2b3515161cd56988d95dadf9e9282690bf463d",
+      "size_bytes": 2655
+    }
+  },
+  "input_files": {
+    "artifacts/models/block0_w8a8_baseline.tflite": {
+      "sha256": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a",
+      "size_bytes": 233360
+    },
+    "artifacts/exports/q_proj_case0.npz": {
+      "sha256": "25c14ba59b83ce2603951e578543f8d1cfb4305c2b5aa5b0caecaa68b0d4790f",
+      "size_bytes": 60408
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "make",
+        "test"
+      ],
+      "evidence": "User terminal output in this conversation"
+    },
+    {
+      "argv": [
+        "make",
+        "disasm",
+        "trace"
+      ],
+      "evidence": "User terminal output"
+    },
+    {
+      "argv": [
+        "python3",
+        "qproj_profile.py",
+        "--elf",
+        "build/qproj/qproj_test.elf",
+        "--trace",
+        "build/qproj/qproj_trace.log",
+        "--macs",
+        "524288",
+        "--outputs",
+        "4096",
+        "--json",
+        "../../results/block0_qproj/b0_profile.json"
+      ],
+      "evidence": "User terminal output and supplied result"
+    }
+  ],
+  "functional_evidence": {
+    "host": "4096 INT8 outputs; 0 mismatches; PASS (user-reported)",
+    "spike": "4096 INT8 outputs; 0 mismatches; PASS (user-reported)"
+  },
+  "simulator_counters": {
+    "mcycle": 4247768,
+    "minstret": 4247773,
+    "evidence": "User terminal output; not hardware cycle measurements"
+  },
+  "metrics": {
+    "kernel_instructions": 4247757,
+    "macs": 524288,
+    "output_elements": 4096,
+    "instructions_per_mac": 8.101953506469727,
+    "loads_per_mac": 2.0,
+    "inner_loop_percent": 98.74161822345299,
+    "observed_scalar_macs": 524288,
+    "requantizations": 4096
+  },
+  "raw_trace": {
+    "path": "experiments/block0_qproj/build/qproj/qproj_trace.log",
+    "sha256": "bbd95b6b5f504628d9b8571b468ddb71d7cfafe45da3f393f635671762012840",
+    "size_bytes": 252270762,
+    "included_in_run": false
+  },
+  "outputs": {
+    "profile.json": {
+      "sha256": "ebb650a7b556c6ed85f9d5958f43abe89d6463a2d7d8fc287fcd9096c982d8a8",
+      "size_bytes": 2122
+    },
+    "qproj_test.elf": {
+      "sha256": "41da09111ca2ed87cb541211525dc36ddeddae79c07ad17531100fe72851a9b4",
+      "size_bytes": 35960
+    },
+    "qproj_test.dis": {
+      "sha256": "e584813fe7f9308c5111acba33504532f83072503f06df181eb4702cc6abcb84",
+      "size_bytes": 44030
+    }
+  },
+  "limitations": [
+    "Original execution timestamp and compiler/Spike versions were not saved.",
+    "Historical external CV-Wally runtime source revision was not captured.",
+    "The recovered model matches weights and quantization metadata; full LiteRT invocation was not rerun during cleanup."
+  ]
+}

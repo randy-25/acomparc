@@ -1,7 +1,7 @@
 {
-  "elf": "/home/randy/Documents/ACompArc/model/project/exports/build/qproj/qproj_test.elf",
-  "elf_sha256": "51523ccedd83828cc16d0697ff647878f61917f67d0f1710ff16637fea6643bd",
-  "trace": "/home/randy/Documents/ACompArc/model/project/exports/build/qproj/qproj_trace.log",
+  "elf": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/qproj/qproj_test.elf",
+  "elf_sha256": "41da09111ca2ed87cb541211525dc36ddeddae79c07ad17531100fe72851a9b4",
+  "trace": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/qproj/qproj_trace.log",
   "isa_attribute": "rv64i2p1_m2p0_c2p0_zicsr2p0_zifencei2p0_zmmul1p0_zca1p0",
   "functions": {
     "qproj_accumulate": {
@@ -48,12 +48,12 @@
   "memory_instructions": 1052672,
   "memory_instructions_per_mac": 2.0078125,
   "elf_size_bytes": {
-    "text_including_read_only_data": 27395,
+    "text_including_read_only_data": 27408,
     "data": 72,
     "bss": 4128
   },
   "regions": {},
-  "matched_trace_records": 4273248,
+  "matched_trace_records": 4274404,
   "scope": "Instructions directly inside selected function symbols; no cycle or cache measurements.",
   "inner_loop": {
     "start": "0x80000178",

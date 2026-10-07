@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "model_id": "roneneldan/TinyStories-3M",
+  "model_revision": "cfaf26ec85ecdfc1bd7c2638104cce55cb67f894",
+  "artifacts": [
+    {
+      "path": "artifacts/models/block0_w8a8_baseline.tflite",
+      "sha256": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a",
+      "size_bytes": 233360,
+      "role": "matching_qproj_baseline_reference"
+    },
+    {
+      "path": "artifacts/models/tinystories_block0_fp32.tflite",
+      "sha256": "22a41ac265597fefaf43bb99d230ba68b30c28fb33598f5488892d9369f38c25",
+      "size_bytes": 818532,
+      "role": "separate_block0_export"
+    },
+    {
+      "path": "artifacts/models/tinystories_block0_w8a8.tflite",
+      "sha256": "ec06fd406d154223f7993152e182a9ba16f1b87560c64b5177848b198cd628e2",
+      "size_bytes": 232432,
+      "role": "separate_block0_export"
+    },
+    {
+      "path": "artifacts/exports/q_proj_case0.npz",
+      "sha256": "25c14ba59b83ce2603951e578543f8d1cfb4305c2b5aa5b0caecaa68b0d4790f",
+      "size_bytes": 60408,
+      "role": "frozen_case0_golden_fixture"
+    }
+  ],
+  "recovered_model": {
+    "git_commit": "6b5d84ba4a252af96644555a6ce18e3a39203163",
+    "original_git_path": "block0_w8a8.tflite",
+    "new_path": "artifacts/models/block0_w8a8_baseline.tflite"
+  },
+  "baseline_metadata_match": {
+    "input_scale": 0.030482890084385872,
+    "input_zero_point": -5,
+    "weight_scale": 0.0017367515247315168,
+    "weight_zero_point": 0,
+    "output_scale": 0.02414144203066826,
+    "output_zero_point": -17,
+    "weight_bytes_sha256": "57b411c51f94d1accce1913eb5a9dd6f009c7bf5b3d6756289950aea896d53d4"
+  },
+  "note": "Different W8A8 filenames are different experiments; do not substitute one for another."
+}
