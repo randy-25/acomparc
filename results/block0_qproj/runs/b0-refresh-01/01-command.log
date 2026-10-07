@@ -1,0 +1,71 @@
+gcc -O2 -Wall -Wextra qproj_acc_test.c -o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_acc_host
+riscv64-unknown-elf-gcc -O2 -Wall -Wextra -march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -fno-tree-loop-distribute-patterns -c qproj_acc_test.c -o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_acc_test.o
+riscv64-unknown-elf-gcc -O2 -Wall -Wextra -march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -fno-tree-loop-distribute-patterns -I /home/randy/Documents/ACompArc/cvw/examples/C/common -c /home/randy/Documents/ACompArc/cvw/examples/C/common/crt.S -o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/crt.o
+riscv64-unknown-elf-gcc -O2 -Wall -Wextra -march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -fno-tree-loop-distribute-patterns -I /home/randy/Documents/ACompArc/cvw/examples/C/common -c /home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c -o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/syscalls.o
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: In function 'handle_trap':
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:100:55: warning: unused parameter 'cause' [-Wunused-parameter]
+  100 | uintptr_t __attribute__((weak)) handle_trap(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+      |                                             ~~~~~~~~~~^~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:100:72: warning: unused parameter 'epc' [-Wunused-parameter]
+  100 | uintptr_t __attribute__((weak)) handle_trap(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+      |                                                              ~~~~~~~~~~^~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:100:87: warning: unused parameter 'regs' [-Wunused-parameter]
+  100 | uintptr_t __attribute__((weak)) handle_trap(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
+      |                                                                             ~~~~~~~~~~^~~~~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: In function 'thread_entry':
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:132:54: warning: unused parameter 'nc' [-Wunused-parameter]
+  132 | void __attribute__((weak)) thread_entry(int cid, int nc)
+      |                                                  ~~~~^~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: In function 'main':
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:139:36: warning: unused parameter 'argc' [-Wunused-parameter]
+  139 | int __attribute__((weak)) main(int argc, char** argv)
+      |                                ~~~~^~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:139:49: warning: unused parameter 'argv' [-Wunused-parameter]
+  139 | int __attribute__((weak)) main(int argc, char** argv)
+      |                                          ~~~~~~~^~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: In function 'vprintfmt':
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:259:38: warning: variable 'altflag' set but not used [-Wunused-but-set-variable]
+  259 |   int base, lflag, width, precision, altflag;
+      |                                      ^~~~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:257:20: warning: unused variable 'err' [-Wunused-variable]
+  257 |   register int ch, err;
+      |                    ^~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: In function 'uartPutStr':
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:50:1: warning: control reaches end of non-void function [-Wreturn-type]
+   50 | }
+      | ^
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: In function 'vprintfmt':
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:378:7: warning: this statement may fall through [-Wimplicit-fallthrough=]
+  378 |       putch('x', putdat);
+      |       ^~~~~~~~~~~~~~~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:382:5: note: here
+  382 |     case 'x':
+      |     ^~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c: At top level:
+/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:56:18: warning: 'syscall' defined but not used [-Wunused-function]
+   56 | static uintptr_t syscall(uintptr_t which, uint64_t arg0, uint64_t arg1, uint64_t arg2)
+      |                  ^~~~~~~
+In file included from /home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c:9:
+/home/randy/Documents/ACompArc/cvw/examples/C/common/util.h:70:18: warning: 'insn_len' defined but not used [-Wunused-function]
+   70 | static uintptr_t insn_len(uintptr_t pc)
+      |                  ^~~~~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/util.h:64:17: warning: 'lfsr' defined but not used [-Wunused-function]
+   64 | static uint64_t lfsr(uint64_t x)
+      |                 ^~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/util.h:44:39: warning: 'barrier' defined but not used [-Wunused-function]
+   44 | static void __attribute__((noinline)) barrier(int ncores)
+      |                                       ^~~~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/util.h:28:12: warning: 'verifyDouble' defined but not used [-Wunused-function]
+   28 | static int verifyDouble(int n, const volatile double* test, const double* verify)
+      |            ^~~~~~~~~~~~
+/home/randy/Documents/ACompArc/cvw/examples/C/common/util.h:12:12: warning: 'verify' defined but not used [-Wunused-function]
+   12 | static int verify(int n, const volatile int* test, const int* verify)
+      |            ^~~~~~
+riscv64-unknown-elf-gcc -march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -nostdlib -static -T /home/randy/Documents/ACompArc/cvw/examples/C/common/test.ld /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_acc_test.o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/crt.o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/syscalls.o -lgcc -o /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.elf
+"/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_acc_host"
+Checked 4096 INT8 outputs; mismatches: 0
+PASS
+spike --isa=rv64imc_zicsr_zifencei "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.elf"
+Checked 4096 INT8 outputs; mismatches: 0
+PASSmcycle = 4247768
+minstret = 4247773

@@ -1,2 +1,7 @@
 /unused
 *.log
+# Disposable experiment builds
+/experiments/*/build/
+
+# Preserve command logs in saved run records
+!/results/*/runs/*/[0-9][0-9]-command.log

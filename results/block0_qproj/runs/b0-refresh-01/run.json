@@ -1,0 +1,344 @@
+{
+  "schema_version": 1,
+  "experiment_id": "block0_qproj",
+  "run_id": "b0-refresh-01",
+  "origin": "executed",
+  "status": "passed",
+  "started_at_utc": "2026-10-07T11:21:13.084256+00:00",
+  "git": {
+    "commit": "13ccb84770ff73c114116982d5a2ce2726e62401",
+    "status_porcelain": "",
+    "diff_stat": ""
+  },
+  "config": {
+    "schema_version": 1,
+    "id": "block0_qproj",
+    "status": "verified_baseline",
+    "variant": "B0",
+    "purpose": "Scalar block-0 q-projection with fixed-point requantization on RV64IMC.",
+    "workload": {
+      "batch": 1,
+      "tokens": 32,
+      "input_features": 128,
+      "output_features": 128,
+      "macs": 524288,
+      "outputs": 4096,
+      "function": "qproj_accumulate"
+    },
+    "inputs": [
+      {
+        "path": "artifacts/models/block0_w8a8_baseline.tflite",
+        "sha256": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a",
+        "size_bytes": 233360
+      },
+      {
+        "path": "artifacts/exports/q_proj_case0.npz",
+        "sha256": "25c14ba59b83ce2603951e578543f8d1cfb4305c2b5aa5b0caecaa68b0d4790f",
+        "size_bytes": 60408
+      }
+    ],
+    "source_files": [
+      "experiments/block0_qproj/qproj_acc_test.c",
+      "experiments/block0_qproj/qproj_data.h",
+      "experiments/block0_qproj/qproj_y_ref.h",
+      "experiments/block0_qproj/qproj_profile.py",
+      "experiments/block0_qproj/Makefile",
+      "requirements.txt",
+      "scripts/run_experiment.py",
+      "scripts/provenance.py"
+    ],
+    "capture_make_settings": true,
+    "capture_cvw_runtime": true,
+    "commands": [
+      [
+        "make",
+        "BUILD_DIR={build_dir}",
+        "test"
+      ],
+      [
+        "make",
+        "BUILD_DIR={build_dir}",
+        "disasm",
+        "trace"
+      ],
+      [
+        "{python}",
+        "qproj_profile.py",
+        "--elf",
+        "{build_dir}/qproj_test.elf",
+        "--trace",
+        "{build_dir}/qproj_trace.log",
+        "--prefix",
+        "{riscv_prefix}",
+        "--macs",
+        "524288",
+        "--outputs",
+        "4096",
+        "--json",
+        "{run_dir}/profile.json"
+      ]
+    ],
+    "profile_filename": "profile.json",
+    "build_outputs": {
+      "elf": "qproj_test.elf",
+      "disassembly": "qproj_test.dis",
+      "trace": "qproj_trace.log"
+    },
+    "required_profile_checks": [
+      "scalar_macs_match_expected",
+      "requantizations_match_expected_outputs"
+    ],
+    "notes": [
+      "The model is a matching recovered reference; the C test consumes frozen headers.",
+      "Spike instruction counts are distinct from CV-Wally hardware cycles.",
+      "The Q39 rule is verified for case 0, not claimed bit-exact for all possible accumulators."
+    ]
+  },
+  "make_variables": [],
+  "source_files": {
+    "experiments/block0_qproj/experiment.json": {
+      "sha256": "ee1cd34d022c75911fb1d10d02f6830d8e85e05c4c3df99400af1c390014bfdc",
+      "size_bytes": 2208
+    },
+    "experiments/block0_qproj/qproj_acc_test.c": {
+      "sha256": "8ff85e52be5d084f6132fd890410d2620a6ae550cb61a706b73003786096692e",
+      "size_bytes": 1743
+    },
+    "experiments/block0_qproj/qproj_data.h": {
+      "sha256": "d044f1055a72f31ed5c41fe9119890a55b0dbb1f88157cb2cb9fd514afd6ad3f",
+      "size_bytes": 114949
+    },
+    "experiments/block0_qproj/qproj_y_ref.h": {
+      "sha256": "8a6d43ef2bde81141c750771c89883701b814b77a108f5a3d4143a74a6df0a05",
+      "size_bytes": 19224
+    },
+    "experiments/block0_qproj/qproj_profile.py": {
+      "sha256": "92e5653685814e478b678ca6d7e79f3d9797506023d9170be11e628c894108ef",
+      "size_bytes": 15820
+    },
+    "experiments/block0_qproj/Makefile": {
+      "sha256": "4685a7d19dd1947577da5b2dc011af1b259b3de93e3541fe4e5aa34e7e2f6034",
+      "size_bytes": 3069
+    },
+    "requirements.txt": {
+      "sha256": "bafb67ee7e1fe0fba1d22637ee869b88354ff5aa3ae30d1f2ad1531328c226e4",
+      "size_bytes": 2306
+    },
+    "scripts/run_experiment.py": {
+      "sha256": "63d51b717681b5a97ef4a23dbea86f39d41acd538982043711c4656cd9b16aa3",
+      "size_bytes": 9943
+    },
+    "scripts/provenance.py": {
+      "sha256": "67c92c6db00d100f80cdada8523d87b0738229898507794276ef377d93df9e3f",
+      "size_bytes": 1713
+    }
+  },
+  "input_files": {
+    "artifacts/models/block0_w8a8_baseline.tflite": {
+      "sha256": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a",
+      "size_bytes": 233360
+    },
+    "artifacts/exports/q_proj_case0.npz": {
+      "sha256": "25c14ba59b83ce2603951e578543f8d1cfb4305c2b5aa5b0caecaa68b0d4790f",
+      "size_bytes": 60408
+    }
+  },
+  "external_files": {
+    "/home/randy/Documents/ACompArc/cvw/examples/C/common/crt.S": {
+      "sha256": "2794cf1a7ae21537060453864c94a811869e72335e98b9eb1e8aeee4de7f0508",
+      "size_bytes": 4073
+    },
+    "/home/randy/Documents/ACompArc/cvw/examples/C/common/syscalls.c": {
+      "sha256": "ab1172ce470f409a43553abd5204c567b9159f15a574d088c94ed059829e3d0d",
+      "size_bytes": 10704
+    },
+    "/home/randy/Documents/ACompArc/cvw/examples/C/common/test.ld": {
+      "sha256": "8e8c4af13d3c08ee5bbc0d2dcb4eb0f8b7acd1209c336bafd912e7c0e526516c",
+      "size_bytes": 1726
+    },
+    "/home/randy/Documents/ACompArc/cvw/examples/C/common/util.h": {
+      "sha256": "d2d9895ca9bd97de279f8570cb735d99ff408b09095cf81ff8b93caa621b0484",
+      "size_bytes": 2041
+    },
+    "/home/randy/Documents/ACompArc/cvw/examples/C/common/encoding.h": {
+      "sha256": "01d64c269f7460ca946449fef3552fc9b2454769556fb9eb5e85952ac9ad4b81",
+      "size_bytes": 106791
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "make",
+        "BUILD_DIR=/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01",
+        "test"
+      ],
+      "cwd": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj",
+      "started_at_utc": "2026-10-07T11:21:13.710177+00:00",
+      "log": "01-command.log",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-07T11:21:14.429852+00:00"
+    },
+    {
+      "argv": [
+        "make",
+        "BUILD_DIR=/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01",
+        "disasm",
+        "trace"
+      ],
+      "cwd": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj",
+      "started_at_utc": "2026-10-07T11:21:14.429915+00:00",
+      "log": "02-command.log",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-07T11:21:15.723684+00:00"
+    },
+    {
+      "argv": [
+        "/home/randy/Documents/ACompArc/model/.venv/bin/python3",
+        "qproj_profile.py",
+        "--elf",
+        "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.elf",
+        "--trace",
+        "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_trace.log",
+        "--prefix",
+        "riscv64-unknown-elf-",
+        "--macs",
+        "524288",
+        "--outputs",
+        "4096",
+        "--json",
+        "/home/randy/Documents/ACompArc/model/project/results/block0_qproj/runs/b0-refresh-01/profile.json"
+      ],
+      "cwd": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj",
+      "started_at_utc": "2026-10-07T11:21:15.723761+00:00",
+      "log": "03-command.log",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-07T11:21:19.193367+00:00"
+    }
+  ],
+  "outputs": {
+    "experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.elf": {
+      "sha256": "41da09111ca2ed87cb541211525dc36ddeddae79c07ad17531100fe72851a9b4",
+      "size_bytes": 35960
+    },
+    "experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.dis": {
+      "sha256": "c1bd20d7ecd53e2de7db79c15c2f92cdf992cdc70127db00934bfa21edd9546f",
+      "size_bytes": 44113
+    },
+    "experiments/block0_qproj/build/runs/b0-refresh-01/qproj_trace.log": {
+      "sha256": "bbd95b6b5f504628d9b8571b468ddb71d7cfafe45da3f393f635671762012840",
+      "size_bytes": 252270762
+    },
+    "01-command.log": {
+      "sha256": "a6379d4a94b6a8e21bd3ae1b23aff83a72dcb2fdba524dd28887783966018660",
+      "size_bytes": 6835
+    },
+    "02-command.log": {
+      "sha256": "2b6d31021a02b40b522975236d4d48209265840dd212f4a1174a6cab7afd0eab",
+      "size_bytes": 601
+    },
+    "03-command.log": {
+      "sha256": "f5b5dac8644b62e63a96ba559c0f22257c6d7a73a06213a0f37a1552e02d8556",
+      "size_bytes": 1179
+    },
+    "profile.json": {
+      "sha256": "9d84a24e2f3a6bd76a24ac86831ee15a61f64af247bf7e32035704e79c7b71a8",
+      "size_bytes": 2148
+    },
+    "qproj_test.dis": {
+      "sha256": "c1bd20d7ecd53e2de7db79c15c2f92cdf992cdc70127db00934bfa21edd9546f",
+      "size_bytes": 44113
+    },
+    "qproj_test.elf": {
+      "sha256": "41da09111ca2ed87cb541211525dc36ddeddae79c07ad17531100fe72851a9b4",
+      "size_bytes": 35960
+    }
+  },
+  "build_directory": "experiments/block0_qproj/build/runs/b0-refresh-01",
+  "make_settings_capture": {
+    "command": [
+      "make",
+      "-s",
+      "print-config",
+      "BUILD_DIR=/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01"
+    ],
+    "returncode": 0,
+    "stdout": "HOST_CC=gcc\nRISCV_PREFIX=riscv64-unknown-elf-\nSPIKE=spike\nISA=rv64imc_zicsr_zifencei\nCVW_ROOT=/home/randy/Documents/ACompArc/cvw\nCVW_COMMON=/home/randy/Documents/ACompArc/cvw/examples/C/common\nHOST_CFLAGS=-O2 -Wall -Wextra\nRISCV_CFLAGS=-O2 -Wall -Wextra -march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -fno-tree-loop-distribute-patterns\nRISCV_LDFLAGS=-march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -nostdlib -static -T /home/randy/Documents/ACompArc/cvw/examples/C/common/test.ld\nBUILD_DIR=/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01\nRTL_CONFIG=rv64gc\n",
+    "stderr": ""
+  },
+  "make_settings": {
+    "HOST_CC": "gcc",
+    "RISCV_PREFIX": "riscv64-unknown-elf-",
+    "SPIKE": "spike",
+    "ISA": "rv64imc_zicsr_zifencei",
+    "CVW_ROOT": "/home/randy/Documents/ACompArc/cvw",
+    "CVW_COMMON": "/home/randy/Documents/ACompArc/cvw/examples/C/common",
+    "HOST_CFLAGS": "-O2 -Wall -Wextra",
+    "RISCV_CFLAGS": "-O2 -Wall -Wextra -march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -fno-tree-loop-distribute-patterns",
+    "RISCV_LDFLAGS": "-march=rv64imc_zicsr_zifencei -mabi=lp64 -mcmodel=medany -nostdlib -static -T /home/randy/Documents/ACompArc/cvw/examples/C/common/test.ld",
+    "BUILD_DIR": "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01",
+    "RTL_CONFIG": "rv64gc"
+  },
+  "cvw_git": {
+    "commit": "ff84ec10824bcbb904838efac415975eed717e66",
+    "status_porcelain": "M examples/C/common/syscalls.c\n?? examples/C/common/crt.s\n?? \"examples/C/common/syscalls copy.c\"",
+    "diff_stat": "examples/C/common/syscalls.c | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)"
+  },
+  "tools": [
+    {
+      "command": [
+        "gcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "riscv64-unknown-elf-gcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "riscv64-unknown-elf-gcc (g5115c7e44) 15.2.0\nCopyright (C) 2025 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "spike",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Spike RISC-V ISA Simulator 1.1.1-dev\n\nusage: spike [host options] <target program> [target options]\nHost Options:\n  -p<n>                 Simulate <n> processors [default 1]\n  -m<n>                 Provide <n> MiB of target memory [default 2048]\n  -m<a:m,b:n,...>       Provide memory regions of size m and n bytes\n                          at base addresses a and b (with 4 KiB alignment)\n  -d                    Interactive debug mode\n  -g                    Track histogram of PCs\n  -l                    Generate a log of execution\n  -s                    Command I/O via socket (use with -d)\n  -h, --help            Print this help message\n  --halted              Start halted, allowing a debugger to connect\n  --log=<name>          File name for option -l\n  --debug-cmd=<name>    Read commands from file (use with -d)\n  --isa=<name>          RISC-V ISA string [default rv64imafdc_zicntr_zihpm]\n  --pmpregions=<n>      Number of PMP regions [default 16]\n  --pmpgranularity=<n>  PMP Granularity in bytes [default 4]\n  --priv=<m|mu|msu>     RISC-V privilege modes supported [default MSU]\n  --pc=<address>        Override ELF entry point\n  --hartids=<a,b,...>   Explicitly specify hartids, default is 0,1,...\n  --ic=<S>:<W>:<B>      Instantiate a cache model with S sets,\n  --dc=<S>:<W>:<B>        W ways, and B-byte blocks (with S and\n  --l2=<S>:<W>:<B>        B both powers of 2).\n  --big-endian          Use a big-endian memory system.\n  --device=<name>       Attach MMIO plugin device from an --extlib library,\n                          specify --device=<name>,<args> to pass down extra args.\n  --dtb-discovery       Enable direct device discovery from device tree blob. Requires --dtb and usage of special \"spike_plugin_params\" dts field.\n  --log-cache-miss      Generate a log of cache miss\n  --log-commits         Generate a log of commits info\n  --extension=<name>    Specify RoCC Extension\n                          This flag can be used multiple times.\n  --extlib=<name>       Shared library to load\n                        This flag can be used multiple times.\n  --rbb-port=<port>     Listen on <port> for remote bitbang connection\n  --dump-dts            Print device tree string and exit\n  --dtb=<path>          Use specified device tree blob [default: auto-generate]\n  --disable-dtb         Don't write the device tree blob into memory\n  --kernel=<path>       Load kernel flat image into memory\n  --initrd=<path>       Load kernel initrd into memory\n  --bootargs=<args>     Provide custom bootargs for kernel [default: console=ttyS0 earlycon]\n  --real-time-clint     Increment clint time at real-time rate\n  --triggers=<n>        Number of supported triggers [default 4]\n  --dm-progsize=<words> Progsize for the debug module [default 2]\n  --dm-datacount=<n>    Number of data registers available for the debug module [default 2]\n  --dm-sba=<bits>       Debug system bus access supports up to <bits> wide accesses [default 0]\n  --dm-auth             Debug module requires debugger to authenticate\n  --dmi-rti=<n>         Number of Run-Test/Idle cycles required for a DMI access [default 0]\n  --dm-abstract-rti=<n> Number of Run-Test/Idle cycles required for an abstract command to execute [default 0]\n  --dm-no-hasel         Debug module won't support hasel\n  --dm-no-abstract-csr  Debug module won't support abstract CSR access\n  --dm-no-abstract-fpr  Debug module won't support abstract FPR access\n  --dm-no-halt-groups   Debug module won't support halt groups\n  --dm-no-impebreak     Debug module won't support implicit ebreak in program buffer\n  --dm-no-abstractauto  Debug module won't support the abstractauto register\n  --blocksz=<size>      Cache block size (B) for CMO operations(powers of 2) [default 64]\n  --instructions=<n>    Stop after n instructions\n"
+    }
+  ],
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "python_packages": {
+    "command": [
+      "/home/randy/Documents/ACompArc/model/.venv/bin/python3",
+      "-m",
+      "pip",
+      "freeze"
+    ],
+    "returncode": 0,
+    "stdout": "absl-py==2.5.0\nai-edge-litert==2.2.0\nai-edge-model-explorer==0.1.33\nai-edge-quantizer==0.9.0\nai_edge_model_explorer_adapter==0.2.0\nannotated-doc==0.0.5\nanyio==4.14.2\nasttokens==3.0.2\nbackports.strenum==1.2.8\nblinker==1.9.0\ncertifi==2026.7.22\ncharset-normalizer==3.5.1\nclick==8.5.0\ncomm==0.2.3\ncuda-bindings==13.4.2\ncuda-pathfinder==1.8.2\ncuda-toolkit==13.0.3.0\ndacite==1.9.2\ndebugpy==1.8.22\nexecuting==2.2.1\nfilelock==4.0.1\nfire==0.7.1\nFlask==3.1.3\nflatbuffers==25.12.19\nfsspec==2026.9.0\nh11==0.16.0\nhf-xet==1.6.0\nhttpcore==1.0.9\nhttpx==0.28.1\nhuggingface_hub==1.32.0\nidna==3.20\nimmutabledict==4.2.1\nipykernel==7.3.0\nipython==9.17.1\nipython_pygments_lexers==1.1.1\nitsdangerous==2.2.0\njax==0.11.2\njaxlib==0.11.2\njaxtyping==0.3.11\njedi==0.20.0\nJinja2==3.1.6\njupyter_client==8.10.0\njupyter_core==5.9.1\nkagglehub==1.0.2\nkagglesdk==0.1.37\nlark==1.3.1\nlitert-converter==0.4.0\nlitert-lm-builder==0.17.1\nlitert-torch==0.9.4\nmarkdown-it-py==4.2.0\nMarkupSafe==3.0.3\nmatplotlib-inline==0.2.2\nmdurl==0.1.2\nml_dtypes==0.6.0\nmpmath==1.3.0\nmultipledispatch==1.0.0\nnest-asyncio2==1.7.2\nnetworkx==3.6.1\nnumpy==2.5.3\nnvidia-cublas==13.1.1.3\nnvidia-cuda-cupti==13.0.85\nnvidia-cuda-nvrtc==13.0.88\nnvidia-cuda-runtime==13.0.96\nnvidia-cudnn-cu13==9.20.0.48\nnvidia-cufft==12.0.0.61\nnvidia-cufile==1.15.1.6\nnvidia-curand==10.4.0.35\nnvidia-cusolver==12.0.4.66\nnvidia-cusparse==12.6.3.3\nnvidia-cusparselt-cu13==0.8.1\nnvidia-nccl-cu13==2.29.7\nnvidia-nvjitlink==13.4.92\nnvidia-nvshmem-cu13==3.4.5\nnvidia-nvtx==13.0.85\nopt_einsum==3.4.0\nordered-set==4.1.0\npackaging==26.3\nparso==0.8.7\npexpect==4.9.0\npillow==12.3.0\nplatformdirs==4.11.11\nportpicker==1.6.0\nprompt_toolkit==3.0.53\nprotobuf==7.36.2\npsutil==7.2.2\nptyprocess==0.7.0\npure_eval==0.2.4\nPygments==2.21.0\npython-dateutil==2.9.0.post0\nPyYAML==6.0.3\npyzmq==27.2.0\nregex==2026.9.10\nrequests==2.34.2\nrich==15.0.0\nsafetensors==0.8.0\nscipy==1.18.1\nsentencepiece==0.2.2\nsetuptools==84.0.0\nshellingham==1.5.4\nsix==1.17.0\nstack-data==0.6.3\nsympy==1.14.0\ntabulate==0.10.0\ntermcolor==3.3.0\ntokenizers==0.23.2\ntomli==2.4.1\ntorch==2.13.0\ntorchao==0.18.0\ntorchvision==0.28.0\ntornado==6.5.10\ntqdm==4.70.1\ntraitlets==5.16.1\ntransformers==5.17.0\ntriton==3.7.1\ntyper==0.27.2\ntyping_extensions==4.16.0\nurllib3==2.8.0\nwadler_lindig==0.1.7\nwatchdog==6.0.0\nwcwidth==0.8.4\nWerkzeug==3.1.8\nxdsl==0.28.0\n",
+    "stderr": ""
+  },
+  "metrics": {
+    "kernel_instructions": 4247757,
+    "macs": 524288,
+    "output_elements": 4096,
+    "instructions_per_mac": 8.101953506469727,
+    "loads_per_mac": 2.0,
+    "inner_loop_percent": 98.74161822345299,
+    "observed_scalar_macs": 524288,
+    "requantizations": 4096
+  },
+  "raw_trace": {
+    "path": "experiments/block0_qproj/build/runs/b0-refresh-01/qproj_trace.log",
+    "sha256": "bbd95b6b5f504628d9b8571b468ddb71d7cfafe45da3f393f635671762012840",
+    "size_bytes": 252270762,
+    "included_in_run": false
+  },
+  "finished_at_utc": "2026-10-07T11:21:19.358014+00:00"
+}

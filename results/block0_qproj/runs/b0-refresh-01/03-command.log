@@ -1,0 +1,25 @@
+ELF ISA: rv64i2p1_m2p0_c2p0_zicsr2p0_zifencei2p0_zmmul1p0_zca1p0
+Function qproj_accumulate: 0x80000136..0x800001c2 (exclusive), 140 bytes
+Kernel instructions: 4,247,757
+Inner loop: 0x80000178..0x80000190 (exclusive)
+Inner-loop instructions: 4,194,304
+Outside-inner-loop instructions: 53,453
+Inner-loop share: 98.742%
+MACs (expected workload): 524,288
+MACs (observed scalar mulw executions): 524,288 [MATCH]
+Output elements (expected workload): 4,096
+Requantizations: 4,096 [MATCH] at 0x80000190
+Instruction mix:
+  branch/jump                   536,609   12.633%
+  integer ALU                 2,130,092   50.146%
+  load                        1,048,576   24.685%
+  multiply                      528,384   12.439%
+  store                           4,096    0.096%
+macs_per_instruction: 0.123427023
+instructions_per_mac: 8.101953506
+instructions_per_output: 1037.050048828
+loads_per_mac: 2.000000000
+stores_per_mac: 0.007812500
+memory_instructions_per_mac: 2.007812500
+ELF sizes (text includes read-only data): {'text_including_read_only_data': 27408, 'data': 72, 'bss': 4128}
+Saved: /home/randy/Documents/ACompArc/model/project/results/block0_qproj/runs/b0-refresh-01/profile.json

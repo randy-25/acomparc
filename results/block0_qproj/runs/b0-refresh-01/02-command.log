@@ -1,0 +1,5 @@
+riscv64-unknown-elf-objdump -d /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.elf > /home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.dis
+spike -l --log=/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_trace.log --isa=rv64imc_zicsr_zifencei "/home/randy/Documents/ACompArc/model/project/experiments/block0_qproj/build/runs/b0-refresh-01/qproj_test.elf"
+Checked 4096 INT8 outputs; mismatches: 0
+PASSmcycle = 4247768
+minstret = 4247773
