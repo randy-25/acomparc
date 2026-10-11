@@ -1,0 +1,6 @@
+{
+  "model_id": "roneneldan/TinyStories-3M",
+  "revision": "cfaf26ec85ecdfc1bd7c2638104cce55cb67f894",
+  "dtype": "float32",
+  "quantized": false
+}

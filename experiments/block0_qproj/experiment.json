@@ -15,11 +15,6 @@
   },
   "inputs": [
     {
-      "path": "artifacts/models/block0_w8a8_baseline.tflite",
-      "sha256": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a",
-      "size_bytes": 233360
-    },
-    {
       "path": "artifacts/exports/q_proj_case0.npz",
       "sha256": "25c14ba59b83ce2603951e578543f8d1cfb4305c2b5aa5b0caecaa68b0d4790f",
       "size_bytes": 60408
@@ -79,6 +74,14 @@
   "notes": [
     "The model is a matching recovered reference; the C test consumes frozen headers.",
     "Spike instruction counts are distinct from CV-Wally hardware cycles.",
-    "The Q39 rule is verified for case 0, not claimed bit-exact for all possible accumulators."
+    "The Q39 rule is verified for case 0, not claimed bit-exact for all possible accumulators.",
+    "The matching TFLite reference was removed from the working tree; its identity is retained in historical_model_inputs and Git."
+  ],
+  "historical_model_inputs": [
+    {
+      "path": "artifacts/models/block0_w8a8_baseline.tflite",
+      "sha256": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a",
+      "size_bytes": 233360
+    }
   ]
 }
