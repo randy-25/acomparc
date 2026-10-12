@@ -1,0 +1,9 @@
+op_index,op_name,inputs,outputs,int8_inputs_and_output
+15,FULLY_CONNECTED,"[45, 27, -1]",[46],True
+16,FULLY_CONNECTED,"[45, 25, -1]",[47],True
+17,FULLY_CONNECTED,"[45, 26, -1]",[48],True
+28,BATCH_MATMUL,"[56, 58]",[59],False
+35,BATCH_MATMUL,"[63, 65]",[66],False
+40,FULLY_CONNECTED,"[70, 28, 24]",[71],True
+58,FULLY_CONNECTED,"[88, 29, 23]",[89],True
+71,FULLY_CONNECTED,"[104, 30, 22]",[105],True

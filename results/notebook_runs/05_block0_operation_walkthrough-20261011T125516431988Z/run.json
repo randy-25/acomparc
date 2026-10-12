@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "05_block0_operation_walkthrough-20261011T125516431988Z",
+  "notebook": "notebooks/05_block0_operation_walkthrough.ipynb",
+  "status": "started",
+  "started_at_utc": "2026-10-11T12:55:16.441354+00:00",
+  "parameters": {
+    "model_id": "roneneldan/TinyStories-3M",
+    "revision": "cfaf26ec85ecdfc1bd7c2638104cce55cb67f894",
+    "sequence_length": 32,
+    "prompt": "Once upon a time, a curious little girl named Lily lived in a quiet village beside a green forest. Every morning, she carried fresh bread to her grandmother and watched the birds in the trees.",
+    "scope": "Op0 MEAN; experimental symmetric INT8 input/output",
+    "scale_selection": "maxabs/127 from this input only; not model calibration",
+    "rounding": "nearest, ties to even"
+  },
+  "git_commit": "1778fcca0e338055380bfc08b4b0ba901f6487e9",
+  "git_status_porcelain": " M notebooks/03_inspect_block0_graph.ipynb\n?? notebooks/05_block0_operation_walkthrough.ipynb\n?? results/notebook_runs/\n?? src/python/__pycache__/\n",
+  "package_versions": {
+    "torch": "2.13.0",
+    "transformers": "5.17.0",
+    "torchao": "0.18.0",
+    "litert-torch": "0.9.4",
+    "ai-edge-litert": "2.2.0",
+    "numpy": "2.5.3"
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "source_files": {
+    "notebooks/05_block0_operation_walkthrough.ipynb": "bd3cc605c365e354b9348581df33c53c2502d4a5fa7fbbaad683c3e11bd73d98",
+    "src/python/litert_helpers.py": "20586a8741ac0688ef820fd77fb64e66acf9e649a179622fb244b2501b2e83e8",
+    "src/python/notebook_runs.py": "67222cbed1a18a9fd6b5e00d95a433d0a3ddd92f7290279931ac4d707cf23e23",
+    "src/python/workflow_config.py": "b14906d0f069894915a888c4ddef2b51713631cd3fbdd0ceea3105827ec3a71c",
+    "requirements.txt": "bafb67ee7e1fe0fba1d22637ee869b88354ff5aa3ae30d1f2ad1531328c226e4"
+  },
+  "inputs": {
+    "artifacts/models/block0_w8a8_baseline.tflite": "39f33344ac937d13241dd964a99095eb7d4b948bd3245587d3502851431bc46a"
+  },
+  "outputs": {}
+}
