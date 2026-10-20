@@ -1,0 +1,20 @@
+part,work,case0_clipped_elements,case1_clipped_elements,case2_clipped_elements,case3_clipped_elements,case4_clipped_elements,case5_clipped_elements,case6_clipped_elements,case7_clipped_elements
+1,T45 conversion,0,0,0,0,0,0,0,1
+2,Q conversion,1,1,0,0,0,1,0,0
+2,K conversion,0,2,2,0,0,2,2,1
+2,V conversion,0,0,0,0,0,0,0,0
+3,T70 conversion,0,0,0,0,0,1,0,0
+4,T71 conversion,0,0,0,1,0,1,0,0
+5,T88 conversion,0,0,0,0,0,0,2,0
+6,T89 conversion,1,1,0,1,0,2,0,0
+6,T92 conversion,0,0,0,0,0,0,0,0
+6,T94 conversion,0,0,0,0,0,0,0,0
+6,T96 conversion,0,0,0,0,0,0,0,0
+6,chunk 0: T97 conversion,0,0,0,0,0,0,0,0
+6,chunk 1: T97 conversion,0,0,0,0,0,0,0,0
+6,chunk 2: T97 conversion,0,0,0,0,1,1,0,0
+6,chunk 3: T97 conversion,0,0,1,1,0,1,0,0
+6,T99 conversion,0,0,0,0,0,0,0,0
+6,T103 conversion,2,2,0,1,0,2,0,0
+6,T104 two-round conversion,0,0,0,0,0,0,0,0
+7,T105 conversion,2,2,0,0,0,0,0,1

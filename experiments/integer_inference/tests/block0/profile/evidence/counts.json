@@ -1,0 +1,235 @@
+{
+  "method": "Scoped RV64 disassembly semantic replay; matched supplied Spike raw counts after exact caller overhead correction.",
+  "sha256": {
+    "build/block0/profile/test_block0_profile.dis": "d039b27d350df42e7cab3aad78d04f28be5111cf24522445fd9e06b1d6d0011e",
+    "build/block0/profile/test_block0_profile.elf": "9817604c28aa5ca6e39bae36fac60ccbb8888ab57befde5b481620aa1442aecb",
+    "fixtures/block0/mlp_out_residual_golden.c": "2e86f52a856526b58fef892424eebf3737153070a8509c404aa419843cb7866f",
+    "fixtures/block0/mlp_out_residual_golden.h": "7f8dd06bc1cecc8e68812ed63a3fe5f882c3315d3b26a7e8e4d1c126e4aca64d",
+    "params/block0_params.c": "27eb95e0e5947d08e43eab1fe9b787319d8e3d31309688e0eacb83c3fe47c58b",
+    "params/block0_params.h": "ebfae626d9242550128e5b33901530648dac456e22979a3d8ef6290faaa8058c",
+    "src/attention.c": "69ed8506c04a5f89d2898ab4a2ab85bac78a12ff3d692de724672afbffe5024b",
+    "src/attention.h": "df924fe24a8525aa423b4e2a0b29689117e8e8a75922ce66c400164f8885e515",
+    "src/blocks/block0.c": "10d92eb8b95bb68cae39496053a0de8cf4a5763602d8b1a11f080ab195fe388a",
+    "src/blocks/block0.h": "86d22f9cc06825a7a6a83d852b574274eeaadade41db97ad377f9c70dc5dca68",
+    "src/gelu.c": "22c26e3abc569f8d266514817bc04ba07a59c896def3b162a24851c04d43cf01",
+    "src/gelu.h": "3b085b88f502dde2e907e416703e82ca272a416eeda64c68827fc99cc4140873",
+    "src/layernorm.c": "d6359ebe52e37d81a82a00051c753e87740ca1641329c2b5230a612279304e38",
+    "src/layernorm.h": "9610b54f8be7270d3a6d3f2c8894dbfc023b331a8cc838d3ccb56e8f19ac5ff3",
+    "src/projection.c": "f6ece87462b64a1de49931686e5b7dad2995879909f8b88697004e3c014763fc",
+    "src/projection.h": "65d5194ccb749f283f800033f93e49559f638b81981ab9e6db1f1e8c29bf16e2",
+    "src/requantization.c": "059f42fb42022e7d4136d035a48d28305cde00aeecf278dfdc1c8189a9c4240f",
+    "src/requantization.h": "df73c9206e952c3be8bfb5c1e14af57d03da3b47edffd89a5ea95799c36edbd4",
+    "src/residual.c": "1b3fec9cd7e9cefb4b38d8fd5d218f615562baf2f430d363a81e104fd3479aef",
+    "src/residual.h": "5082de95fe5f451acd81143a4659226def5a35176ce418141853ddfc3782f3f0",
+    "tests/block0/profile/test_block0_profile.c": "aca8d9cacab87dc70bbee2b20342821a89f847a8619f6e7b669a0e8041af2905"
+  },
+  "raw_full": [
+    57181526,
+    57181531,
+    57181638,
+    57181373,
+    57181491,
+    57181396,
+    57181509,
+    57181316
+  ],
+  "raw_stages": [
+    [
+      256445,
+      12842003,
+      2922571,
+      4366724,
+      256384,
+      19595945,
+      16941445
+    ],
+    [
+      256447,
+      12842005,
+      2922550,
+      4366724,
+      256406,
+      19595945,
+      16941445
+    ],
+    [
+      256458,
+      12842004,
+      2922686,
+      4366724,
+      256371,
+      19595943,
+      16941443
+    ],
+    [
+      256488,
+      12842002,
+      2922376,
+      4366725,
+      256385,
+      19595945,
+      16941443
+    ],
+    [
+      256485,
+      12842002,
+      2922492,
+      4366724,
+      256393,
+      19595943,
+      16941443
+    ],
+    [
+      256453,
+      12842005,
+      2922449,
+      4366725,
+      256364,
+      19595948,
+      16941443
+    ],
+    [
+      256484,
+      12842004,
+      2922523,
+      4366724,
+      256380,
+      19595942,
+      16941443
+    ],
+    [
+      256449,
+      12842003,
+      2922370,
+      4366724,
+      256375,
+      19595942,
+      16941444
+    ]
+  ],
+  "full_measurement_overhead": 6,
+  "full_wrapper_exclusive": 48,
+  "stage_measurement_overhead": [
+    5,
+    7,
+    8,
+    7,
+    5,
+    5,
+    8
+  ],
+  "cases": [
+    {
+      "case": 0,
+      "output_mismatches": 0,
+      "full_body": 57181520,
+      "stage_bodies": [
+        256440,
+        12841996,
+        2922563,
+        4366717,
+        256379,
+        19595940,
+        16941437
+      ]
+    },
+    {
+      "case": 1,
+      "output_mismatches": 0,
+      "full_body": 57181525,
+      "stage_bodies": [
+        256442,
+        12841998,
+        2922542,
+        4366717,
+        256401,
+        19595940,
+        16941437
+      ]
+    },
+    {
+      "case": 2,
+      "output_mismatches": 0,
+      "full_body": 57181632,
+      "stage_bodies": [
+        256453,
+        12841997,
+        2922678,
+        4366717,
+        256366,
+        19595938,
+        16941435
+      ]
+    },
+    {
+      "case": 3,
+      "output_mismatches": 0,
+      "full_body": 57181367,
+      "stage_bodies": [
+        256483,
+        12841995,
+        2922368,
+        4366718,
+        256380,
+        19595940,
+        16941435
+      ]
+    },
+    {
+      "case": 4,
+      "output_mismatches": 0,
+      "full_body": 57181485,
+      "stage_bodies": [
+        256480,
+        12841995,
+        2922484,
+        4366717,
+        256388,
+        19595938,
+        16941435
+      ]
+    },
+    {
+      "case": 5,
+      "output_mismatches": 0,
+      "full_body": 57181390,
+      "stage_bodies": [
+        256448,
+        12841998,
+        2922441,
+        4366718,
+        256359,
+        19595943,
+        16941435
+      ]
+    },
+    {
+      "case": 6,
+      "output_mismatches": 0,
+      "full_body": 57181503,
+      "stage_bodies": [
+        256479,
+        12841997,
+        2922515,
+        4366717,
+        256375,
+        19595937,
+        16941435
+      ]
+    },
+    {
+      "case": 7,
+      "output_mismatches": 0,
+      "full_body": 57181310,
+      "stage_bodies": [
+        256444,
+        12841996,
+        2922362,
+        4366717,
+        256370,
+        19595937,
+        16941436
+      ]
+    }
+  ]
+}

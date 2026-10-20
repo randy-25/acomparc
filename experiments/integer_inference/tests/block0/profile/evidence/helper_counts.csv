@@ -1,0 +1,71 @@
+part,order,work,function,inclusive_or_exclusive,case0,case1,case2,case3,case4,case5,case6,case7
+1,0,wrapper,block0_ln1_forward,wrapper_exclusive,74,74,74,74,74,74,74,74
+1,1,mean sums,layernorm_sum_i8,helper_inclusive,16615,16615,16615,16615,16615,16615,16615,16615
+1,2,squared differences,layernorm_squared_difference_i8,helper_inclusive,33032,33032,33032,33032,33032,33032,33032,33032
+1,3,square conversion,requantize_shift_i64_to_i32,helper_inclusive,28679,28679,28679,28679,28679,28679,28679,28679
+1,4,variance sums,layernorm_variance_i32,helper_inclusive,16583,16583,16583,16583,16583,16583,16583,16583
+1,5,epsilon,layernorm_add_epsilon_i32,helper_inclusive,196,196,196,196,196,196,196,196
+1,6,inverse standard deviation,layernorm_rsqrt_i32,helper_inclusive,4966,4968,4979,5009,5006,4974,5005,4969
+1,7,normalize,layernorm_normalize_i8,helper_inclusive,33096,33096,33096,33096,33096,33096,33096,33096
+1,8,normalize conversion,requantize_shift_i64_to_i32,helper_inclusive,28679,28679,28679,28679,28679,28679,28679,28679
+1,9,affine transform,layernorm_affine_i32,helper_inclusive,49455,49455,49455,49455,49455,49455,49455,49455
+1,10,T45 conversion,requantize_i64_to_i8,helper_inclusive,45065,45065,45065,45065,45065,45065,45065,45066
+2,0,wrapper,block0_qkv_forward,wrapper_exclusive,72,72,72,72,72,72,72,72
+2,1,Q accumulation,projection_accumulate_i8,helper_inclusive,4235576,4235576,4235576,4235576,4235576,4235576,4235576,4235576
+2,2,Q conversion,requantize_i32_to_i8,helper_inclusive,45066,45066,45065,45065,45065,45066,45065,45065
+2,3,K accumulation,projection_accumulate_i8,helper_inclusive,4235576,4235576,4235576,4235576,4235576,4235576,4235576,4235576
+2,4,K conversion,requantize_i32_to_i8,helper_inclusive,45065,45067,45067,45065,45065,45067,45067,45066
+2,5,V accumulation,projection_accumulate_i8,helper_inclusive,4235576,4235576,4235576,4235576,4235576,4235576,4235576,4235576
+2,6,V conversion,requantize_i32_to_i8,helper_inclusive,45065,45065,45065,45065,45065,45065,45065,45065
+3,0,wrapper,block0_attention_forward,wrapper_exclusive,60,60,60,60,60,60,60,60
+3,1,Q × Kᵀ scores,attention_scores_i8,helper_inclusive,1317294,1317294,1317294,1317294,1317294,1317294,1317294,1317294
+3,2,causal maximum and shift,attention_causal_shift_i32,helper_inclusive,136645,136624,136760,136450,136566,136522,136597,136444
+3,3,exponential LUT,attention_exp_lut_i32,helper_inclusive,208493,208493,208493,208493,208493,208493,208493,208493
+3,4,probability normalization,attention_normalize_exp_i32,helper_inclusive,133452,133452,133452,133452,133452,133452,133452,133452
+3,5,probability × V context,attention_context_i8,helper_inclusive,1081554,1081554,1081554,1081554,1081554,1081554,1081554,1081554
+3,6,T70 conversion,requantize_i32_to_i8,helper_inclusive,45065,45065,45065,45065,45065,45066,45065,45065
+4,0,wrapper,block0_out_residual_forward,wrapper_exclusive,49,49,49,49,49,49,49,49
+4,1,output accumulation,projection_accumulate_i8,helper_inclusive,4243768,4243768,4243768,4243768,4243768,4243768,4243768,4243768
+4,2,T71 conversion,requantize_i32_to_i8,helper_inclusive,45065,45065,45065,45066,45065,45066,45065,45065
+4,3,T72 alignment,requantize_i8_to_i32,helper_inclusive,36871,36871,36871,36871,36871,36871,36871,36871
+4,4,T0 + T72 residual,residual_add_i8_i32,helper_inclusive,40964,40964,40964,40964,40964,40964,40964,40964
+5,0,wrapper,block0_ln2_forward,wrapper_exclusive,74,74,74,74,74,74,74,74
+5,1,mean sums,layernorm_sum_i32,helper_inclusive,16583,16583,16583,16583,16583,16583,16583,16583
+5,2,squared differences,layernorm_squared_difference_i32,helper_inclusive,33032,33032,33032,33032,33032,33032,33032,33032
+5,3,square conversion,requantize_shift_i64_to_i32,helper_inclusive,28679,28679,28679,28679,28679,28679,28679,28679
+5,4,variance sums,layernorm_variance_i32,helper_inclusive,16583,16583,16583,16583,16583,16583,16583,16583
+5,5,epsilon,layernorm_add_epsilon_i32,helper_inclusive,196,196,196,196,196,196,196,196
+5,6,inverse standard deviation,layernorm_rsqrt_i32,helper_inclusive,4937,4959,4924,4938,4946,4917,4931,4928
+5,7,normalize,layernorm_normalize_i32,helper_inclusive,33096,33096,33096,33096,33096,33096,33096,33096
+5,8,normalize conversion,requantize_shift_i64_to_i32,helper_inclusive,28679,28679,28679,28679,28679,28679,28679,28679
+5,9,affine transform,layernorm_affine_i32,helper_inclusive,49455,49455,49455,49455,49455,49455,49455,49455
+5,10,T88 conversion,requantize_i64_to_i8,helper_inclusive,45065,45065,45065,45065,45065,45065,45067,45065
+6,0,wrapper,block0_mlp_gelu_forward,wrapper_exclusive,221,221,221,221,221,221,221,221
+6,1,expansion accumulation,projection_accumulate_i8,helper_inclusive,16974136,16974136,16974136,16974136,16974136,16974136,16974136,16974136
+6,2,T89 conversion,requantize_i32_to_i8,helper_inclusive,180234,180234,180233,180234,180233,180235,180233,180233
+6,3,half-input multiply,gelu_multiply_scalar_i8,helper_inclusive,114692,114692,114692,114692,114692,114692,114692,114692
+6,4,T92 conversion,requantize_i32_to_i8,helper_inclusive,180233,180233,180233,180233,180233,180233,180233,180233
+6,5,cube,gelu_cube_i8,helper_inclusive,131076,131076,131076,131076,131076,131076,131076,131076
+6,6,T94 conversion,requantize_i32_to_i8,helper_inclusive,180233,180233,180233,180233,180233,180233,180233,180233
+6,7,weighted-cube multiply,gelu_multiply_scalar_i8,helper_inclusive,114692,114692,114692,114692,114692,114692,114692,114692
+6,8,T96 conversion,requantize_i32_to_i8,helper_inclusive,180233,180233,180233,180233,180233,180233,180233,180233
+6,9,chunk 0: scaled add,gelu_add_scaled_i8,helper_inclusive,49155,49155,49155,49155,49155,49155,49155,49155
+6,10,chunk 0: T97 conversion,requantize_i64_to_i8,helper_inclusive,45065,45065,45065,45065,45065,45065,45065,45065
+6,11,chunk 1: scaled add,gelu_add_scaled_i8,helper_inclusive,49155,49155,49155,49155,49155,49155,49155,49155
+6,12,chunk 1: T97 conversion,requantize_i64_to_i8,helper_inclusive,45065,45065,45065,45065,45065,45065,45065,45065
+6,13,chunk 2: scaled add,gelu_add_scaled_i8,helper_inclusive,49155,49155,49155,49155,49155,49155,49155,49155
+6,14,chunk 2: T97 conversion,requantize_i64_to_i8,helper_inclusive,45065,45065,45065,45065,45066,45066,45065,45065
+6,15,chunk 3: scaled add,gelu_add_scaled_i8,helper_inclusive,49155,49155,49155,49155,49155,49155,49155,49155
+6,16,chunk 3: T97 conversion,requantize_i64_to_i8,helper_inclusive,45065,45065,45066,45066,45065,45066,45065,45065
+6,17,tanh-argument multiply,gelu_multiply_scalar_i8,helper_inclusive,114692,114692,114692,114692,114692,114692,114692,114692
+6,18,T99 conversion,requantize_i32_to_i8,helper_inclusive,180233,180233,180233,180233,180233,180233,180233,180233
+6,19,tanh LUT,gelu_tanh_lut_i8,helper_inclusive,147460,147460,147460,147460,147460,147460,147460,147460
+6,20,one-plus-tanh add,gelu_add_scalar_i32,helper_inclusive,98308,98308,98308,98308,98308,98308,98308,98308
+6,21,T103 conversion,requantize_i32_to_i8,helper_inclusive,180235,180235,180233,180234,180233,180235,180233,180233
+6,22,half × factor multiply,gelu_multiply_i8,helper_inclusive,163843,163843,163843,163843,163843,163843,163843,163843
+6,23,T104 two-round conversion,requantize_two_round_i32_to_i8,helper_inclusive,278539,278539,278539,278539,278539,278539,278539,278539
+7,0,wrapper,block0_mlp_out_residual_forward,wrapper_exclusive,47,47,47,47,47,47,47,47
+7,1,output accumulation,projection_accumulate_i8,helper_inclusive,16826680,16826680,16826680,16826680,16826680,16826680,16826680,16826680
+7,2,T105 conversion,requantize_i32_to_i8,helper_inclusive,45067,45067,45065,45065,45065,45065,45065,45066
+7,3,T106 alignment,requantize_i8_to_i32,helper_inclusive,36871,36871,36871,36871,36871,36871,36871,36871
+7,4,T73 + T106 residual,residual_add_i32,helper_inclusive,32772,32772,32772,32772,32772,32772,32772,32772
