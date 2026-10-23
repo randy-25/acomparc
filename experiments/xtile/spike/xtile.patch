@@ -1,0 +1,439 @@
+diff --git a/riscv/encoding.h b/riscv/encoding.h
+index 5203544b..d37811f1 100644
+--- a/riscv/encoding.h
++++ b/riscv/encoding.h
+@@ -581,6 +581,26 @@
+ #define MASK_ADD_UW 0xfe00707f
+ #define MATCH_ADDI 0x13
+ #define MASK_ADDI 0x707f
++
++// TILE-ENGINE-MODIFICATION-START
++#define MATCH_XTILE_CFG 0x0000000b
++#define MASK_XTILE_CFG  0xfff07fff
++
++#define MATCH_XTILE_SET_AB 0x0000100b
++#define MASK_XTILE_SET_AB  0xfe007fff
++
++#define MATCH_XTILE_SET_C 0x0000200b
++#define MASK_XTILE_SET_C  0xfff07fff
++
++#define MATCH_XTILE_SET_ZP 0x0000300b
++#define MASK_XTILE_SET_ZP  0xfe007fff
++
++#define MATCH_XTILE_RUN 0x0000400b
++#define MASK_XTILE_RUN  0xffffffff
++
++#define CAUSE_XTILE_OVERFLOW 0x18
++// TILE-ENGINE-MODIFICATION-END
++
+ #define MATCH_ADDIW 0x1b
+ #define MASK_ADDIW 0x707f
+ #define MATCH_ADDW 0x3b
+@@ -3152,6 +3172,15 @@
+ DECLARE_INSN(add, MATCH_ADD, MASK_ADD)
+ DECLARE_INSN(add_uw, MATCH_ADD_UW, MASK_ADD_UW)
+ DECLARE_INSN(addi, MATCH_ADDI, MASK_ADDI)
++
++// TILE-ENGINE-MODIFICATION-START
++DECLARE_INSN(xtile_cfg, MATCH_XTILE_CFG, MASK_XTILE_CFG)
++DECLARE_INSN(xtile_set_ab, MATCH_XTILE_SET_AB, MASK_XTILE_SET_AB)
++DECLARE_INSN(xtile_set_c, MATCH_XTILE_SET_C, MASK_XTILE_SET_C)
++DECLARE_INSN(xtile_set_zp, MATCH_XTILE_SET_ZP, MASK_XTILE_SET_ZP)
++DECLARE_INSN(xtile_run, MATCH_XTILE_RUN, MASK_XTILE_RUN)
++// TILE-ENGINE-MODIFICATION-END
++
+ DECLARE_INSN(addiw, MATCH_ADDIW, MASK_ADDIW)
+ DECLARE_INSN(addw, MATCH_ADDW, MASK_ADDW)
+ DECLARE_INSN(aes32dsi, MATCH_AES32DSI, MASK_AES32DSI)
+diff --git a/riscv/insns/xtile_cfg.h b/riscv/insns/xtile_cfg.h
+new file mode 100644
+index 00000000..5d62483a
+--- /dev/null
++++ b/riscv/insns/xtile_cfg.h
+@@ -0,0 +1,32 @@
++// TILE-ENGINE-MODIFICATION-START
++
++// This instruction consumes one 64-bit configuration value.
++require_rv64;
++
++const reg_t cfg = RS1;
++
++// [63:38] = RESERVED
++// [37:28] = K --> Reduction Length
++// [27:18] = N --> Number of output column
++// [17:8] = M --> Number of output rows
++// [7:5] = TILE_COLUMNS_MINUS_1 --> active columns = field + 1
++// [4:2] = TILE_ROWS_MINUS_1 --> active rows = field + 1
++// [1] = B_TYPE --> 0: signed INT8 ; 1: signed INT32
++// [0] = A_TYPE --> 0: signed INT8 ; 1: signed INT32
++
++// Matrix dimensions are stored directly as 10-bit unsigned values.
++const reg_t m = (cfg >> 8)  & 0x3ff; // bit [17:8]
++const reg_t n = (cfg >> 18) & 0x3ff; // bit [27:18]
++const reg_t k = (cfg >> 28) & 0x3ff; // bit [37:28]
++
++// Validate before modifying the retained configuration.
++require((cfg >> 38) == 0);
++require(m != 0);
++require(n != 0);
++require(k != 0);
++
++// Retain the configuration for subsequent tile instructions.
++STATE.xtile_cfg = cfg;
++STATE.xtile_cfg_valid = true;
++
++// TILE-ENGINE-MODIFICATION-END
+diff --git a/riscv/insns/xtile_run.h b/riscv/insns/xtile_run.h
+new file mode 100644
+index 00000000..1734e986
+--- /dev/null
++++ b/riscv/insns/xtile_run.h
+@@ -0,0 +1,184 @@
++// TILE-ENGINE-MODIFICATION-START
++
++require_rv64;
++
++// All setup instructions must have completed since reset.
++require(STATE.xtile_cfg_valid);
++require(STATE.xtile_ab_valid);
++require(STATE.xtile_c_valid);
++require(STATE.xtile_zp_valid);
++
++const reg_t cfg = STATE.xtile_cfg;
++
++// Operand types: false = signed INT8, true = signed INT32.
++const bool a_is_int32 = (cfg & 0x1) != 0;
++const bool b_is_int32 = (cfg & 0x2) != 0;
++
++// Output width is derived from the operand types.
++const bool wide_output = a_is_int32 || b_is_int32;
++
++const reg_t a_bytes = a_is_int32 ? 4 : 1;
++const reg_t b_bytes = b_is_int32 ? 4 : 1;
++const reg_t c_bytes = wide_output ? 8 : 4;
++
++// Active tile dimensions are encoded minus one.
++const reg_t tile_rows = ((cfg >> 2) & 0x7) + 1;
++const reg_t tile_columns = ((cfg >> 5) & 0x7) + 1;
++
++// Matrix dimensions were validated by xtile.cfg.
++const reg_t m_count = (cfg >> 8) & 0x3ff;
++const reg_t n_count = (cfg >> 18) & 0x3ff;
++const reg_t k_count = (cfg >> 28) & 0x3ff;
++
++const reg_t a_base = STATE.xtile_a_base;
++const reg_t bt_base = STATE.xtile_bt_base;
++const reg_t c_base = STATE.xtile_c_base;
++
++const int64_t a_zero_point =
++    static_cast<int64_t>(STATE.xtile_a_zp);
++
++const int64_t b_zero_point =
++    static_cast<int64_t>(STATE.xtile_b_zp);
++
++// Validate type-dependent zero-point ranges before memory access.
++require(a_is_int32 ||
++        (a_zero_point >= -128 && a_zero_point <= 127));
++
++require(b_is_int32 ||
++        (b_zero_point >= -128 && b_zero_point <= 127));
++
++// Software must provide adequate buffers and keep C separate
++// from A and BT. Input matrices may share storage with each other.
++
++// Visit output tiles in increasing row, then column order.
++for (reg_t m_start = 0;
++     m_start < m_count;
++     m_start += tile_rows) {
++
++  const reg_t rows_remaining = m_count - m_start;
++  const reg_t active_rows =
++      rows_remaining < tile_rows ? rows_remaining : tile_rows;
++
++  for (reg_t n_start = 0;
++       n_start < n_count;
++       n_start += tile_columns) {
++
++    const reg_t columns_remaining = n_count - n_start;
++    const reg_t active_columns =
++        columns_remaining < tile_columns
++            ? columns_remaining
++            : tile_columns;
++
++    // Scratch belongs to the host simulator.
++    // It models one output tile, not the entire C matrix.
++    int64_t accumulators[8][8] = {};
++
++    // Accumulate each output in increasing K order.
++    for (reg_t k = 0; k < k_count; ++k) {
++
++      int64_t a_operands[8];
++      int64_t b_operands[8];
++
++      // Load one centered A operand for each active row.
++      for (reg_t row = 0; row < active_rows; ++row) {
++
++        const reg_t m = m_start + row;
++
++        const reg_t address =
++            a_base + (m * k_count + k) * a_bytes;
++
++        const int64_t value =
++            a_is_int32
++                ? static_cast<int64_t>(
++                      MMU.load<int32_t>(address))
++                : static_cast<int64_t>(
++                      MMU.load<int8_t>(address));
++
++        a_operands[row] = value - a_zero_point;
++      }
++
++      // Load one centered BT operand for each active column.
++      for (reg_t column = 0;
++           column < active_columns;
++           ++column) {
++
++        const reg_t n = n_start + column;
++
++        const reg_t address =
++            bt_base + (n * k_count + k) * b_bytes;
++
++        const int64_t value =
++            b_is_int32
++                ? static_cast<int64_t>(
++                      MMU.load<int32_t>(address))
++                : static_cast<int64_t>(
++                      MMU.load<int8_t>(address));
++
++        b_operands[column] = value - b_zero_point;
++      }
++
++      // Update all active output accumulators.
++      for (reg_t row = 0; row < active_rows; ++row) {
++
++        for (reg_t column = 0;
++             column < active_columns;
++             ++column) {
++
++          int64_t product;
++
++          if (__builtin_mul_overflow(
++                  a_operands[row],
++                  b_operands[column],
++                  &product)) {
++            throw trap_xtile_overflow(insn.bits());
++          }
++
++          int64_t next;
++
++          if (__builtin_add_overflow(
++                  accumulators[row][column],
++                  product,
++                  &next)) {
++            throw trap_xtile_overflow(insn.bits());
++          }
++
++          accumulators[row][column] = next;
++        }
++      }
++    }
++
++    // All arithmetic for this tile succeeded.
++    // Store valid elements in row-major order.
++    for (reg_t row = 0; row < active_rows; ++row) {
++
++      const reg_t m = m_start + row;
++
++      for (reg_t column = 0;
++           column < active_columns;
++           ++column) {
++
++        const reg_t n = n_start + column;
++
++        const reg_t address =
++            c_base + (m * n_count + n) * c_bytes;
++
++        const int64_t result = accumulators[row][column];
++
++        if (wide_output) {
++          MMU.store<uint64_t>(
++              address, static_cast<uint64_t>(result));
++        } else {
++          // INT8/INT8 sums fit INT32 under the validated
++          // zero-point ranges and configured K bound.
++          MMU.store<uint32_t>(
++              address, static_cast<uint32_t>(result));
++        }
++      }
++    }
++  }
++}
++
++// Retain configuration, addresses, zero points, and valid flags.
++// MMU exceptions propagate normally; completed stores remain.
++
++// TILE-ENGINE-MODIFICATION-END
+\ No newline at end of file
+diff --git a/riscv/insns/xtile_set_ab.h b/riscv/insns/xtile_set_ab.h
+new file mode 100644
+index 00000000..f80d413c
+--- /dev/null
++++ b/riscv/insns/xtile_set_ab.h
+@@ -0,0 +1,14 @@
++// TILE-ENGINE-MODIFICATION-START
++
++require_rv64;
++
++// Read both source operands before updating engine state.
++const reg_t a_base = RS1;
++const reg_t bt_base = RS2;
++
++// Retain the addresses for subsequent tile operations.
++STATE.xtile_a_base = a_base;
++STATE.xtile_bt_base = bt_base;
++STATE.xtile_ab_valid = true;
++
++// TILE-ENGINE-MODIFICATION-END
+\ No newline at end of file
+diff --git a/riscv/insns/xtile_set_c.h b/riscv/insns/xtile_set_c.h
+new file mode 100644
+index 00000000..e5e4013b
+--- /dev/null
++++ b/riscv/insns/xtile_set_c.h
+@@ -0,0 +1,11 @@
++// TILE-ENGINE-MODIFICATION-START
++
++require_rv64;
++
++const reg_t c_base = RS1;
++
++// Retain the output address for subsequent tile operations.
++STATE.xtile_c_base = c_base;
++STATE.xtile_c_valid = true;
++
++// TILE-ENGINE-MODIFICATION-END
+\ No newline at end of file
+diff --git a/riscv/insns/xtile_set_zp.h b/riscv/insns/xtile_set_zp.h
+new file mode 100644
+index 00000000..c36fe953
+--- /dev/null
++++ b/riscv/insns/xtile_set_zp.h
+@@ -0,0 +1,17 @@
++// TILE-ENGINE-MODIFICATION-START
++
++require_rv64;
++
++// Keep the low 32 bits and interpret them as signed zero points.
++const int32_t a_zp =
++    static_cast<int32_t>(static_cast<uint32_t>(RS1));
++
++const int32_t b_zp =
++    static_cast<int32_t>(static_cast<uint32_t>(RS2));
++
++// Update state after reading both operands.
++STATE.xtile_a_zp = a_zp;
++STATE.xtile_b_zp = b_zp;
++STATE.xtile_zp_valid = true;
++
++// TILE-ENGINE-MODIFICATION-END
+\ No newline at end of file
+diff --git a/riscv/processor.cc b/riscv/processor.cc
+index 80a47d93..7781f666 100644
+--- a/riscv/processor.cc
++++ b/riscv/processor.cc
+@@ -103,6 +103,26 @@ void state_t::reset(processor_t* const proc, reg_t max_isa)
+   XPR.reset();
+   FPR.reset();
+ 
++  // TILE-ENGINE-MODIFICATION-START
++  // configuration state
++  xtile_cfg = 0;
++  xtile_cfg_valid = false;
++
++  // Input matrix address state.
++  xtile_a_base = 0;
++  xtile_bt_base = 0;
++  xtile_ab_valid = false;
++
++  // Output matrix address state.
++  xtile_c_base = 0;
++  xtile_c_valid = false;
++
++  // Zero points require explicit initialization by software.
++  xtile_a_zp = 0;
++  xtile_b_zp = 0;
++  xtile_zp_valid = false;
++  // TILE-ENGINE-MODIFICATION-END
++
+   prv = prev_prv = PRV_M;
+   v = prev_v = false;
+   prv_changed = false;
+diff --git a/riscv/processor.h b/riscv/processor.h
+index bf234d17..7f27646b 100644
+--- a/riscv/processor.h
++++ b/riscv/processor.h
+@@ -85,6 +85,26 @@ struct state_t
+   regfile_t<reg_t, NXPR, true> XPR;
+   regfile_t<freg_t, NFPR, false> FPR;
+ 
++  // TILE-ENGINE-MODIFICATION-START
++  // configuration state
++  reg_t xtile_cfg;
++  bool xtile_cfg_valid;
++
++  // Input matrix base addresses: A[M,K] and BT[N,K].
++  reg_t xtile_a_base;
++  reg_t xtile_bt_base;
++  bool xtile_ab_valid;
++
++  // Output matrix base address: INT32 C[M,N].
++  reg_t xtile_c_base;
++  bool xtile_c_valid;
++
++  // Operand zero points.
++  int32_t xtile_a_zp;
++  int32_t xtile_b_zp;
++  bool xtile_zp_valid;
++  // TILE-ENGINE-MODIFICATION-END
++
+   // control and status registers
+   std::unordered_map<reg_t, csr_t_p> csrmap;
+   reg_t prv;    // TODO: Can this be an enum instead?
+diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
+index 3a6bd3a1..0f49cdbb 100644
+--- a/riscv/riscv.mk.in
++++ b/riscv/riscv.mk.in
+@@ -1183,6 +1183,18 @@ riscv_insn_list = \
+ 	$(riscv_insn_ext_zicfilp) \
+ 	$(riscv_insn_ext_zicfiss) \
+ 
++
++# TILE-ENGINE-MODIFICATION-START
++riscv_insn_ext_xtile = \
++	xtile_cfg \
++	xtile_set_ab \
++	xtile_set_c \
++	xtile_set_zp \
++	xtile_run
++
++riscv_insn_list += $(riscv_insn_ext_xtile)
++# TILE-ENGINE-MODIFICATION-END
++
+ riscv_gen_srcs = $(addsuffix .cc,$(riscv_insn_list))
+ 
+ insn_list.h: $(src_dir)/riscv/riscv.mk.in
+diff --git a/riscv/trap.h b/riscv/trap.h
+index 5ea56e24..14cfd46c 100644
+--- a/riscv/trap.h
++++ b/riscv/trap.h
+@@ -103,6 +103,10 @@ class mem_trap_t : public trap_t
+ DECLARE_MEM_TRAP(CAUSE_MISALIGNED_FETCH, instruction_address_misaligned)
+ DECLARE_MEM_TRAP(CAUSE_FETCH_ACCESS, instruction_access_fault)
+ DECLARE_INST_TRAP(CAUSE_ILLEGAL_INSTRUCTION, illegal_instruction)
++// TILE-ENGINE-MODIFICATION-START
++DECLARE_INST_TRAP(CAUSE_XTILE_OVERFLOW, xtile_overflow)
++// TILE-ENGINE-MODIFICATION-END
++
+ DECLARE_INST_WITH_GVA_TRAP(CAUSE_BREAKPOINT, breakpoint)
+ DECLARE_MEM_TRAP(CAUSE_MISALIGNED_LOAD, load_address_misaligned)
+ DECLARE_MEM_TRAP(CAUSE_MISALIGNED_STORE, store_address_misaligned)

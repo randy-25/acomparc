@@ -7,11 +7,10 @@
 - Counter: `minstret` (retired instructions)
 - Workload: one block-0 inference, sequence length 32, hidden size 128.
 - Cases: one benchmark and seven calibration sequences.
-- Counter sanity check: adjacent reads = 1; eight NOPs between reads = 9.
 
-Counts in the measurement tables below are raw counter differences, including small measurement and call overhead. The analysis section separately labels corrected stage-body counts. They are instruction counts, not hardware cycle counts.
 
 ## Full Block
+Number of retired instructions across 8 cases testing
 
 | Case | block0_forward | Sum of seven stage measurements |
 |---|---:|---:|
@@ -25,7 +24,6 @@ Counts in the measurement tables below are raw counter differences, including sm
 | 7 | 57,181,316 | 57,181,307 |
 | **Mean** | **57,181,472.5** | **57,181,463.5** |
 
-The full measurement exceeds the stage sum by 9 instructions in every case because the wrapper and measurement call sites execute different surrounding instructions.
 
 ## Individual Stages
 
@@ -41,7 +39,6 @@ The full measurement exceeds the stage sum by 9 instructions in every case becau
 | 7 | 256,449 | 12,842,003 | 2,922,370 | 4,366,724 | 256,375 | 19,595,942 | 16,941,444 |
 | **Mean** | **256,463.625** | **12,842,003.5** | **2,922,502.125** | **4,366,724.25** | **256,382.25** | **19,595,944.125** | **16,941,443.625** |
 
-Means are arithmetic averages across these eight fixtures.
 
 ## Instruction Distribution by Stage
 
@@ -57,13 +54,12 @@ The percentages below use the mean raw instruction count across eight cases, div
 | 6 | MLP expansion + GELU | 34.27% |
 | 7 | MLP output projection + residual | 29.63% |
 
-Percentages are rounded and include the small overhead present in the raw measurements.
 
 Parts **2, 6, and 7** together account for approximately **86.36%** of the full-block instruction count.
 
 ## Analysis Findings
 
-The following table uses **case 0, stage bodies including their callees**, with measurement/caller instructions excluded. `Other` is everything except the listed multiply and register-add opcodes. Register-add totals include address calculations as well as numerical additions; mathematical MAC counts appear separately.
+The following table counts the assembly instruction manually for each part in the block0 using case 0, with measurement/caller instructions excluded. `Other` is everything except the listed multiply and register-add opcodes. Register-add totals include address calculations as well as numerical additions. Mathematical MAC counts appear separately.
 
 | Part and detailed analysis | Matrix MACs | `mul` + `mulw` | `add` + `addw` | Other instructions | Stage-body total |
 |---|---|---|---|---|---|
@@ -76,9 +72,19 @@ The following table uses **case 0, stage bodies including their callees**, with 
 | [7: MLP Output Projection and Second Residual](mlp_out_residual_forward.md) | 2,097,152 | 2,105,344 | 2,125,957 | 12,710,136 | 16,941,437 |
 | **Seven stage bodies** | 6,553,600 | 6,926,855 | 7,338,109 | 42,916,508 | 57,181,472 |
 
-The full wrapper adds **48 instructions** to those stage bodies; the full measurement adds **6 caller/counter instructions**. Thus the case-0 raw full count is **57,181,526**, and the sum of raw stage measurements is **57,181,517**. The constant difference of nine is fully explained by these boundaries.
+
+From the Spike Measurement using `minstret`:
+- Full block 0 inference count = **57,181,526**
+- 7 stages of block 0 counted individually = **57,181,517**
+
+And manually counted the assembly using the disassembly of block 0 case 0 full inference = **57,181,472**
+
+The full wrapper adds **48 instructions** to those stage bodies. The full measurement adds **6 caller/counter instructions**. Thus the case-0 raw full count is **57,181,526**. The individual stages measurement has different method to do the preparation of their function, which result in the gap of **45** from the full block 0 case 0 inference.
+
 
 ### Projection accumulation across the block
+
+The table below shows the total number of instruction executed by the ``dense layer`` or ``projection_accumulation`` across all the stages in block 0. There are 6 dense layers, which in total counted like the following table. 
 
 | Purpose | Executed instructions |
 |---|---|
