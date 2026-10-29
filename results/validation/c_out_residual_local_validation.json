@@ -1,0 +1,56 @@
+{
+  "part4_cases_per_path_passed": 104,
+  "residual_int32_outputs_per_path": 425984,
+  "paths": [
+    "standalone",
+    "Parts1-3-chained"
+  ],
+  "checked": [
+    "biased INT32 accumulator",
+    "INT8 projection boundary",
+    "INT32 branch boundary",
+    "INT32 residual output",
+    "distinct output buffers",
+    "accumulator/output reuse",
+    "input preservation",
+    "buffer guards"
+  ],
+  "existing_regressions": {
+    "ln1_cases": 104,
+    "qkv_cases_per_path": 104,
+    "attention_cases_per_path": 104
+  },
+  "part1_to_3_bodies_unchanged_for_blocks": 8,
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "local_execution": "real LayerNorm, attention and residual software kernels; temporary external XTILE/XREQUANT emulators",
+  "make_dry_runs": {
+    "ln1": {
+      "object_commands": 33,
+      "link_commands": 1
+    },
+    "qkv": {
+      "object_commands": 33,
+      "link_commands": 1
+    },
+    "attention": {
+      "object_commands": 33,
+      "link_commands": 1
+    },
+    "out_residual": {
+      "object_commands": 33,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "RV64 build",
+    "Part-4 test on combined custom Spike"
+  ]
+}

@@ -13,4 +13,4 @@
 Archived notebooks retain exploratory source and historical paths. They are not the supported execution sequence. Active notebooks clear saved outputs and use relative paths, independent kernels, and unique run records. The multi-prompt quantization path
 and original calibration prompt strings are retained.
 
-The measured C kernel, reference headers, and profiler are preserved in `experiments/block0_qproj/`. They are distinct from notebook 04's generated accumulator test. The original user-supplied Git history is retained in the output zip.
+The measured C kernel, reference headers, and profiler are preserved in `experiments/block0/qproj/`. They are distinct from notebook 04's generated accumulator test. The original user-supplied Git history is retained in the output zip.

@@ -1,0 +1,62 @@
+{
+  "mlp_cases_per_path_passed": 104,
+  "mlp_int8_outputs_per_path": 1703936,
+  "paths": [
+    "standalone",
+    "Parts1-5-chained"
+  ],
+  "gelu_input_codes_per_block": 256,
+  "gelu_code_test_buffer_elements": 16384,
+  "checked": [
+    "biased expansion accumulator",
+    "INT8 expansion",
+    "full Part-6 forward",
+    "separate expansion and GELU calls",
+    "all raw and quantized GELU checkpoints",
+    "single-round branch sum",
+    "two-round final conversion",
+    "input preservation",
+    "buffer guards"
+  ],
+  "part1_to_5_bodies_unchanged_for_blocks": 8,
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "local_execution": "real software kernels; temporary external XTILE/XREQUANT emulators",
+  "make_dry_runs": {
+    "ln1": {
+      "object_commands": 34,
+      "link_commands": 1
+    },
+    "qkv": {
+      "object_commands": 34,
+      "link_commands": 1
+    },
+    "attention": {
+      "object_commands": 34,
+      "link_commands": 1
+    },
+    "out_residual": {
+      "object_commands": 34,
+      "link_commands": 1
+    },
+    "ln2": {
+      "object_commands": 34,
+      "link_commands": 1
+    },
+    "mlp_gelu": {
+      "object_commands": 34,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "RV64 build",
+    "Part-6 test on combined custom Spike"
+  ]
+}

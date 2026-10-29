@@ -1,0 +1,23 @@
+{
+  "source_notebook_sha256": "6fd3fbc4d12dba08e0acbdd2dc3a524902d4ebc283534a8a4f75bffd3c21ea3e",
+  "checks": {
+    "parameter_bundles_equal_original_notebook": 8,
+    "block_calls_equal_original_notebook": 64,
+    "int8_outputs_equal": 262144,
+    "pre_boundary_int32_outputs_equal": 262144,
+    "legacy_block0_int32_fixture_values_equal": 32768,
+    "legacy_block0_numeric_macros_equal": 94,
+    "legacy_block0_arrays_equal": 15,
+    "generated_c_files_compile_with_warnings_as_errors": 8,
+    "archive_integrity_unit_tests_passed": 3,
+    "cli_help_without_host_dependencies": 4,
+    "benchmark_final_relative_l2_percent": 15.6707588,
+    "benchmark_final_rmse": 0.0112652807
+  },
+  "pending_on_laptop": [
+    "Production exporter with official LiteRT generated schema",
+    "Full FP32/LiteRT diagnostic rerun",
+    "Greedy generation CLI rerun"
+  ],
+  "local_loader_note": "Actual uploaded FlatBuffers were read by a test-only adapter. Production export uses the official generated schema; that dependency path was unavailable locally."
+}

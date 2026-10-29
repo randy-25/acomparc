@@ -1,24 +1,12 @@
-# Experiment Results
+# Results
 
-This folder contains the results of each experiment. Open an experiment's results README for its measurements, tables, analysis, and supporting evidence.
+## Historical block-0 Q-projection baseline
 
-## Experiment index
+[Measurements and analysis](../experiments/block0/qproj/results/Result.md)
 
-| Experiment | Description | Results |
-|---|---|---|
-| `block0_qproj` | Block-0 q-projection: scalar RV64IMC baseline (B0) | [Results and analysis](block0_qproj/Result.md) |
+`experiments/block0/qproj/results/` retains the scalar RV64IMC Q-projection measurements,
+profiles, and supporting evidence. Its `runs/` directory preserves
+the imported baseline and the executed refresh run.
 
-Add a row to this table when another experiment has results to report.
-
-## Saved runs
-
-Each experiment keeps individual run records in:
-
-`<experiment>/runs/<run-id>/`
-
-The experiment's results README identifies the runs used in its tables and comparisons. Each saved run includes metadata, source/input snapshots, logs, and available profiling evidence.
-
-To list saved command-line and imported runs, execute from the project root:
-
-```bash
-python3 scripts/list_runs.py
+These historical measurements are separate from the eight-block
+implementation under `inference/`.

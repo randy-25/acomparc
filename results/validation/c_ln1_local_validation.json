@@ -1,0 +1,30 @@
+{
+  "uploaded_c_parameter_files_equal_exporter": 17,
+  "ln1_cases_passed": 104,
+  "int8_outputs_per_path_checked": 425984,
+  "blocks": 8,
+  "reference_cases_per_block": 8,
+  "edge_cases_per_block": 5,
+  "checkpoint_comparison": "all ten computed LN1 checkpoints plus input preservation",
+  "guards": "all writable buffers unchanged",
+  "local_backend": "temporary host requantization emulator, not packaged",
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "make_dry_run": {
+    "object_commands": 30,
+    "link_commands": 1,
+    "isa": "rv64imc_zicsr",
+    "runtime_files": "placeholder dependency files only"
+  },
+  "pending": [
+    "RISC-V compilation with user toolchain",
+    "Run on combined XTILE/XREQUANT Spike"
+  ]
+}

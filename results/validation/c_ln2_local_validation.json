@@ -1,0 +1,46 @@
+{
+  "ln2_cases_per_path_passed": 104,
+  "ln2_int8_outputs_per_path": 425984,
+  "paths": [
+    "standalone",
+    "Parts1-4-chained"
+  ],
+  "checked": [
+    "INT32 residual input",
+    "feature sums",
+    "fine and stored squares",
+    "variance before and after epsilon",
+    "inverse standard deviation",
+    "fine and stored normalized values",
+    "INT64 affine values",
+    "INT8 output",
+    "input preservation",
+    "buffer guards"
+  ],
+  "direct_edge_inputs": "zero, constants -65536/+65536, alternating -65536/+65536, one +65536 feature; all at scale 2^-16",
+  "part1_to_4_bodies_unchanged_for_blocks": 8,
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "local_execution": "real LayerNorm, attention and residual software kernels; temporary external XTILE/XREQUANT emulators",
+  "make_dry_runs": {
+    "out_residual": {
+      "object_commands": 33,
+      "link_commands": 1
+    },
+    "ln2": {
+      "object_commands": 33,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "RV64 build",
+    "LN2 test on combined custom Spike"
+  ]
+}

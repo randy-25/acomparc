@@ -1,0 +1,27 @@
+{
+  "existing_files_extended": [
+    "src/blocks/block0.c",
+    "src/blocks/block0.h",
+    "src/blocks/block1.c",
+    "src/blocks/block1.h",
+    "src/blocks/block2.c",
+    "src/blocks/block2.h",
+    "src/blocks/block3.c",
+    "src/blocks/block3.h",
+    "src/blocks/block4.c",
+    "src/blocks/block4.h",
+    "src/blocks/block5.c",
+    "src/blocks/block5.h",
+    "src/blocks/block6.c",
+    "src/blocks/block6.h",
+    "src/blocks/block7.c",
+    "src/blocks/block7.h"
+  ],
+  "changes": [
+    "Part 1-7 and boundary function bodies unchanged; add full block entry points.",
+    "Add shared workspace declaration and actual eight-block driver.",
+    "Add separate scalar backend selected at build time.",
+    "Accelerated projection.c, requantization.c and instruction wrappers remain unchanged.",
+    "Compare identical arithmetic, parameters and compiler flags; report raw minstret."
+  ]
+}

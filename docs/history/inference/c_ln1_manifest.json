@@ -1,0 +1,15 @@
+{
+  "source_archive_sha256": "aa389c0d79f20759f475a10b5d22c088f6052dd9d5fb73ed16bdc9295c145fc4",
+  "copied_unchanged": {
+    "src/layernorm.c": "d6359ebe52e37d81a82a00051c753e87740ca1641329c2b5230a612279304e38",
+    "src/requantization.c": "c5c91c1d9a2e934a9340b9411bf2db8dd7f2a56c5eeb5e47d7e6805a45fac234",
+    "src/requantization.h": "df73c9206e952c3be8bfb5c1e14af57d03da3b47edffd89a5ea95799c36edbd4",
+    "src/xrequant.h": "9bdf0c85dfb8671587b3b8d08b1cdf4834219cddc717c86bbae7a0e6599ec2d6"
+  },
+  "changes": [
+    "New layernorm.h imports the generated LayerNormI8Params type.",
+    "Added separate LN1 entry points for blocks 0 through 7.",
+    "No change to existing XREQUANT encoding or wrapper semantics.",
+    "LN1 uses XREQUANT modes 0 and 1; XTILE begins with Part 2."
+  ]
+}

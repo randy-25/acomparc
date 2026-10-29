@@ -1,0 +1,25 @@
+{
+  "existing_files_extended": [
+    "src/blocks/block0.c",
+    "src/blocks/block0.h",
+    "src/blocks/block1.c",
+    "src/blocks/block1.h",
+    "src/blocks/block2.c",
+    "src/blocks/block2.h",
+    "src/blocks/block3.c",
+    "src/blocks/block3.h",
+    "src/blocks/block4.c",
+    "src/blocks/block4.h",
+    "src/blocks/block5.c",
+    "src/blocks/block5.h",
+    "src/blocks/block6.c",
+    "src/blocks/block6.h",
+    "src/blocks/block7.c",
+    "src/blocks/block7.h"
+  ],
+  "changes": [
+    "Part 1-4 function bodies unchanged; add per-block LN2 entry points.",
+    "Reuse existing INT32-input LayerNorm arithmetic and XREQUANT modes 0 and 1.",
+    "No shared-kernel, instruction, parameter or earlier-Makefile changes."
+  ]
+}

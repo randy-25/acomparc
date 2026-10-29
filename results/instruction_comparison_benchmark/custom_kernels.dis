@@ -1,0 +1,151 @@
+0000000080000a3e <projection_accumulate_i8>:
+    80000a3e:	c341                	beqz	a4,80000abe <projection_accumulate_i8+0x80>
+    80000a40:	00183e13          	seqz	t3,a6
+    80000a44:	06080d63          	beqz	a6,80000abe <projection_accumulate_i8+0x80>
+    80000a48:	01076333          	or	t1,a4,a6
+    80000a4c:	3ff00e93          	li	t4,1023
+    80000a50:	066ee863          	bltu	t4,t1,80000ac0 <projection_accumulate_i8+0x82>
+    80000a54:	fff78313          	addi	t1,a5,-1
+    80000a58:	3fe00e93          	li	t4,1022
+    80000a5c:	066ee263          	bltu	t4,t1,80000ac0 <projection_accumulate_i8+0x82>
+    80000a60:	01c79313          	slli	t1,a5,0x1c
+    80000a64:	00871793          	slli	a5,a4,0x8
+    80000a68:	0067e7b3          	or	a5,a5,t1
+    80000a6c:	01281313          	slli	t1,a6,0x12
+    80000a70:	0067e7b3          	or	a5,a5,t1
+    80000a74:	0fc7e793          	ori	a5,a5,252
+    80000a78:	0007800b          	.insn	4, 0x0007800b
+    80000a7c:	00b5100b          	.insn	4, 0x00b5100b
+    80000a80:	0006a00b          	.insn	4, 0x0006a00b
+    80000a84:	01c8b00b          	.insn	4, 0x01c8b00b
+    80000a88:	0000400b          	.insn	4, 0x400b
+    80000a8c:	ca0d                	beqz	a2,80000abe <projection_accumulate_i8+0x80>
+    80000a8e:	00281f13          	slli	t5,a6,0x2
+    80000a92:	4e81                	li	t4,0
+    80000a94:	4e01                	li	t3,0
+    80000a96:	01d687b3          	add	a5,a3,t4
+    80000a9a:	88b2                	mv	a7,a2
+    80000a9c:	4501                	li	a0,0
+    80000a9e:	0007a303          	lw	t1,0(a5)
+    80000aa2:	0008a583          	lw	a1,0(a7)
+    80000aa6:	0505                	addi	a0,a0,1
+    80000aa8:	0891                	addi	a7,a7,4
+    80000aaa:	006585bb          	addw	a1,a1,t1
+    80000aae:	c38c                	sw	a1,0(a5)
+    80000ab0:	0791                	addi	a5,a5,4
+    80000ab2:	ff0566e3          	bltu	a0,a6,80000a9e <projection_accumulate_i8+0x60>
+    80000ab6:	0e05                	addi	t3,t3,1
+    80000ab8:	9efa                	add	t4,t4,t5
+    80000aba:	fcee6ee3          	bltu	t3,a4,80000a96 <projection_accumulate_i8+0x58>
+    80000abe:	8082                	ret
+    80000ac0:	9002                	ebreak
+
+0000000080000ac2 <requantize_shift_i64_to_i32>:
+    80000ac2:	ce0d                	beqz	a2,80000afc <requantize_shift_i64_to_i32+0x3a>
+    80000ac4:	57fd                	li	a5,-1
+    80000ac6:	9381                	srli	a5,a5,0x20
+    80000ac8:	02c7eb63          	bltu	a5,a2,80000afe <requantize_shift_i64_to_i32+0x3c>
+    80000acc:	fff6879b          	addiw	a5,a3,-1
+    80000ad0:	03e00713          	li	a4,62
+    80000ad4:	02f76563          	bltu	a4,a5,80000afe <requantize_shift_i64_to_i32+0x3c>
+    80000ad8:	02069793          	slli	a5,a3,0x20
+    80000adc:	01d7d693          	srli	a3,a5,0x1d
+    80000ae0:	0626                	slli	a2,a2,0x9
+    80000ae2:	8ed1                	or	a3,a3,a2
+    80000ae4:	0006802b          	.insn	4, 0x0006802b
+    80000ae8:	00b5102b          	.insn	4, 0x00b5102b
+    80000aec:	4785                	li	a5,1
+    80000aee:	0007a02b          	.insn	4, 0x0007a02b
+    80000af2:	4781                	li	a5,0
+    80000af4:	00f7b02b          	.insn	4, 0x00f7b02b
+    80000af8:	0000402b          	.insn	4, 0x402b
+    80000afc:	8082                	ret
+    80000afe:	9002                	ebreak
+
+0000000080000b00 <requantize_i64_to_i8>:
+    80000b00:	ce1d                	beqz	a2,80000b3e <requantize_i64_to_i8+0x3e>
+    80000b02:	587d                	li	a6,-1
+    80000b04:	02085813          	srli	a6,a6,0x20
+    80000b08:	02c86c63          	bltu	a6,a2,80000b40 <requantize_i64_to_i8+0x40>
+    80000b0c:	fff7081b          	addiw	a6,a4,-1
+    80000b10:	03e00893          	li	a7,62
+    80000b14:	0308e663          	bltu	a7,a6,80000b40 <requantize_i64_to_i8+0x40>
+    80000b18:	02071813          	slli	a6,a4,0x20
+    80000b1c:	01d85713          	srli	a4,a6,0x1d
+    80000b20:	0626                	slli	a2,a2,0x9
+    80000b22:	8f51                	or	a4,a4,a2
+    80000b24:	00176713          	ori	a4,a4,1
+    80000b28:	0007002b          	.insn	4, 0x0007002b
+    80000b2c:	00b5102b          	.insn	4, 0x00b5102b
+    80000b30:	0006a02b          	.insn	4, 0x0006a02b
+    80000b34:	4701                	li	a4,0
+    80000b36:	00f7302b          	.insn	4, 0x00f7302b
+    80000b3a:	0000402b          	.insn	4, 0x402b
+    80000b3e:	8082                	ret
+    80000b40:	9002                	ebreak
+
+0000000080000b42 <requantize_i32_to_i8>:
+    80000b42:	ce1d                	beqz	a2,80000b80 <requantize_i32_to_i8+0x3e>
+    80000b44:	587d                	li	a6,-1
+    80000b46:	02085813          	srli	a6,a6,0x20
+    80000b4a:	02c86c63          	bltu	a6,a2,80000b82 <requantize_i32_to_i8+0x40>
+    80000b4e:	fff7081b          	addiw	a6,a4,-1
+    80000b52:	03e00893          	li	a7,62
+    80000b56:	0308e663          	bltu	a7,a6,80000b82 <requantize_i32_to_i8+0x40>
+    80000b5a:	02071813          	slli	a6,a4,0x20
+    80000b5e:	01d85713          	srli	a4,a6,0x1d
+    80000b62:	0626                	slli	a2,a2,0x9
+    80000b64:	8f51                	or	a4,a4,a2
+    80000b66:	00276713          	ori	a4,a4,2
+    80000b6a:	0007002b          	.insn	4, 0x0007002b
+    80000b6e:	00b5102b          	.insn	4, 0x00b5102b
+    80000b72:	0006a02b          	.insn	4, 0x0006a02b
+    80000b76:	4701                	li	a4,0
+    80000b78:	00f7302b          	.insn	4, 0x00f7302b
+    80000b7c:	0000402b          	.insn	4, 0x402b
+    80000b80:	8082                	ret
+    80000b82:	9002                	ebreak
+
+0000000080000b84 <requantize_i8_to_i32>:
+    80000b84:	ce1d                	beqz	a2,80000bc2 <requantize_i8_to_i32+0x3e>
+    80000b86:	587d                	li	a6,-1
+    80000b88:	02085813          	srli	a6,a6,0x20
+    80000b8c:	02c86c63          	bltu	a6,a2,80000bc4 <requantize_i8_to_i32+0x40>
+    80000b90:	fff7081b          	addiw	a6,a4,-1
+    80000b94:	03e00893          	li	a7,62
+    80000b98:	0308e663          	bltu	a7,a6,80000bc4 <requantize_i8_to_i32+0x40>
+    80000b9c:	02071813          	slli	a6,a4,0x20
+    80000ba0:	01d85713          	srli	a4,a6,0x1d
+    80000ba4:	0626                	slli	a2,a2,0x9
+    80000ba6:	8f51                	or	a4,a4,a2
+    80000ba8:	00376713          	ori	a4,a4,3
+    80000bac:	0007002b          	.insn	4, 0x0007002b
+    80000bb0:	00b5102b          	.insn	4, 0x00b5102b
+    80000bb4:	0006a02b          	.insn	4, 0x0006a02b
+    80000bb8:	4701                	li	a4,0
+    80000bba:	00e7b02b          	.insn	4, 0x00e7b02b
+    80000bbe:	0000402b          	.insn	4, 0x402b
+    80000bc2:	8082                	ret
+    80000bc4:	9002                	ebreak
+
+0000000080000bc6 <requantize_two_round_i32_to_i8>:
+    80000bc6:	ce05                	beqz	a2,80000bfe <requantize_two_round_i32_to_i8+0x38>
+    80000bc8:	4805                	li	a6,1
+    80000bca:	1802                	slli	a6,a6,0x20
+    80000bcc:	03067a63          	bgeu	a2,a6,80000c00 <requantize_two_round_i32_to_i8+0x3a>
+    80000bd0:	487d                	li	a6,31
+    80000bd2:	00e838b3          	sltu	a7,a6,a4
+    80000bd6:	02e86563          	bltu	a6,a4,80000c00 <requantize_two_round_i32_to_i8+0x3a>
+    80000bda:	02071813          	slli	a6,a4,0x20
+    80000bde:	01d85713          	srli	a4,a6,0x1d
+    80000be2:	0626                	slli	a2,a2,0x9
+    80000be4:	8f51                	or	a4,a4,a2
+    80000be6:	00476713          	ori	a4,a4,4
+    80000bea:	0007002b          	.insn	4, 0x0007002b
+    80000bee:	00b5102b          	.insn	4, 0x00b5102b
+    80000bf2:	0006a02b          	.insn	4, 0x0006a02b
+    80000bf6:	00f8b02b          	.insn	4, 0x00f8b02b
+    80000bfa:	0000402b          	.insn	4, 0x402b
+    80000bfe:	8082                	ret
+    80000c00:	9002                	ebreak
+

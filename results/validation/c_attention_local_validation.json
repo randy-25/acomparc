@@ -1,0 +1,53 @@
+{
+  "attention_cases_per_path_passed": 104,
+  "attention_int8_outputs_per_path": 425984,
+  "values_per_score_checkpoint_per_path": 1703936,
+  "paths": [
+    "standalone",
+    "LN1-QKV-chained"
+  ],
+  "checked": [
+    "raw scores",
+    "causal shifted scores",
+    "exponentials",
+    "probabilities",
+    "merged context",
+    "final INT8 output",
+    "probability invariants",
+    "input preservation",
+    "buffer guards"
+  ],
+  "ln1_regression_cases_passed": 104,
+  "qkv_regression_cases_per_path_passed": 104,
+  "ln1_and_qkv_function_bodies_unchanged": 8,
+  "atomic_export_interruption_check": "passed",
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "local_execution": "real software attention kernels; temporary external emulators for upstream XTILE and XREQUANT",
+  "make_dry_runs": {
+    "ln1": {
+      "object_commands": 32,
+      "link_commands": 1
+    },
+    "qkv": {
+      "object_commands": 32,
+      "link_commands": 1
+    },
+    "attention": {
+      "object_commands": 32,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "RISC-V builds",
+    "LN1/QKV regressions after attention linkage update",
+    "Attention test on combined custom Spike"
+  ]
+}

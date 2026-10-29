@@ -1,0 +1,40 @@
+{
+  "qkv_cases_per_path_passed": 104,
+  "qkv_int8_outputs_per_path": 1277952,
+  "qkv_int32_accumulators_per_path": 1277952,
+  "paths": [
+    "standalone",
+    "LN1-chained"
+  ],
+  "guard_checks": "passed",
+  "input_preservation": "passed",
+  "ln1_regression_cases_passed": 104,
+  "ln1_regression_outputs_per_path": 425984,
+  "stale_c_parameters_rejected_before_writes": true,
+  "ln1_function_bodies_unchanged": 8,
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "local_backend": "temporary scalar XTILE/XREQUANT emulators outside delivered package",
+  "make_dry_runs": {
+    "ln1": {
+      "object_commands": 31,
+      "link_commands": 1
+    },
+    "qkv": {
+      "object_commands": 31,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "RISC-V compilation",
+    "LN1 regression on custom Spike after extending block sources",
+    "QKV test on combined XTILE/XREQUANT Spike"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "profile": "tinystories-allblocks-int8-v1",
+  "notebook_sha256": "6fd3fbc4d12dba08e0acbdd2dc3a524902d4ebc283534a8a4f75bffd3c21ea3e",
+  "shape": [
+    1,
+    32,
+    128
+  ],
+  "blocks": 8,
+  "heads": 16,
+  "head_dim": 8,
+  "mlp_features": 512,
+  "boundary_scale_exponents": [
+    -8,
+    -7,
+    -8,
+    -8,
+    -8,
+    -8,
+    -8,
+    -8,
+    -7
+  ],
+  "boundary_zero_point": 0,
+  "input_encoding_rounding": "nearest, ties to even (offline embedding preparation)",
+  "runtime_rounding": "nearest, ties toward positive infinity",
+  "gelu_second_rounding": "nearest, ties away from zero",
+  "residual_scale_exponent": -16,
+  "model_sha256": {
+    "0": "06481f6c5151a83e3c01896d314d902ee9608773d94834848777ccc7282d87a9",
+    "1": "6f722d380201c19363193dcbcb912e4941dde583960c5af59999da2018cbf7f8",
+    "2": "a8054ade2122aea9ffdf47de7e8e36efd35dccbebac2d9819c676f2e2cd811db",
+    "3": "97671509edf529b700c4e24d6a8e9d5dfd1cabf7eb8f5a31dab1f5b5b652e1ea",
+    "4": "4d3c97d300014b2a0c246dd9915c64bdc0249526398fbd0b8d8676e33f76d5f8",
+    "5": "54e043f718c3c189adebe08641a859ce5c63654fd98552a7a2e6ac7e9fa21986",
+    "6": "3e5aed897a89346db26e0a15d3a89167308b1c218b3473300ddfe1a3b1861c6f",
+    "7": "47494f78bd76a509c4ec2da6d3527dafde5425af4c2e39c5eaf19a8b52fe3d7e"
+  },
+  "validation_inputs_sha256": "85cc41f8f3504ccb9514baa5b2bcd89c2adedc5f7b34f05134e997ae9261aa36"
+}
