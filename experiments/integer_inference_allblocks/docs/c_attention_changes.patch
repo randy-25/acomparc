@@ -1,0 +1,678 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -1,6 +1,7 @@
+ #include "block0.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block0_params.h"
+ 
+ void block0_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK0_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block0_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK0_TOKEN_COUNT, BLOCK0_HEAD_COUNT, BLOCK0_HEAD_DIM,
++                         BLOCK0_Q_OUTPUT_ZERO_POINT, BLOCK0_K_OUTPUT_ZERO_POINT);
++}
++
++void block0_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block0_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK0_HEAD_COUNT, BLOCK0_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK0_HEAD_COUNT, BLOCK0_TOKEN_COUNT,
++                          block0_softmax_exp_lut,
++                          BLOCK0_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK0_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK0_HEAD_COUNT, BLOCK0_TOKEN_COUNT,
++                                BLOCK0_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK0_TOKEN_COUNT, BLOCK0_HEAD_COUNT, BLOCK0_HEAD_DIM,
++                          BLOCK0_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK0_TOKEN_COUNT * BLOCK0_HIDDEN_SIZE,
++                         BLOCK0_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK0_ATTN_CONTEXT_SHIFT,
++                         BLOCK0_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -23,4 +23,27 @@
+ void block0_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK0_HEAD_COUNT 16u
++#define BLOCK0_HEAD_DIM 8u
++#define BLOCK0_SCORE_ELEMENTS (BLOCK0_HEAD_COUNT * BLOCK0_TOKEN_COUNT * BLOCK0_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block0_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block0_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -1,6 +1,7 @@
+ #include "block1.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block1_params.h"
+ 
+ void block1_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK1_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block1_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK1_TOKEN_COUNT, BLOCK1_HEAD_COUNT, BLOCK1_HEAD_DIM,
++                         BLOCK1_Q_OUTPUT_ZERO_POINT, BLOCK1_K_OUTPUT_ZERO_POINT);
++}
++
++void block1_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block1_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK1_HEAD_COUNT, BLOCK1_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK1_HEAD_COUNT, BLOCK1_TOKEN_COUNT,
++                          block1_softmax_exp_lut,
++                          BLOCK1_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK1_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK1_HEAD_COUNT, BLOCK1_TOKEN_COUNT,
++                                BLOCK1_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK1_TOKEN_COUNT, BLOCK1_HEAD_COUNT, BLOCK1_HEAD_DIM,
++                          BLOCK1_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK1_TOKEN_COUNT * BLOCK1_HIDDEN_SIZE,
++                         BLOCK1_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK1_ATTN_CONTEXT_SHIFT,
++                         BLOCK1_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -23,4 +23,27 @@
+ void block1_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK1_HEAD_COUNT 16u
++#define BLOCK1_HEAD_DIM 8u
++#define BLOCK1_SCORE_ELEMENTS (BLOCK1_HEAD_COUNT * BLOCK1_TOKEN_COUNT * BLOCK1_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block1_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block1_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -1,6 +1,7 @@
+ #include "block2.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block2_params.h"
+ 
+ void block2_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK2_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block2_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK2_TOKEN_COUNT, BLOCK2_HEAD_COUNT, BLOCK2_HEAD_DIM,
++                         BLOCK2_Q_OUTPUT_ZERO_POINT, BLOCK2_K_OUTPUT_ZERO_POINT);
++}
++
++void block2_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block2_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK2_HEAD_COUNT, BLOCK2_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK2_HEAD_COUNT, BLOCK2_TOKEN_COUNT,
++                          block2_softmax_exp_lut,
++                          BLOCK2_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK2_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK2_HEAD_COUNT, BLOCK2_TOKEN_COUNT,
++                                BLOCK2_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK2_TOKEN_COUNT, BLOCK2_HEAD_COUNT, BLOCK2_HEAD_DIM,
++                          BLOCK2_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK2_TOKEN_COUNT * BLOCK2_HIDDEN_SIZE,
++                         BLOCK2_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK2_ATTN_CONTEXT_SHIFT,
++                         BLOCK2_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -23,4 +23,27 @@
+ void block2_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK2_HEAD_COUNT 16u
++#define BLOCK2_HEAD_DIM 8u
++#define BLOCK2_SCORE_ELEMENTS (BLOCK2_HEAD_COUNT * BLOCK2_TOKEN_COUNT * BLOCK2_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block2_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block2_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -1,6 +1,7 @@
+ #include "block3.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block3_params.h"
+ 
+ void block3_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK3_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block3_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK3_TOKEN_COUNT, BLOCK3_HEAD_COUNT, BLOCK3_HEAD_DIM,
++                         BLOCK3_Q_OUTPUT_ZERO_POINT, BLOCK3_K_OUTPUT_ZERO_POINT);
++}
++
++void block3_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block3_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK3_HEAD_COUNT, BLOCK3_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK3_HEAD_COUNT, BLOCK3_TOKEN_COUNT,
++                          block3_softmax_exp_lut,
++                          BLOCK3_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK3_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK3_HEAD_COUNT, BLOCK3_TOKEN_COUNT,
++                                BLOCK3_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK3_TOKEN_COUNT, BLOCK3_HEAD_COUNT, BLOCK3_HEAD_DIM,
++                          BLOCK3_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK3_TOKEN_COUNT * BLOCK3_HIDDEN_SIZE,
++                         BLOCK3_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK3_ATTN_CONTEXT_SHIFT,
++                         BLOCK3_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -23,4 +23,27 @@
+ void block3_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK3_HEAD_COUNT 16u
++#define BLOCK3_HEAD_DIM 8u
++#define BLOCK3_SCORE_ELEMENTS (BLOCK3_HEAD_COUNT * BLOCK3_TOKEN_COUNT * BLOCK3_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block3_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block3_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -1,6 +1,7 @@
+ #include "block4.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block4_params.h"
+ 
+ void block4_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK4_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block4_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK4_TOKEN_COUNT, BLOCK4_HEAD_COUNT, BLOCK4_HEAD_DIM,
++                         BLOCK4_Q_OUTPUT_ZERO_POINT, BLOCK4_K_OUTPUT_ZERO_POINT);
++}
++
++void block4_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block4_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK4_HEAD_COUNT, BLOCK4_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK4_HEAD_COUNT, BLOCK4_TOKEN_COUNT,
++                          block4_softmax_exp_lut,
++                          BLOCK4_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK4_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK4_HEAD_COUNT, BLOCK4_TOKEN_COUNT,
++                                BLOCK4_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK4_TOKEN_COUNT, BLOCK4_HEAD_COUNT, BLOCK4_HEAD_DIM,
++                          BLOCK4_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK4_TOKEN_COUNT * BLOCK4_HIDDEN_SIZE,
++                         BLOCK4_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK4_ATTN_CONTEXT_SHIFT,
++                         BLOCK4_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -23,4 +23,27 @@
+ void block4_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK4_HEAD_COUNT 16u
++#define BLOCK4_HEAD_DIM 8u
++#define BLOCK4_SCORE_ELEMENTS (BLOCK4_HEAD_COUNT * BLOCK4_TOKEN_COUNT * BLOCK4_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block4_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block4_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -1,6 +1,7 @@
+ #include "block5.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block5_params.h"
+ 
+ void block5_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK5_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block5_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK5_TOKEN_COUNT, BLOCK5_HEAD_COUNT, BLOCK5_HEAD_DIM,
++                         BLOCK5_Q_OUTPUT_ZERO_POINT, BLOCK5_K_OUTPUT_ZERO_POINT);
++}
++
++void block5_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block5_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK5_HEAD_COUNT, BLOCK5_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK5_HEAD_COUNT, BLOCK5_TOKEN_COUNT,
++                          block5_softmax_exp_lut,
++                          BLOCK5_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK5_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK5_HEAD_COUNT, BLOCK5_TOKEN_COUNT,
++                                BLOCK5_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK5_TOKEN_COUNT, BLOCK5_HEAD_COUNT, BLOCK5_HEAD_DIM,
++                          BLOCK5_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK5_TOKEN_COUNT * BLOCK5_HIDDEN_SIZE,
++                         BLOCK5_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK5_ATTN_CONTEXT_SHIFT,
++                         BLOCK5_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -23,4 +23,27 @@
+ void block5_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK5_HEAD_COUNT 16u
++#define BLOCK5_HEAD_DIM 8u
++#define BLOCK5_SCORE_ELEMENTS (BLOCK5_HEAD_COUNT * BLOCK5_TOKEN_COUNT * BLOCK5_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block5_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block5_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -1,6 +1,7 @@
+ #include "block6.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block6_params.h"
+ 
+ void block6_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK6_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block6_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK6_TOKEN_COUNT, BLOCK6_HEAD_COUNT, BLOCK6_HEAD_DIM,
++                         BLOCK6_Q_OUTPUT_ZERO_POINT, BLOCK6_K_OUTPUT_ZERO_POINT);
++}
++
++void block6_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block6_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK6_HEAD_COUNT, BLOCK6_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK6_HEAD_COUNT, BLOCK6_TOKEN_COUNT,
++                          block6_softmax_exp_lut,
++                          BLOCK6_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK6_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK6_HEAD_COUNT, BLOCK6_TOKEN_COUNT,
++                                BLOCK6_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK6_TOKEN_COUNT, BLOCK6_HEAD_COUNT, BLOCK6_HEAD_DIM,
++                          BLOCK6_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK6_TOKEN_COUNT * BLOCK6_HIDDEN_SIZE,
++                         BLOCK6_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK6_ATTN_CONTEXT_SHIFT,
++                         BLOCK6_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -23,4 +23,27 @@
+ void block6_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK6_HEAD_COUNT 16u
++#define BLOCK6_HEAD_DIM 8u
++#define BLOCK6_SCORE_ELEMENTS (BLOCK6_HEAD_COUNT * BLOCK6_TOKEN_COUNT * BLOCK6_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block6_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block6_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -1,6 +1,7 @@
+ #include "block7.h"
+ #include "../requantization.h"
+ #include "../projection.h"
++#include "../attention.h"
+ #include "block7_params.h"
+ 
+ void block7_ln1_forward(const int8_t *input, int8_t *output,
+@@ -73,3 +74,41 @@
+                          BLOCK7_V_OUTPUT_ZERO_POINT);
+ 
+ }
++
++void block7_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores)
++{
++    attention_scores_i8(query, key, scores,
++                         BLOCK7_TOKEN_COUNT, BLOCK7_HEAD_COUNT, BLOCK7_HEAD_DIM,
++                         BLOCK7_Q_OUTPUT_ZERO_POINT, BLOCK7_K_OUTPUT_ZERO_POINT);
++}
++
++void block7_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace)
++{
++    /* Software Q*K^T in the existing token-major Q/K layout. */
++    block7_attention_scores_forward(query, key, score_workspace);
++    attention_causal_shift_i32(score_workspace, score_workspace,
++                                BLOCK7_HEAD_COUNT, BLOCK7_TOKEN_COUNT);
++    attention_exp_lut_i32(score_workspace, score_workspace,
++                          BLOCK7_HEAD_COUNT, BLOCK7_TOKEN_COUNT,
++                          block7_softmax_exp_lut,
++                          BLOCK7_SOFTMAX_COORD_MULTIPLIER,
++                          BLOCK7_SOFTMAX_COORD_SHIFT);
++    attention_normalize_exp_i32(score_workspace, score_workspace,
++                                BLOCK7_HEAD_COUNT, BLOCK7_TOKEN_COUNT,
++                                BLOCK7_SOFTMAX_PROB_FRAC_BITS);
++
++    /* Software P*V writes directly to token-major context. */
++    attention_context_i8(score_workspace, value, context_workspace,
++                          BLOCK7_TOKEN_COUNT, BLOCK7_HEAD_COUNT, BLOCK7_HEAD_DIM,
++                          BLOCK7_V_OUTPUT_ZERO_POINT);
++
++    /* Preserve the existing separate XREQUANT mode-2 context conversion. */
++    requantize_i32_to_i8(context_workspace, output,
++                         BLOCK7_TOKEN_COUNT * BLOCK7_HIDDEN_SIZE,
++                         BLOCK7_ATTN_CONTEXT_MULTIPLIER,
++                         BLOCK7_ATTN_CONTEXT_SHIFT,
++                         BLOCK7_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -23,4 +23,27 @@
+ void block7_qkv_forward(const int8_t *input,
+                          int8_t *q_output, int8_t *k_output, int8_t *v_output,
+                          int32_t *accumulator);
++
++#define BLOCK7_HEAD_COUNT 16u
++#define BLOCK7_HEAD_DIM 8u
++#define BLOCK7_SCORE_ELEMENTS (BLOCK7_HEAD_COUNT * BLOCK7_TOKEN_COUNT * BLOCK7_TOKEN_COUNT)
++
++/* Scores: Q/K INT8 [32,128] -> INT32 [16,32,32], zero point 0.
++ * No masking or extra score scaling is performed here.
++ * All buffers must be valid and disjoint.
++ */
++void block7_attention_scores_forward(const int8_t *query, const int8_t *key,
++                                      int32_t *scores);
++
++/* Part 3: causal software attention, with XREQUANT context conversion.
++ * Q/K/V: INT8 [32,128] at their exported scales and zero points.
++ * Output: INT8 [32,128] at the saved context output scale and zero point.
++ * score_workspace: 16384 INT32 elements, reused through probabilities.
++ * context_workspace: 4096 INT32 elements, merged token-major context.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * Workspace contents are overwritten. No allocation is performed.
++ */
++void block7_attention_forward(const int8_t *query, const int8_t *key,
++                               const int8_t *value, int8_t *output,
++                               int32_t *score_workspace, int32_t *context_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/tests/ln1/Makefile
++++ b/experiments/integer_inference_allblocks/tests/ln1/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c tests/ln1/test_allblocks_ln1.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c tests/ln1/test_allblocks_ln1.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/qkv/Makefile
++++ b/experiments/integer_inference_allblocks/tests/qkv/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c tests/qkv/test_allblocks_qkv.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c tests/qkv/test_allblocks_qkv.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)

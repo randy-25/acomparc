@@ -1,0 +1,5989 @@
+{
+  "static": {
+    "scalar": {
+      "custom_totals": {},
+      "functions": {
+        "_start": {
+          "instructions": 57,
+          "bytes": 148,
+          "custom": {},
+          "mnemonics": {
+            "li": 34,
+            "lui": 1,
+            "csrs": 1,
+            "slli": 3,
+            "bgez": 1,
+            "auipc": 4,
+            "sw": 1,
+            "j": 2,
+            "addi": 4,
+            "csrw": 1,
+            "andi": 1,
+            "csrr": 1,
+            "bgeu": 1,
+            "add": 2
+          }
+        },
+        "trap_entry": {
+          "instructions": 74,
+          "bytes": 162,
+          "custom": {},
+          "mnemonics": {
+            "addi": 2,
+            "sd": 31,
+            "csrr": 2,
+            "mv": 1,
+            "jal": 1,
+            "csrw": 1,
+            "lui": 1,
+            "addiw": 1,
+            "csrs": 1,
+            "ld": 31,
+            "mret": 1,
+            "nop": 1
+          }
+        },
+        "tinystories_blocks_forward": {
+          "instructions": 44,
+          "bytes": 96,
+          "custom": {},
+          "mnemonics": {
+            "addi": 7,
+            "sd": 7,
+            "mv": 10,
+            "li": 2,
+            "andi": 2,
+            "beqz": 1,
+            "ld": 9,
+            "jalr": 2,
+            "beq": 1,
+            "bnez": 1,
+            "j": 1,
+            "ret": 1
+          }
+        },
+        "layernorm_sum_i8": {
+          "instructions": 25,
+          "bytes": 72,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 1,
+            "add": 5,
+            "li": 2,
+            "lb": 1,
+            "addi": 4,
+            "addw": 1,
+            "bne": 3,
+            "sw": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_squared_difference_i8": {
+          "instructions": 29,
+          "bytes": 88,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 6,
+            "li": 1,
+            "lw": 1,
+            "mv": 1,
+            "lb": 1,
+            "addi": 5,
+            "mul": 2,
+            "sub": 1,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_variance_i32": {
+          "instructions": 24,
+          "bytes": 70,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 4,
+            "sub": 1,
+            "li": 1,
+            "lw": 1,
+            "addi": 4,
+            "bne": 3,
+            "sw": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_add_epsilon_i32": {
+          "instructions": 10,
+          "bytes": 24,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lw": 1,
+            "addi": 2,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "layernorm_rsqrt_i32": {
+          "instructions": 29,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "li": 4,
+            "add": 3,
+            "srli": 4,
+            "lw": 1,
+            "divu": 1,
+            "bltu": 3,
+            "sub": 1,
+            "bnez": 1,
+            "sext.w": 1,
+            "sw": 1,
+            "addi": 2,
+            "bne": 1,
+            "ret": 1,
+            "j": 1
+          }
+        },
+        "layernorm_normalize_i8": {
+          "instructions": 31,
+          "bytes": 94,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 6,
+            "li": 1,
+            "lw": 2,
+            "mv": 1,
+            "lb": 1,
+            "addi": 6,
+            "mul": 2,
+            "sub": 1,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_affine_i32": {
+          "instructions": 42,
+          "bytes": 112,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "addi": 9,
+            "sd": 3,
+            "mv": 4,
+            "slli": 3,
+            "add": 5,
+            "li": 2,
+            "lw": 3,
+            "mul": 2,
+            "bne": 3,
+            "ld": 2,
+            "ret": 2,
+            "beq": 1,
+            "j": 1
+          }
+        },
+        "layernorm_sum_i32": {
+          "instructions": 24,
+          "bytes": 70,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 4,
+            "sub": 1,
+            "li": 1,
+            "lw": 1,
+            "addi": 4,
+            "bne": 3,
+            "sw": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_squared_difference_i32": {
+          "instructions": 29,
+          "bytes": 88,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 3,
+            "add": 5,
+            "li": 1,
+            "lw": 2,
+            "sub": 2,
+            "addi": 5,
+            "mul": 2,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_normalize_i32": {
+          "instructions": 31,
+          "bytes": 94,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 3,
+            "add": 5,
+            "li": 1,
+            "lw": 3,
+            "sub": 2,
+            "addi": 6,
+            "mul": 2,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "attention_scores_i8": {
+          "instructions": 112,
+          "bytes": 288,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 3,
+            "addi": 11,
+            "sd": 14,
+            "mv": 24,
+            "mul": 2,
+            "add": 14,
+            "slli": 3,
+            "li": 5,
+            "lb": 2,
+            "subw": 2,
+            "mulw": 1,
+            "addw": 1,
+            "bne": 6,
+            "ld": 15,
+            "sw": 3,
+            "ret": 2,
+            "beq": 2,
+            "j": 2
+          }
+        },
+        "attention_causal_shift_i32": {
+          "instructions": 76,
+          "bytes": 196,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "addi": 16,
+            "sd": 5,
+            "mv": 13,
+            "mul": 1,
+            "slli": 2,
+            "li": 2,
+            "lw": 4,
+            "add": 9,
+            "subw": 1,
+            "sw": 2,
+            "bne": 5,
+            "beq": 2,
+            "bge": 1,
+            "sext.w": 1,
+            "j": 1,
+            "ld": 6,
+            "ret": 3
+          }
+        },
+        "attention_exp_lut_i32": {
+          "instructions": 103,
+          "bytes": 264,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "addi": 14,
+            "sd": 13,
+            "mv": 9,
+            "mul": 3,
+            "addiw": 1,
+            "li": 5,
+            "slli": 5,
+            "sll": 1,
+            "lui": 1,
+            "add": 11,
+            "lw": 3,
+            "sub": 2,
+            "sra": 1,
+            "srai": 2,
+            "zext.b": 1,
+            "bge": 1,
+            "addw": 1,
+            "sw": 2,
+            "bne": 4,
+            "ld": 15,
+            "beq": 2,
+            "j": 1,
+            "ret": 3
+          }
+        },
+        "attention_normalize_exp_i32": {
+          "instructions": 76,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 16,
+            "sd": 6,
+            "mv": 9,
+            "beqz": 2,
+            "mul": 1,
+            "slli": 3,
+            "li": 3,
+            "add": 11,
+            "lw": 2,
+            "bne": 5,
+            "srli": 1,
+            "srai": 1,
+            "sll": 1,
+            "div": 1,
+            "sw": 2,
+            "beq": 2,
+            "j": 1,
+            "ld": 7,
+            "ret": 2
+          }
+        },
+        "attention_context_i8": {
+          "instructions": 80,
+          "bytes": 204,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 3,
+            "addi": 10,
+            "sd": 9,
+            "mv": 10,
+            "mul": 2,
+            "slli": 3,
+            "li": 5,
+            "add": 13,
+            "lb": 1,
+            "lw": 1,
+            "subw": 1,
+            "mulw": 1,
+            "addw": 1,
+            "bne": 6,
+            "sw": 1,
+            "ld": 9,
+            "ret": 2,
+            "beq": 1,
+            "j": 1
+          }
+        },
+        "residual_add_i8_i32": {
+          "instructions": 14,
+          "bytes": 42,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lb": 1,
+            "lw": 1,
+            "addi": 3,
+            "sub": 1,
+            "mul": 1,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "residual_add_i32": {
+          "instructions": 12,
+          "bytes": 26,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lw": 2,
+            "addi": 3,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_multiply_scalar_i8": {
+          "instructions": 11,
+          "bytes": 30,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lb": 1,
+            "addi": 2,
+            "sub": 1,
+            "mul": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_cube_i8": {
+          "instructions": 12,
+          "bytes": 34,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lb": 1,
+            "addi": 2,
+            "subw": 1,
+            "mulw": 2,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_add_scaled_i8": {
+          "instructions": 15,
+          "bytes": 46,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "add": 2,
+            "lb": 2,
+            "addi": 3,
+            "sub": 2,
+            "mul": 2,
+            "sd": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_tanh_lut_i8": {
+          "instructions": 13,
+          "bytes": 34,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 2,
+            "add": 2,
+            "lb": 1,
+            "addi": 2,
+            "addiw": 1,
+            "lw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_add_scalar_i32": {
+          "instructions": 10,
+          "bytes": 24,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lw": 1,
+            "addi": 2,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_multiply_i8": {
+          "instructions": 13,
+          "bytes": 40,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "add": 1,
+            "lb": 2,
+            "addi": 3,
+            "subw": 2,
+            "mulw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "projection_accumulate_i8": {
+          "instructions": 70,
+          "bytes": 190,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 3,
+            "addi": 12,
+            "sd": 4,
+            "mv": 5,
+            "or": 1,
+            "li": 10,
+            "bltu": 6,
+            "add": 9,
+            "slli": 2,
+            "lb": 2,
+            "subw": 1,
+            "mulw": 1,
+            "addw": 2,
+            "bne": 1,
+            "sw": 2,
+            "lw": 2,
+            "ld": 4,
+            "ret": 2,
+            "ebreak": 1
+          }
+        },
+        "requantize_shift_i64_to_i32": {
+          "instructions": 19,
+          "bytes": 56,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "addiw": 1,
+            "li": 2,
+            "bltu": 1,
+            "slli": 2,
+            "bgeu": 1,
+            "add": 2,
+            "sll": 1,
+            "ld": 1,
+            "addi": 2,
+            "sra": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_i64_to_i8": {
+          "instructions": 29,
+          "bytes": 92,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "addiw": 1,
+            "li": 6,
+            "bltu": 1,
+            "slli": 2,
+            "bgeu": 1,
+            "sll": 1,
+            "add": 3,
+            "ld": 1,
+            "mul": 1,
+            "sra": 1,
+            "blt": 2,
+            "mv": 1,
+            "sb": 1,
+            "addi": 2,
+            "bne": 1,
+            "ret": 1,
+            "j": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_i32_to_i8": {
+          "instructions": 29,
+          "bytes": 92,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "addiw": 1,
+            "li": 6,
+            "bltu": 1,
+            "slli": 2,
+            "bgeu": 1,
+            "sll": 1,
+            "add": 3,
+            "lw": 1,
+            "mul": 1,
+            "sra": 1,
+            "blt": 2,
+            "mv": 1,
+            "sb": 1,
+            "addi": 2,
+            "bne": 1,
+            "ret": 1,
+            "j": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_i8_to_i32": {
+          "instructions": 21,
+          "bytes": 66,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "addiw": 1,
+            "li": 2,
+            "bltu": 1,
+            "slli": 2,
+            "bgeu": 1,
+            "add": 2,
+            "sll": 1,
+            "lb": 1,
+            "addi": 2,
+            "sub": 1,
+            "mul": 1,
+            "sra": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_two_round_i32_to_i8": {
+          "instructions": 38,
+          "bytes": 120,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "li": 6,
+            "bltu": 1,
+            "slli": 2,
+            "bgeu": 1,
+            "blez": 1,
+            "sll": 1,
+            "addi": 3,
+            "add": 5,
+            "srli": 2,
+            "lui": 1,
+            "lw": 1,
+            "mul": 1,
+            "srai": 1,
+            "and": 1,
+            "sltu": 1,
+            "sra": 1,
+            "blt": 2,
+            "mv": 1,
+            "sb": 1,
+            "bne": 1,
+            "ret": 1,
+            "j": 1,
+            "ebreak": 1
+          }
+        },
+        "check_guards.constprop.0": {
+          "instructions": 322,
+          "bytes": 1136,
+          "custom": {},
+          "mnemonics": {
+            "lui": 17,
+            "slli": 12,
+            "addi": 62,
+            "auipc": 74,
+            "ld": 39,
+            "sd": 1,
+            "add": 9,
+            "bne": 38,
+            "li": 23,
+            "j": 21,
+            "beq": 2,
+            "lbu": 2,
+            "sext.w": 1,
+            "jal": 20,
+            "ret": 1
+          }
+        },
+        "reset_buffers.constprop.0": {
+          "instructions": 201,
+          "bytes": 710,
+          "custom": {},
+          "mnemonics": {
+            "auipc": 58,
+            "ld": 14,
+            "addi": 38,
+            "sd": 59,
+            "lui": 2,
+            "li": 2,
+            "add": 10,
+            "lbu": 1,
+            "sb": 9,
+            "bne": 4,
+            "sw": 3,
+            "ret": 1
+          }
+        },
+        "block0_ln1_forward": {
+          "instructions": 73,
+          "bytes": 194,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block0_qkv_forward": {
+          "instructions": 72,
+          "bytes": 196,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block0_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block0_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block0_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block0_ln2_forward": {
+          "instructions": 73,
+          "bytes": 194,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block0_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block0_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block0_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block0_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block0_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block0_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block1_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block1_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block1_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block1_attention_forward": {
+          "instructions": 62,
+          "bytes": 162,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block1_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block1_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block1_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 76,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block1_gelu_forward": {
+          "instructions": 130,
+          "bytes": 368,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block1_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 100,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block1_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block1_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block1_forward": {
+          "instructions": 81,
+          "bytes": 208,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block2_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block2_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block2_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block2_attention_forward": {
+          "instructions": 61,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block2_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block2_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block2_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block2_gelu_forward": {
+          "instructions": 130,
+          "bytes": 376,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 14,
+            "ld": 33,
+            "li": 26,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block2_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block2_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block2_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block2_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block3_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block3_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block3_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block3_attention_forward": {
+          "instructions": 61,
+          "bytes": 158,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block3_out_residual_forward": {
+          "instructions": 50,
+          "bytes": 132,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "slli": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block3_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block3_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block3_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block3_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block3_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block3_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block3_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block4_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block4_qkv_forward": {
+          "instructions": 72,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block4_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 4,
+            "mv": 1,
+            "j": 1
+          }
+        },
+        "block4_attention_forward": {
+          "instructions": 61,
+          "bytes": 158,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "li": 17,
+            "sd": 5,
+            "mv": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block4_out_residual_forward": {
+          "instructions": 51,
+          "bytes": 136,
+          "custom": {},
+          "mnemonics": {
+            "addi": 7,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "slli": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block4_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block4_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 76,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block4_gelu_forward": {
+          "instructions": 130,
+          "bytes": 368,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block4_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 100,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block4_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block4_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block4_forward": {
+          "instructions": 81,
+          "bytes": 208,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block5_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block5_qkv_forward": {
+          "instructions": 72,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block5_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block5_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 18,
+            "li": 17,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block5_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block5_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block5_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block5_gelu_forward": {
+          "instructions": 130,
+          "bytes": 376,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block5_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block5_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block5_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block5_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block6_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block6_qkv_forward": {
+          "instructions": 72,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block6_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 4,
+            "mv": 1,
+            "j": 1
+          }
+        },
+        "block6_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "li": 17,
+            "sd": 5,
+            "mv": 18,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block6_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block6_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block6_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block6_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block6_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block6_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block6_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block6_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block7_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block7_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block7_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block7_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block7_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 134,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block7_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block7_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block7_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block7_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block7_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 132,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block7_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block7_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "putchar": {
+          "instructions": 9,
+          "bytes": 28,
+          "custom": {},
+          "mnemonics": {
+            "lui": 2,
+            "addi": 1,
+            "lbu": 1,
+            "andi": 1,
+            "beqz": 1,
+            "sb": 1,
+            "li": 1,
+            "ret": 1
+          }
+        },
+        "vprintfmt": {
+          "instructions": 251,
+          "bytes": 692,
+          "custom": {},
+          "mnemonics": {
+            "addi": 22,
+            "sd": 12,
+            "mv": 40,
+            "li": 30,
+            "auipc": 2,
+            "j": 21,
+            "beqz": 6,
+            "jalr": 12,
+            "lbu": 13,
+            "bne": 3,
+            "addiw": 15,
+            "zext.b": 2,
+            "bltu": 3,
+            "slli": 2,
+            "add": 4,
+            "lw": 5,
+            "jr": 1,
+            "ld": 15,
+            "ret": 1,
+            "bgeu": 4,
+            "slliw": 2,
+            "addw": 3,
+            "bgez": 2,
+            "remu": 2,
+            "sw": 2,
+            "divu": 1,
+            "bge": 1,
+            "sext.w": 3,
+            "blt": 2,
+            "bltz": 2,
+            "bnez": 7,
+            "lwu": 1,
+            "snez": 1,
+            "sgtz": 1,
+            "and": 1,
+            "beq": 2,
+            "blez": 2,
+            "neg": 1,
+            "sub": 1,
+            "subw": 1
+          }
+        },
+        "sprintf_putch.0": {
+          "instructions": 6,
+          "bytes": 14,
+          "custom": {},
+          "mnemonics": {
+            "ld": 2,
+            "sb": 1,
+            "addi": 1,
+            "sd": 1,
+            "ret": 1
+          }
+        },
+        "uartInit": {
+          "instructions": 4,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "lui": 1,
+            "li": 1,
+            "sb": 1,
+            "ret": 1
+          }
+        },
+        "uartSend": {
+          "instructions": 8,
+          "bytes": 26,
+          "custom": {},
+          "mnemonics": {
+            "lui": 2,
+            "addi": 1,
+            "lbu": 1,
+            "andi": 1,
+            "beqz": 1,
+            "sb": 1,
+            "ret": 1
+          }
+        },
+        "uartReceive": {
+          "instructions": 8,
+          "bytes": 24,
+          "custom": {},
+          "mnemonics": {
+            "lui": 2,
+            "addi": 1,
+            "lbu": 2,
+            "andi": 1,
+            "beqz": 1,
+            "ret": 1
+          }
+        },
+        "uartPutStr": {
+          "instructions": 13,
+          "bytes": 40,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "addi": 2,
+            "andi": 1,
+            "sb": 1,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "setStats": {
+          "instructions": 22,
+          "bytes": 62,
+          "custom": {},
+          "mnemonics": {
+            "csrr": 3,
+            "auipc": 3,
+            "addi": 3,
+            "beqz": 1,
+            "sd": 6,
+            "ret": 2,
+            "ld": 2,
+            "sub": 2
+          }
+        },
+        "tohost_exit": {
+          "instructions": 5,
+          "bytes": 18,
+          "custom": {},
+          "mnemonics": {
+            "slli": 1,
+            "ori": 1,
+            "auipc": 1,
+            "sd": 1,
+            "j": 1
+          }
+        },
+        "handle_trap": {
+          "instructions": 5,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "lui": 1,
+            "addi": 1,
+            "auipc": 1,
+            "sd": 1,
+            "j": 1
+          }
+        },
+        "exit": {
+          "instructions": 3,
+          "bytes": 8,
+          "custom": {},
+          "mnemonics": {
+            "addi": 1,
+            "sd": 1,
+            "jal": 1
+          }
+        },
+        "abort": {
+          "instructions": 4,
+          "bytes": 14,
+          "custom": {},
+          "mnemonics": {
+            "li": 1,
+            "auipc": 1,
+            "sd": 1,
+            "j": 1
+          }
+        },
+        "printstr": {
+          "instructions": 13,
+          "bytes": 40,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "addi": 2,
+            "andi": 1,
+            "sb": 1,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "puts": {
+          "instructions": 14,
+          "bytes": 42,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "addi": 2,
+            "andi": 1,
+            "sb": 1,
+            "bnez": 1,
+            "li": 1,
+            "ret": 1
+          }
+        },
+        "thread_entry": {
+          "instructions": 3,
+          "bytes": 6,
+          "custom": {},
+          "mnemonics": {
+            "bnez": 1,
+            "ret": 1,
+            "j": 1
+          }
+        },
+        "printhex": {
+          "instructions": 29,
+          "bytes": 88,
+          "custom": {},
+          "mnemonics": {
+            "addi": 7,
+            "li": 3,
+            "j": 1,
+            "andi": 2,
+            "bltu": 1,
+            "addw": 1,
+            "sb": 3,
+            "srli": 1,
+            "bne": 1,
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "printf": {
+          "instructions": 21,
+          "bytes": 50,
+          "custom": {},
+          "mnemonics": {
+            "addi": 4,
+            "sd": 9,
+            "mv": 2,
+            "auipc": 1,
+            "li": 2,
+            "jal": 1,
+            "ld": 1,
+            "ret": 1
+          }
+        },
+        "sprintf": {
+          "instructions": 27,
+          "bytes": 64,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 10,
+            "mv": 3,
+            "auipc": 1,
+            "jal": 1,
+            "ld": 4,
+            "sb": 1,
+            "subw": 1,
+            "ret": 1
+          }
+        },
+        "memcpy": {
+          "instructions": 23,
+          "bytes": 64,
+          "custom": {},
+          "mnemonics": {
+            "or": 2,
+            "andi": 1,
+            "add": 2,
+            "beqz": 1,
+            "mv": 2,
+            "bgeu": 2,
+            "lbu": 1,
+            "addi": 4,
+            "sb": 1,
+            "bne": 1,
+            "ret": 3,
+            "ld": 1,
+            "sd": 1,
+            "bltu": 1
+          }
+        },
+        "memset": {
+          "instructions": 23,
+          "bytes": 70,
+          "custom": {},
+          "mnemonics": {
+            "or": 1,
+            "andi": 1,
+            "add": 2,
+            "beqz": 1,
+            "mv": 2,
+            "bgeu": 2,
+            "addi": 3,
+            "sb": 1,
+            "bne": 1,
+            "ret": 3,
+            "lui": 1,
+            "slli": 1,
+            "zext.b": 1,
+            "mul": 1,
+            "sd": 1,
+            "bltu": 1
+          }
+        },
+        "_init": {
+          "instructions": 61,
+          "bytes": 176,
+          "custom": {},
+          "mnemonics": {
+            "addi": 10,
+            "auipc": 6,
+            "sd": 7,
+            "sub": 2,
+            "mv": 14,
+            "jal": 7,
+            "add": 2,
+            "li": 4,
+            "lui": 1,
+            "sb": 1,
+            "andi": 1,
+            "ld": 2,
+            "bnez": 1,
+            "bne": 1,
+            "beq": 1,
+            "j": 1
+          }
+        },
+        "strlen": {
+          "instructions": 10,
+          "bytes": 26,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 2,
+            "beqz": 1,
+            "mv": 1,
+            "addi": 1,
+            "bnez": 1,
+            "sub": 1,
+            "ret": 2,
+            "li": 1
+          }
+        },
+        "strnlen": {
+          "instructions": 12,
+          "bytes": 32,
+          "custom": {},
+          "mnemonics": {
+            "add": 1,
+            "mv": 1,
+            "bnez": 2,
+            "j": 1,
+            "addi": 1,
+            "beq": 1,
+            "lbu": 1,
+            "sub": 1,
+            "ret": 2,
+            "li": 1
+          }
+        },
+        "strcmp": {
+          "instructions": 9,
+          "bytes": 28,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 2,
+            "addi": 2,
+            "sext.w": 1,
+            "beqz": 1,
+            "beq": 1,
+            "subw": 1,
+            "ret": 1
+          }
+        },
+        "strcpy": {
+          "instructions": 7,
+          "bytes": 18,
+          "custom": {},
+          "mnemonics": {
+            "mv": 1,
+            "lbu": 1,
+            "addi": 2,
+            "sb": 1,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "atol": {
+          "instructions": 34,
+          "bytes": 100,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 5,
+            "li": 5,
+            "mv": 1,
+            "bne": 1,
+            "addi": 4,
+            "beq": 1,
+            "addiw": 2,
+            "andi": 1,
+            "bnez": 3,
+            "seqz": 1,
+            "beqz": 2,
+            "slli": 2,
+            "add": 2,
+            "neg": 1,
+            "ret": 2,
+            "j": 1
+          }
+        },
+        "main": {
+          "instructions": 473,
+          "bytes": 1536,
+          "custom": {},
+          "mnemonics": {
+            "addi": 87,
+            "sd": 29,
+            "csrr": 21,
+            "nop": 8,
+            "sub": 11,
+            "mv": 27,
+            "auipc": 56,
+            "jal": 24,
+            "bnez": 4,
+            "beqz": 3,
+            "li": 33,
+            "ld": 69,
+            "ret": 2,
+            "lui": 11,
+            "j": 17,
+            "beq": 16,
+            "add": 18,
+            "lb": 8,
+            "sext.w": 7,
+            "lw": 6,
+            "andi": 2,
+            "jalr": 9,
+            "addiw": 3,
+            "bne": 2
+          }
+        }
+      }
+    },
+    "custom": {
+      "custom_totals": {
+        "xtile_cfg": 1,
+        "xtile_set_ab": 1,
+        "xtile_set_c": 1,
+        "xtile_set_zp": 1,
+        "xtile_run": 1,
+        "xrequant_cfg": 5,
+        "xrequant_set_io": 5,
+        "xrequant_set_mul": 5,
+        "xrequant_set_zp": 5,
+        "xrequant_run": 5
+      },
+      "functions": {
+        "_start": {
+          "instructions": 57,
+          "bytes": 148,
+          "custom": {},
+          "mnemonics": {
+            "li": 34,
+            "lui": 1,
+            "csrs": 1,
+            "slli": 3,
+            "bgez": 1,
+            "auipc": 4,
+            "sw": 1,
+            "j": 2,
+            "addi": 4,
+            "csrw": 1,
+            "andi": 1,
+            "csrr": 1,
+            "bgeu": 1,
+            "add": 2
+          }
+        },
+        "trap_entry": {
+          "instructions": 74,
+          "bytes": 162,
+          "custom": {},
+          "mnemonics": {
+            "addi": 2,
+            "sd": 31,
+            "csrr": 2,
+            "mv": 1,
+            "jal": 1,
+            "csrw": 1,
+            "lui": 1,
+            "addiw": 1,
+            "csrs": 1,
+            "ld": 31,
+            "mret": 1,
+            "nop": 1
+          }
+        },
+        "tinystories_blocks_forward": {
+          "instructions": 44,
+          "bytes": 96,
+          "custom": {},
+          "mnemonics": {
+            "addi": 7,
+            "sd": 7,
+            "mv": 10,
+            "li": 2,
+            "andi": 2,
+            "beqz": 1,
+            "ld": 9,
+            "jalr": 2,
+            "beq": 1,
+            "bnez": 1,
+            "j": 1,
+            "ret": 1
+          }
+        },
+        "layernorm_sum_i8": {
+          "instructions": 25,
+          "bytes": 72,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 1,
+            "add": 5,
+            "li": 2,
+            "lb": 1,
+            "addi": 4,
+            "addw": 1,
+            "bne": 3,
+            "sw": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_squared_difference_i8": {
+          "instructions": 29,
+          "bytes": 88,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 6,
+            "li": 1,
+            "lw": 1,
+            "mv": 1,
+            "lb": 1,
+            "addi": 5,
+            "mul": 2,
+            "sub": 1,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_variance_i32": {
+          "instructions": 24,
+          "bytes": 70,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 4,
+            "sub": 1,
+            "li": 1,
+            "lw": 1,
+            "addi": 4,
+            "bne": 3,
+            "sw": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_add_epsilon_i32": {
+          "instructions": 10,
+          "bytes": 24,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lw": 1,
+            "addi": 2,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "layernorm_rsqrt_i32": {
+          "instructions": 29,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "li": 4,
+            "add": 3,
+            "srli": 4,
+            "lw": 1,
+            "divu": 1,
+            "bltu": 3,
+            "sub": 1,
+            "bnez": 1,
+            "sext.w": 1,
+            "sw": 1,
+            "addi": 2,
+            "bne": 1,
+            "ret": 1,
+            "j": 1
+          }
+        },
+        "layernorm_normalize_i8": {
+          "instructions": 31,
+          "bytes": 94,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 6,
+            "li": 1,
+            "lw": 2,
+            "mv": 1,
+            "lb": 1,
+            "addi": 6,
+            "mul": 2,
+            "sub": 1,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_affine_i32": {
+          "instructions": 42,
+          "bytes": 112,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "addi": 9,
+            "sd": 3,
+            "mv": 4,
+            "slli": 3,
+            "add": 5,
+            "li": 2,
+            "lw": 3,
+            "mul": 2,
+            "bne": 3,
+            "ld": 2,
+            "ret": 2,
+            "beq": 1,
+            "j": 1
+          }
+        },
+        "layernorm_sum_i32": {
+          "instructions": 24,
+          "bytes": 70,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 2,
+            "add": 4,
+            "sub": 1,
+            "li": 1,
+            "lw": 1,
+            "addi": 4,
+            "bne": 3,
+            "sw": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_squared_difference_i32": {
+          "instructions": 29,
+          "bytes": 88,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 3,
+            "add": 5,
+            "li": 1,
+            "lw": 2,
+            "sub": 2,
+            "addi": 5,
+            "mul": 2,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "layernorm_normalize_i32": {
+          "instructions": 31,
+          "bytes": 94,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "slli": 3,
+            "add": 5,
+            "li": 1,
+            "lw": 3,
+            "sub": 2,
+            "addi": 6,
+            "mul": 2,
+            "sd": 1,
+            "bne": 3,
+            "ret": 2,
+            "beq": 1
+          }
+        },
+        "attention_scores_i8": {
+          "instructions": 112,
+          "bytes": 288,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 3,
+            "addi": 11,
+            "sd": 14,
+            "mv": 24,
+            "mul": 2,
+            "add": 14,
+            "slli": 3,
+            "li": 5,
+            "lb": 2,
+            "subw": 2,
+            "mulw": 1,
+            "addw": 1,
+            "bne": 6,
+            "ld": 15,
+            "sw": 3,
+            "ret": 2,
+            "beq": 2,
+            "j": 2
+          }
+        },
+        "attention_causal_shift_i32": {
+          "instructions": 76,
+          "bytes": 196,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "addi": 16,
+            "sd": 5,
+            "mv": 13,
+            "mul": 1,
+            "slli": 2,
+            "li": 2,
+            "lw": 4,
+            "add": 9,
+            "subw": 1,
+            "sw": 2,
+            "bne": 5,
+            "beq": 2,
+            "bge": 1,
+            "sext.w": 1,
+            "j": 1,
+            "ld": 6,
+            "ret": 3
+          }
+        },
+        "attention_exp_lut_i32": {
+          "instructions": 103,
+          "bytes": 264,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 2,
+            "addi": 14,
+            "sd": 13,
+            "mv": 9,
+            "mul": 3,
+            "addiw": 1,
+            "li": 5,
+            "slli": 5,
+            "sll": 1,
+            "lui": 1,
+            "add": 11,
+            "lw": 3,
+            "sub": 2,
+            "sra": 1,
+            "srai": 2,
+            "zext.b": 1,
+            "bge": 1,
+            "addw": 1,
+            "sw": 2,
+            "bne": 4,
+            "ld": 15,
+            "beq": 2,
+            "j": 1,
+            "ret": 3
+          }
+        },
+        "attention_normalize_exp_i32": {
+          "instructions": 76,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 16,
+            "sd": 6,
+            "mv": 9,
+            "beqz": 2,
+            "mul": 1,
+            "slli": 3,
+            "li": 3,
+            "add": 11,
+            "lw": 2,
+            "bne": 5,
+            "srli": 1,
+            "srai": 1,
+            "sll": 1,
+            "div": 1,
+            "sw": 2,
+            "beq": 2,
+            "j": 1,
+            "ld": 7,
+            "ret": 2
+          }
+        },
+        "attention_context_i8": {
+          "instructions": 80,
+          "bytes": 204,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 3,
+            "addi": 10,
+            "sd": 9,
+            "mv": 10,
+            "mul": 2,
+            "slli": 3,
+            "li": 5,
+            "add": 13,
+            "lb": 1,
+            "lw": 1,
+            "subw": 1,
+            "mulw": 1,
+            "addw": 1,
+            "bne": 6,
+            "sw": 1,
+            "ld": 9,
+            "ret": 2,
+            "beq": 1,
+            "j": 1
+          }
+        },
+        "residual_add_i8_i32": {
+          "instructions": 14,
+          "bytes": 42,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lb": 1,
+            "lw": 1,
+            "addi": 3,
+            "sub": 1,
+            "mul": 1,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "residual_add_i32": {
+          "instructions": 12,
+          "bytes": 26,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lw": 2,
+            "addi": 3,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_multiply_scalar_i8": {
+          "instructions": 11,
+          "bytes": 30,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lb": 1,
+            "addi": 2,
+            "sub": 1,
+            "mul": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_cube_i8": {
+          "instructions": 12,
+          "bytes": 34,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lb": 1,
+            "addi": 2,
+            "subw": 1,
+            "mulw": 2,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_add_scaled_i8": {
+          "instructions": 15,
+          "bytes": 46,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "add": 2,
+            "lb": 2,
+            "addi": 3,
+            "sub": 2,
+            "mul": 2,
+            "sd": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_tanh_lut_i8": {
+          "instructions": 13,
+          "bytes": 34,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 2,
+            "add": 2,
+            "lb": 1,
+            "addi": 2,
+            "addiw": 1,
+            "lw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_add_scalar_i32": {
+          "instructions": 10,
+          "bytes": 24,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "slli": 1,
+            "add": 1,
+            "lw": 1,
+            "addi": 2,
+            "addw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "gelu_multiply_i8": {
+          "instructions": 13,
+          "bytes": 40,
+          "custom": {},
+          "mnemonics": {
+            "beqz": 1,
+            "add": 1,
+            "lb": 2,
+            "addi": 3,
+            "subw": 2,
+            "mulw": 1,
+            "sw": 1,
+            "bne": 1,
+            "ret": 1
+          }
+        },
+        "projection_accumulate_i8": {
+          "instructions": 40,
+          "bytes": 132,
+          "custom": {
+            "xtile_cfg": 1,
+            "xtile_set_ab": 1,
+            "xtile_set_c": 1,
+            "xtile_set_zp": 1,
+            "xtile_run": 1
+          },
+          "mnemonics": {
+            "beqz": 3,
+            "seqz": 1,
+            "or": 3,
+            "li": 5,
+            "bltu": 4,
+            "addi": 5,
+            "slli": 4,
+            "ori": 1,
+            ".insn": 5,
+            "add": 2,
+            "mv": 1,
+            "lw": 2,
+            "addw": 1,
+            "sw": 1,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_shift_i64_to_i32": {
+          "instructions": 20,
+          "bytes": 62,
+          "custom": {
+            "xrequant_cfg": 1,
+            "xrequant_set_io": 1,
+            "xrequant_set_mul": 1,
+            "xrequant_set_zp": 1,
+            "xrequant_run": 1
+          },
+          "mnemonics": {
+            "beqz": 1,
+            "li": 4,
+            "srli": 2,
+            "bltu": 2,
+            "addiw": 1,
+            "slli": 2,
+            "or": 1,
+            ".insn": 5,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_i64_to_i8": {
+          "instructions": 20,
+          "bytes": 66,
+          "custom": {
+            "xrequant_cfg": 1,
+            "xrequant_set_io": 1,
+            "xrequant_set_mul": 1,
+            "xrequant_set_zp": 1,
+            "xrequant_run": 1
+          },
+          "mnemonics": {
+            "beqz": 1,
+            "li": 3,
+            "srli": 2,
+            "bltu": 2,
+            "addiw": 1,
+            "slli": 2,
+            "or": 1,
+            "ori": 1,
+            ".insn": 5,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_i32_to_i8": {
+          "instructions": 20,
+          "bytes": 66,
+          "custom": {
+            "xrequant_cfg": 1,
+            "xrequant_set_io": 1,
+            "xrequant_set_mul": 1,
+            "xrequant_set_zp": 1,
+            "xrequant_run": 1
+          },
+          "mnemonics": {
+            "beqz": 1,
+            "li": 3,
+            "srli": 2,
+            "bltu": 2,
+            "addiw": 1,
+            "slli": 2,
+            "or": 1,
+            "ori": 1,
+            ".insn": 5,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_i8_to_i32": {
+          "instructions": 20,
+          "bytes": 66,
+          "custom": {
+            "xrequant_cfg": 1,
+            "xrequant_set_io": 1,
+            "xrequant_set_mul": 1,
+            "xrequant_set_zp": 1,
+            "xrequant_run": 1
+          },
+          "mnemonics": {
+            "beqz": 1,
+            "li": 3,
+            "srli": 2,
+            "bltu": 2,
+            "addiw": 1,
+            "slli": 2,
+            "or": 1,
+            "ori": 1,
+            ".insn": 5,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "requantize_two_round_i32_to_i8": {
+          "instructions": 19,
+          "bytes": 60,
+          "custom": {
+            "xrequant_cfg": 1,
+            "xrequant_set_io": 1,
+            "xrequant_set_mul": 1,
+            "xrequant_set_zp": 1,
+            "xrequant_run": 1
+          },
+          "mnemonics": {
+            "beqz": 1,
+            "li": 2,
+            "slli": 3,
+            "bgeu": 1,
+            "sltu": 1,
+            "bltu": 1,
+            "srli": 1,
+            "or": 1,
+            "ori": 1,
+            ".insn": 5,
+            "ret": 1,
+            "ebreak": 1
+          }
+        },
+        "check_guards.constprop.0": {
+          "instructions": 322,
+          "bytes": 1136,
+          "custom": {},
+          "mnemonics": {
+            "lui": 17,
+            "slli": 12,
+            "addi": 62,
+            "auipc": 74,
+            "ld": 39,
+            "sd": 1,
+            "add": 9,
+            "bne": 38,
+            "li": 23,
+            "j": 21,
+            "beq": 2,
+            "lbu": 2,
+            "sext.w": 1,
+            "jal": 20,
+            "ret": 1
+          }
+        },
+        "reset_buffers.constprop.0": {
+          "instructions": 201,
+          "bytes": 710,
+          "custom": {},
+          "mnemonics": {
+            "auipc": 58,
+            "ld": 14,
+            "addi": 38,
+            "sd": 59,
+            "lui": 2,
+            "li": 2,
+            "add": 10,
+            "lbu": 1,
+            "sb": 9,
+            "bne": 4,
+            "sw": 3,
+            "ret": 1
+          }
+        },
+        "block0_ln1_forward": {
+          "instructions": 73,
+          "bytes": 194,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block0_qkv_forward": {
+          "instructions": 72,
+          "bytes": 196,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block0_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block0_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block0_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block0_ln2_forward": {
+          "instructions": 73,
+          "bytes": 194,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block0_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block0_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block0_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block0_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block0_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block0_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block1_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block1_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block1_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block1_attention_forward": {
+          "instructions": 62,
+          "bytes": 162,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block1_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block1_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block1_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 76,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block1_gelu_forward": {
+          "instructions": 130,
+          "bytes": 368,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block1_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 100,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block1_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block1_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block1_forward": {
+          "instructions": 81,
+          "bytes": 208,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block2_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block2_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block2_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block2_attention_forward": {
+          "instructions": 61,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block2_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block2_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block2_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block2_gelu_forward": {
+          "instructions": 130,
+          "bytes": 376,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 14,
+            "ld": 33,
+            "li": 26,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block2_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block2_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block2_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block2_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block3_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block3_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block3_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block3_attention_forward": {
+          "instructions": 61,
+          "bytes": 158,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block3_out_residual_forward": {
+          "instructions": 50,
+          "bytes": 132,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "slli": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block3_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block3_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block3_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block3_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block3_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block3_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block3_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block4_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block4_qkv_forward": {
+          "instructions": 72,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block4_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 4,
+            "mv": 1,
+            "j": 1
+          }
+        },
+        "block4_attention_forward": {
+          "instructions": 61,
+          "bytes": 158,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "li": 17,
+            "sd": 5,
+            "mv": 18,
+            "jal": 5,
+            "lui": 3,
+            "slli": 1,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block4_out_residual_forward": {
+          "instructions": 51,
+          "bytes": 136,
+          "custom": {},
+          "mnemonics": {
+            "addi": 7,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "slli": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block4_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block4_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 76,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block4_gelu_forward": {
+          "instructions": 130,
+          "bytes": 368,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block4_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 100,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block4_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block4_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block4_forward": {
+          "instructions": 81,
+          "bytes": 208,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block5_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block5_qkv_forward": {
+          "instructions": 72,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block5_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block5_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 18,
+            "li": 17,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block5_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block5_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block5_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block5_gelu_forward": {
+          "instructions": 130,
+          "bytes": 376,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block5_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block5_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block5_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block5_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block6_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block6_qkv_forward": {
+          "instructions": 72,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "j": 1
+          }
+        },
+        "block6_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 4,
+            "mv": 1,
+            "j": 1
+          }
+        },
+        "block6_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "li": 17,
+            "sd": 5,
+            "mv": 18,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block6_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 130,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block6_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block6_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block6_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block6_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block6_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 128,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block6_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block6_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block7_ln1_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block7_qkv_forward": {
+          "instructions": 73,
+          "bytes": 200,
+          "custom": {},
+          "mnemonics": {
+            "addi": 8,
+            "li": 18,
+            "sd": 6,
+            "mv": 19,
+            "auipc": 3,
+            "jal": 5,
+            "lui": 6,
+            "ld": 6,
+            "slli": 1,
+            "j": 1
+          }
+        },
+        "block7_attention_scores_forward": {
+          "instructions": 6,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "li": 5,
+            "j": 1
+          }
+        },
+        "block7_attention_forward": {
+          "instructions": 60,
+          "bytes": 156,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 17,
+            "li": 18,
+            "jal": 5,
+            "lui": 3,
+            "auipc": 1,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block7_out_residual_forward": {
+          "instructions": 49,
+          "bytes": 134,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "li": 9,
+            "sd": 5,
+            "mv": 13,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block7_ln2_forward": {
+          "instructions": 74,
+          "bytes": 198,
+          "custom": {},
+          "mnemonics": {
+            "addi": 3,
+            "sd": 5,
+            "mv": 7,
+            "ld": 28,
+            "li": 12,
+            "jal": 9,
+            "auipc": 1,
+            "lw": 5,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "block7_mlp_expand_forward": {
+          "instructions": 26,
+          "bytes": 78,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 3,
+            "mv": 3,
+            "li": 6,
+            "auipc": 2,
+            "jal": 1,
+            "ld": 3,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block7_gelu_forward": {
+          "instructions": 130,
+          "bytes": 378,
+          "custom": {},
+          "mnemonics": {
+            "addi": 11,
+            "sd": 6,
+            "mv": 13,
+            "ld": 33,
+            "li": 27,
+            "lui": 19,
+            "jal": 14,
+            "add": 4,
+            "bne": 1,
+            "auipc": 1,
+            "j": 1
+          }
+        },
+        "block7_mlp_gelu_forward": {
+          "instructions": 37,
+          "bytes": 102,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 5,
+            "mv": 6,
+            "ld": 8,
+            "li": 6,
+            "auipc": 2,
+            "jal": 2,
+            "lui": 2,
+            "j": 1
+          }
+        },
+        "block7_mlp_out_residual_forward": {
+          "instructions": 47,
+          "bytes": 132,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 5,
+            "mv": 12,
+            "li": 8,
+            "auipc": 2,
+            "jal": 3,
+            "lui": 5,
+            "ld": 5,
+            "j": 1
+          }
+        },
+        "block7_output_boundary_forward": {
+          "instructions": 5,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "li": 3,
+            "lui": 1,
+            "j": 1
+          }
+        },
+        "block7_forward": {
+          "instructions": 81,
+          "bytes": 210,
+          "custom": {},
+          "mnemonics": {
+            "addi": 6,
+            "sd": 6,
+            "mv": 11,
+            "ld": 34,
+            "jal": 9,
+            "li": 9,
+            "auipc": 2,
+            "lui": 3,
+            "j": 1
+          }
+        },
+        "putchar": {
+          "instructions": 9,
+          "bytes": 28,
+          "custom": {},
+          "mnemonics": {
+            "lui": 2,
+            "addi": 1,
+            "lbu": 1,
+            "andi": 1,
+            "beqz": 1,
+            "sb": 1,
+            "li": 1,
+            "ret": 1
+          }
+        },
+        "vprintfmt": {
+          "instructions": 251,
+          "bytes": 692,
+          "custom": {},
+          "mnemonics": {
+            "addi": 22,
+            "sd": 12,
+            "mv": 40,
+            "li": 30,
+            "auipc": 2,
+            "j": 21,
+            "beqz": 6,
+            "jalr": 12,
+            "lbu": 13,
+            "bne": 3,
+            "addiw": 15,
+            "zext.b": 2,
+            "bltu": 3,
+            "slli": 2,
+            "add": 4,
+            "lw": 5,
+            "jr": 1,
+            "ld": 15,
+            "ret": 1,
+            "bgeu": 4,
+            "slliw": 2,
+            "addw": 3,
+            "bgez": 2,
+            "remu": 2,
+            "sw": 2,
+            "divu": 1,
+            "bge": 1,
+            "sext.w": 3,
+            "blt": 2,
+            "bltz": 2,
+            "bnez": 7,
+            "lwu": 1,
+            "snez": 1,
+            "sgtz": 1,
+            "and": 1,
+            "beq": 2,
+            "blez": 2,
+            "neg": 1,
+            "sub": 1,
+            "subw": 1
+          }
+        },
+        "sprintf_putch.0": {
+          "instructions": 6,
+          "bytes": 14,
+          "custom": {},
+          "mnemonics": {
+            "ld": 2,
+            "sb": 1,
+            "addi": 1,
+            "sd": 1,
+            "ret": 1
+          }
+        },
+        "uartInit": {
+          "instructions": 4,
+          "bytes": 12,
+          "custom": {},
+          "mnemonics": {
+            "lui": 1,
+            "li": 1,
+            "sb": 1,
+            "ret": 1
+          }
+        },
+        "uartSend": {
+          "instructions": 8,
+          "bytes": 26,
+          "custom": {},
+          "mnemonics": {
+            "lui": 2,
+            "addi": 1,
+            "lbu": 1,
+            "andi": 1,
+            "beqz": 1,
+            "sb": 1,
+            "ret": 1
+          }
+        },
+        "uartReceive": {
+          "instructions": 8,
+          "bytes": 24,
+          "custom": {},
+          "mnemonics": {
+            "lui": 2,
+            "addi": 1,
+            "lbu": 2,
+            "andi": 1,
+            "beqz": 1,
+            "ret": 1
+          }
+        },
+        "uartPutStr": {
+          "instructions": 13,
+          "bytes": 40,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "addi": 2,
+            "andi": 1,
+            "sb": 1,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "setStats": {
+          "instructions": 22,
+          "bytes": 62,
+          "custom": {},
+          "mnemonics": {
+            "csrr": 3,
+            "auipc": 3,
+            "addi": 3,
+            "beqz": 1,
+            "sd": 6,
+            "ret": 2,
+            "ld": 2,
+            "sub": 2
+          }
+        },
+        "tohost_exit": {
+          "instructions": 5,
+          "bytes": 18,
+          "custom": {},
+          "mnemonics": {
+            "slli": 1,
+            "ori": 1,
+            "auipc": 1,
+            "sd": 1,
+            "j": 1
+          }
+        },
+        "handle_trap": {
+          "instructions": 5,
+          "bytes": 16,
+          "custom": {},
+          "mnemonics": {
+            "lui": 1,
+            "addi": 1,
+            "auipc": 1,
+            "sd": 1,
+            "j": 1
+          }
+        },
+        "exit": {
+          "instructions": 3,
+          "bytes": 8,
+          "custom": {},
+          "mnemonics": {
+            "addi": 1,
+            "sd": 1,
+            "jal": 1
+          }
+        },
+        "abort": {
+          "instructions": 4,
+          "bytes": 14,
+          "custom": {},
+          "mnemonics": {
+            "li": 1,
+            "auipc": 1,
+            "sd": 1,
+            "j": 1
+          }
+        },
+        "printstr": {
+          "instructions": 13,
+          "bytes": 40,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "addi": 2,
+            "andi": 1,
+            "sb": 1,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "puts": {
+          "instructions": 14,
+          "bytes": 42,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "addi": 2,
+            "andi": 1,
+            "sb": 1,
+            "bnez": 1,
+            "li": 1,
+            "ret": 1
+          }
+        },
+        "thread_entry": {
+          "instructions": 3,
+          "bytes": 6,
+          "custom": {},
+          "mnemonics": {
+            "bnez": 1,
+            "ret": 1,
+            "j": 1
+          }
+        },
+        "printhex": {
+          "instructions": 29,
+          "bytes": 88,
+          "custom": {},
+          "mnemonics": {
+            "addi": 7,
+            "li": 3,
+            "j": 1,
+            "andi": 2,
+            "bltu": 1,
+            "addw": 1,
+            "sb": 3,
+            "srli": 1,
+            "bne": 1,
+            "lbu": 3,
+            "beqz": 2,
+            "lui": 2,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "printf": {
+          "instructions": 21,
+          "bytes": 50,
+          "custom": {},
+          "mnemonics": {
+            "addi": 4,
+            "sd": 9,
+            "mv": 2,
+            "auipc": 1,
+            "li": 2,
+            "jal": 1,
+            "ld": 1,
+            "ret": 1
+          }
+        },
+        "sprintf": {
+          "instructions": 27,
+          "bytes": 64,
+          "custom": {},
+          "mnemonics": {
+            "addi": 5,
+            "sd": 10,
+            "mv": 3,
+            "auipc": 1,
+            "jal": 1,
+            "ld": 4,
+            "sb": 1,
+            "subw": 1,
+            "ret": 1
+          }
+        },
+        "memcpy": {
+          "instructions": 23,
+          "bytes": 64,
+          "custom": {},
+          "mnemonics": {
+            "or": 2,
+            "andi": 1,
+            "add": 2,
+            "beqz": 1,
+            "mv": 2,
+            "bgeu": 2,
+            "lbu": 1,
+            "addi": 4,
+            "sb": 1,
+            "bne": 1,
+            "ret": 3,
+            "ld": 1,
+            "sd": 1,
+            "bltu": 1
+          }
+        },
+        "memset": {
+          "instructions": 23,
+          "bytes": 70,
+          "custom": {},
+          "mnemonics": {
+            "or": 1,
+            "andi": 1,
+            "add": 2,
+            "beqz": 1,
+            "mv": 2,
+            "bgeu": 2,
+            "addi": 3,
+            "sb": 1,
+            "bne": 1,
+            "ret": 3,
+            "lui": 1,
+            "slli": 1,
+            "zext.b": 1,
+            "mul": 1,
+            "sd": 1,
+            "bltu": 1
+          }
+        },
+        "_init": {
+          "instructions": 61,
+          "bytes": 176,
+          "custom": {},
+          "mnemonics": {
+            "addi": 10,
+            "auipc": 6,
+            "sd": 7,
+            "sub": 2,
+            "mv": 14,
+            "jal": 7,
+            "add": 2,
+            "li": 4,
+            "lui": 1,
+            "sb": 1,
+            "andi": 1,
+            "ld": 2,
+            "bnez": 1,
+            "bne": 1,
+            "beq": 1,
+            "j": 1
+          }
+        },
+        "strlen": {
+          "instructions": 10,
+          "bytes": 26,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 2,
+            "beqz": 1,
+            "mv": 1,
+            "addi": 1,
+            "bnez": 1,
+            "sub": 1,
+            "ret": 2,
+            "li": 1
+          }
+        },
+        "strnlen": {
+          "instructions": 12,
+          "bytes": 32,
+          "custom": {},
+          "mnemonics": {
+            "add": 1,
+            "mv": 1,
+            "bnez": 2,
+            "j": 1,
+            "addi": 1,
+            "beq": 1,
+            "lbu": 1,
+            "sub": 1,
+            "ret": 2,
+            "li": 1
+          }
+        },
+        "strcmp": {
+          "instructions": 9,
+          "bytes": 28,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 2,
+            "addi": 2,
+            "sext.w": 1,
+            "beqz": 1,
+            "beq": 1,
+            "subw": 1,
+            "ret": 1
+          }
+        },
+        "strcpy": {
+          "instructions": 7,
+          "bytes": 18,
+          "custom": {},
+          "mnemonics": {
+            "mv": 1,
+            "lbu": 1,
+            "addi": 2,
+            "sb": 1,
+            "bnez": 1,
+            "ret": 1
+          }
+        },
+        "atol": {
+          "instructions": 34,
+          "bytes": 100,
+          "custom": {},
+          "mnemonics": {
+            "lbu": 5,
+            "li": 5,
+            "mv": 1,
+            "bne": 1,
+            "addi": 4,
+            "beq": 1,
+            "addiw": 2,
+            "andi": 1,
+            "bnez": 3,
+            "seqz": 1,
+            "beqz": 2,
+            "slli": 2,
+            "add": 2,
+            "neg": 1,
+            "ret": 2,
+            "j": 1
+          }
+        },
+        "main": {
+          "instructions": 473,
+          "bytes": 1536,
+          "custom": {},
+          "mnemonics": {
+            "addi": 87,
+            "sd": 29,
+            "csrr": 21,
+            "nop": 8,
+            "sub": 11,
+            "mv": 27,
+            "auipc": 56,
+            "jal": 24,
+            "bnez": 4,
+            "beqz": 3,
+            "li": 33,
+            "ld": 69,
+            "ret": 2,
+            "lui": 11,
+            "j": 17,
+            "beq": 16,
+            "add": 18,
+            "lb": 8,
+            "sext.w": 7,
+            "lw": 6,
+            "andi": 2,
+            "jalr": 9,
+            "addiw": 3,
+            "bne": 2
+          }
+        }
+      }
+    }
+  },
+  "dynamic": [
+    {
+      "case": 0,
+      "block": -1,
+      "region": "chain",
+      "scalar_raw_minstret": 461087565,
+      "custom_raw_minstret": 36302539,
+      "reduction_percent": 92.12675817878541,
+      "scalar_custom_instruction_ratio": 12.701248389265555
+    },
+    {
+      "case": 0,
+      "block": -1,
+      "region": "sum_block_raw",
+      "scalar_raw_minstret": 461087497,
+      "custom_raw_minstret": 36302471,
+      "reduction_percent": 92.12677176540313,
+      "scalar_custom_instruction_ratio": 12.7012703074675
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "attention",
+      "scalar_raw_minstret": 2930769,
+      "custom_raw_minstret": 2877527,
+      "reduction_percent": 1.8166563110228067,
+      "scalar_custom_instruction_ratio": 1.0185026934586539
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "forward",
+      "scalar_raw_minstret": 57636989,
+      "custom_raw_minstret": 4538860,
+      "reduction_percent": 92.12509175314484,
+      "scalar_custom_instruction_ratio": 12.698560651793622
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "ln1",
+      "scalar_raw_minstret": 264651,
+      "custom_raw_minstret": 154081,
+      "reduction_percent": 41.779551182500725,
+      "scalar_custom_instruction_ratio": 1.7176095689929323
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "ln2",
+      "scalar_raw_minstret": 264589,
+      "custom_raw_minstret": 154019,
+      "reduction_percent": 41.789341204660815,
+      "scalar_custom_instruction_ratio": 1.7178984411014226
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923909,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.91121993179149,
+      "scalar_custom_instruction_ratio": 16.42365118788449
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019523,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292687227485,
+      "scalar_custom_instruction_ratio": 258.3491150308145
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391538,
+      "custom_raw_minstret": 74045,
+      "reduction_percent": 98.31391644567347,
+      "scalar_custom_instruction_ratio": 59.30904179890607
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842027,
+      "custom_raw_minstret": 204,
+      "reduction_percent": 99.99841146572889,
+      "scalar_custom_instruction_ratio": 62951.11274509804
+    },
+    {
+      "case": 0,
+      "block": 0,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57637006,
+      "custom_raw_minstret": 4538877,
+      "reduction_percent": 92.12506458090485,
+      "scalar_custom_instruction_ratio": 12.698516835772372
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "attention",
+      "scalar_raw_minstret": 2925492,
+      "custom_raw_minstret": 2872250,
+      "reduction_percent": 1.8199331941430705,
+      "scalar_custom_instruction_ratio": 1.0185366872660806
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "forward",
+      "scalar_raw_minstret": 57631670,
+      "custom_raw_minstret": 4533543,
+      "reduction_percent": 92.13359078437254,
+      "scalar_custom_instruction_ratio": 12.712280439382619
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "ln1",
+      "scalar_raw_minstret": 264562,
+      "custom_raw_minstret": 153993,
+      "reduction_percent": 41.7932280524036,
+      "scalar_custom_instruction_ratio": 1.718013156442176
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "ln2",
+      "scalar_raw_minstret": 264636,
+      "custom_raw_minstret": 154066,
+      "reduction_percent": 41.781919315588205,
+      "scalar_custom_instruction_ratio": 1.7176794360858334
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923911,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.9112205429948,
+      "scalar_custom_instruction_ratio": 16.423652836521935
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019525,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292691776063,
+      "scalar_custom_instruction_ratio": 258.34914538996327
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391535,
+      "custom_raw_minstret": 74045,
+      "reduction_percent": 98.3139152938551,
+      "scalar_custom_instruction_ratio": 59.30900128300358
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842026,
+      "custom_raw_minstret": 205,
+      "reduction_percent": 99.99840367867189,
+      "scalar_custom_instruction_ratio": 62644.02926829268
+    },
+    {
+      "case": 0,
+      "block": 1,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57631687,
+      "custom_raw_minstret": 4533560,
+      "reduction_percent": 92.13356360711774,
+      "scalar_custom_instruction_ratio": 12.712236520526915
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "attention",
+      "scalar_raw_minstret": 2929030,
+      "custom_raw_minstret": 2875788,
+      "reduction_percent": 1.8177348815136751,
+      "scalar_custom_instruction_ratio": 1.0185138821081388
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "forward",
+      "scalar_raw_minstret": 57635376,
+      "custom_raw_minstret": 4537245,
+      "reduction_percent": 92.12767346221528,
+      "scalar_custom_instruction_ratio": 12.702725111824465
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "ln1",
+      "scalar_raw_minstret": 264675,
+      "custom_raw_minstret": 154105,
+      "reduction_percent": 41.775762727873804,
+      "scalar_custom_instruction_ratio": 1.7174978099347846
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "ln2",
+      "scalar_raw_minstret": 264688,
+      "custom_raw_minstret": 154118,
+      "reduction_percent": 41.77371093513873,
+      "scalar_custom_instruction_ratio": 1.7174372883115534
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923910,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.91122023739317,
+      "scalar_custom_instruction_ratio": 16.423652012203213
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019525,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292691776063,
+      "scalar_custom_instruction_ratio": 258.34914538996327
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391538,
+      "custom_raw_minstret": 74045,
+      "reduction_percent": 98.31391644567347,
+      "scalar_custom_instruction_ratio": 59.30904179890607
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842027,
+      "custom_raw_minstret": 205,
+      "reduction_percent": 99.9984036787962,
+      "scalar_custom_instruction_ratio": 62644.034146341466
+    },
+    {
+      "case": 0,
+      "block": 2,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57635393,
+      "custom_raw_minstret": 4537262,
+      "reduction_percent": 92.12764628845335,
+      "scalar_custom_instruction_ratio": 12.702681264604072
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "attention",
+      "scalar_raw_minstret": 2930191,
+      "custom_raw_minstret": 2876949,
+      "reduction_percent": 1.8170146587713907,
+      "scalar_custom_instruction_ratio": 1.0185064107844803
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "forward",
+      "scalar_raw_minstret": 57636492,
+      "custom_raw_minstret": 4538361,
+      "reduction_percent": 92.12588961868117,
+      "scalar_custom_instruction_ratio": 12.69984736780525
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "ln1",
+      "scalar_raw_minstret": 264633,
+      "custom_raw_minstret": 154063,
+      "reduction_percent": 41.78239297442118,
+      "scalar_custom_instruction_ratio": 1.7176934111370024
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "ln2",
+      "scalar_raw_minstret": 264684,
+      "custom_raw_minstret": 154114,
+      "reduction_percent": 41.77434223451361,
+      "scalar_custom_instruction_ratio": 1.717455909261975
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923912,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.9112208485964,
+      "scalar_custom_instruction_ratio": 16.423653660840657
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019524,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292689501775,
+      "scalar_custom_instruction_ratio": 258.3491302103889
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391539,
+      "custom_raw_minstret": 74046,
+      "reduction_percent": 98.31389405855214,
+      "scalar_custom_instruction_ratio": 59.30825432839046
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842026,
+      "custom_raw_minstret": 205,
+      "reduction_percent": 99.99840367867189,
+      "scalar_custom_instruction_ratio": 62644.02926829268
+    },
+    {
+      "case": 0,
+      "block": 3,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57636509,
+      "custom_raw_minstret": 4538378,
+      "reduction_percent": 92.12586244597153,
+      "scalar_custom_instruction_ratio": 12.699803542146556
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "attention",
+      "scalar_raw_minstret": 2930176,
+      "custom_raw_minstret": 2876935,
+      "reduction_percent": 1.8169898326926437,
+      "scalar_custom_instruction_ratio": 1.0185061532498996
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "forward",
+      "scalar_raw_minstret": 57636541,
+      "custom_raw_minstret": 4538412,
+      "reduction_percent": 92.12580782736424,
+      "scalar_custom_instruction_ratio": 12.699715451131365
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "ln1",
+      "scalar_raw_minstret": 264712,
+      "custom_raw_minstret": 154142,
+      "reduction_percent": 41.76992353954486,
+      "scalar_custom_instruction_ratio": 1.7173255829040754
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "ln2",
+      "scalar_raw_minstret": 264669,
+      "custom_raw_minstret": 154100,
+      "reduction_percent": 41.776331946695684,
+      "scalar_custom_instruction_ratio": 1.717514600908501
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923910,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.91122023739317,
+      "scalar_custom_instruction_ratio": 16.423652012203213
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019525,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292691776063,
+      "scalar_custom_instruction_ratio": 258.34914538996327
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391539,
+      "custom_raw_minstret": 74047,
+      "reduction_percent": 98.3138712874917,
+      "scalar_custom_instruction_ratio": 59.30745337420827
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842027,
+      "custom_raw_minstret": 204,
+      "reduction_percent": 99.99841146572889,
+      "scalar_custom_instruction_ratio": 62951.11274509804
+    },
+    {
+      "case": 0,
+      "block": 4,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57636558,
+      "custom_raw_minstret": 4538429,
+      "reduction_percent": 92.12578065470183,
+      "scalar_custom_instruction_ratio": 12.699671626459288
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "attention",
+      "scalar_raw_minstret": 2930336,
+      "custom_raw_minstret": 2877094,
+      "reduction_percent": 1.8169247485612572,
+      "scalar_custom_instruction_ratio": 1.0185054780969964
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "forward",
+      "scalar_raw_minstret": 57636715,
+      "custom_raw_minstret": 4538590,
+      "reduction_percent": 92.1255227679093,
+      "scalar_custom_instruction_ratio": 12.699255715982277
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "ln1",
+      "scalar_raw_minstret": 264707,
+      "custom_raw_minstret": 154139,
+      "reduction_percent": 41.769956971292785,
+      "scalar_custom_instruction_ratio": 1.7173265688761443
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "ln2",
+      "scalar_raw_minstret": 264694,
+      "custom_raw_minstret": 154124,
+      "reduction_percent": 41.77276402185165,
+      "scalar_custom_instruction_ratio": 1.7174093586981911
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923909,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.91121993179149,
+      "scalar_custom_instruction_ratio": 16.42365118788449
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019525,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292691776063,
+      "scalar_custom_instruction_ratio": 258.34914538996327
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391537,
+      "custom_raw_minstret": 74045,
+      "reduction_percent": 98.31391606173419,
+      "scalar_custom_instruction_ratio": 59.30902829360524
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842024,
+      "custom_raw_minstret": 204,
+      "reduction_percent": 99.99841146535779,
+      "scalar_custom_instruction_ratio": 62951.098039215685
+    },
+    {
+      "case": 0,
+      "block": 5,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57636732,
+      "custom_raw_minstret": 4538607,
+      "reduction_percent": 92.12549559541301,
+      "scalar_custom_instruction_ratio": 12.699211894750967
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "attention",
+      "scalar_raw_minstret": 2930530,
+      "custom_raw_minstret": 2877288,
+      "reduction_percent": 1.816804468816221,
+      "scalar_custom_instruction_ratio": 1.0185042303724896
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "forward",
+      "scalar_raw_minstret": 57636911,
+      "custom_raw_minstret": 4538787,
+      "reduction_percent": 92.12520775098443,
+      "scalar_custom_instruction_ratio": 12.698747705058642
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "ln1",
+      "scalar_raw_minstret": 264705,
+      "custom_raw_minstret": 154138,
+      "reduction_percent": 41.76989478853818,
+      "scalar_custom_instruction_ratio": 1.7173247349777472
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "ln2",
+      "scalar_raw_minstret": 264697,
+      "custom_raw_minstret": 154128,
+      "reduction_percent": 41.771912790851424,
+      "scalar_custom_instruction_ratio": 1.717384252050244
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923911,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.9112205429948,
+      "scalar_custom_instruction_ratio": 16.423652836521935
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019525,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292691776063,
+      "scalar_custom_instruction_ratio": 258.34914538996327
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391537,
+      "custom_raw_minstret": 74045,
+      "reduction_percent": 98.31391606173419,
+      "scalar_custom_instruction_ratio": 59.30902829360524
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842023,
+      "custom_raw_minstret": 204,
+      "reduction_percent": 99.9984114652341,
+      "scalar_custom_instruction_ratio": 62951.0931372549
+    },
+    {
+      "case": 0,
+      "block": 6,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57636928,
+      "custom_raw_minstret": 4538804,
+      "reduction_percent": 92.12518057867345,
+      "scalar_custom_instruction_ratio": 12.698703887632073
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "attention",
+      "scalar_raw_minstret": 2930484,
+      "custom_raw_minstret": 2877242,
+      "reduction_percent": 1.8168329873154059,
+      "scalar_custom_instruction_ratio": 1.0185045262094743
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "forward",
+      "scalar_raw_minstret": 57636803,
+      "custom_raw_minstret": 4538673,
+      "reduction_percent": 92.1253907854674,
+      "scalar_custom_instruction_ratio": 12.699042870019497
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "ln1",
+      "scalar_raw_minstret": 264664,
+      "custom_raw_minstret": 154095,
+      "reduction_percent": 41.77712118006227,
+      "scalar_custom_instruction_ratio": 1.7175378824750964
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "ln2",
+      "scalar_raw_minstret": 264672,
+      "custom_raw_minstret": 154102,
+      "reduction_percent": 41.77623624712852,
+      "scalar_custom_instruction_ratio": 1.7175117779133302
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "mlp_gelu",
+      "scalar_raw_minstret": 19923909,
+      "custom_raw_minstret": 1213123,
+      "reduction_percent": 93.91121993179149,
+      "scalar_custom_instruction_ratio": 16.42365118788449
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "mlp_out_boundary",
+      "scalar_raw_minstret": 17019525,
+      "custom_raw_minstret": 65878,
+      "reduction_percent": 99.61292691776063,
+      "scalar_custom_instruction_ratio": 258.34914538996327
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "out_residual",
+      "scalar_raw_minstret": 4391538,
+      "custom_raw_minstret": 74045,
+      "reduction_percent": 98.31391644567347,
+      "scalar_custom_instruction_ratio": 59.30904179890607
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "qkv",
+      "scalar_raw_minstret": 12842028,
+      "custom_raw_minstret": 205,
+      "reduction_percent": 99.9984036789205,
+      "scalar_custom_instruction_ratio": 62644.039024390244
+    },
+    {
+      "case": 0,
+      "block": 7,
+      "region": "sum_stage_raw",
+      "scalar_raw_minstret": 57636820,
+      "custom_raw_minstret": 4538690,
+      "reduction_percent": 92.12536361305152,
+      "scalar_custom_instruction_ratio": 12.698999050386785
+    }
+  ],
+  "counter_overhead_correction": null,
+  "cycle_speedup_claimed": false
+}

@@ -1,0 +1,4 @@
+numpy
+ai-edge-litert
+torch
+transformers

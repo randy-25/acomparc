@@ -1,0 +1,416 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -412,3 +412,27 @@
+                          BLOCK0_OUTPUT_REQUANT_SHIFT,
+                          BLOCK0_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block0_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block0_ln1_forward(input, workspace->activation, &workspace->ln);
++    block0_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block0_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block0_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block0_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block0_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block0_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block0_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK0_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK0_TOKEN_COUNT 32u
+ #define BLOCK0_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block0_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block0_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -412,3 +412,27 @@
+                          BLOCK1_OUTPUT_REQUANT_SHIFT,
+                          BLOCK1_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block1_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block1_ln1_forward(input, workspace->activation, &workspace->ln);
++    block1_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block1_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block1_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block1_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block1_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block1_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block1_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK1_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK1_TOKEN_COUNT 32u
+ #define BLOCK1_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block1_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block1_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -412,3 +412,27 @@
+                          BLOCK2_OUTPUT_REQUANT_SHIFT,
+                          BLOCK2_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block2_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block2_ln1_forward(input, workspace->activation, &workspace->ln);
++    block2_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block2_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block2_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block2_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block2_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block2_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block2_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK2_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK2_TOKEN_COUNT 32u
+ #define BLOCK2_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block2_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block2_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -412,3 +412,27 @@
+                          BLOCK3_OUTPUT_REQUANT_SHIFT,
+                          BLOCK3_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block3_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block3_ln1_forward(input, workspace->activation, &workspace->ln);
++    block3_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block3_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block3_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block3_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block3_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block3_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block3_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK3_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK3_TOKEN_COUNT 32u
+ #define BLOCK3_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block3_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block3_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -412,3 +412,27 @@
+                          BLOCK4_OUTPUT_REQUANT_SHIFT,
+                          BLOCK4_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block4_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block4_ln1_forward(input, workspace->activation, &workspace->ln);
++    block4_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block4_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block4_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block4_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block4_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block4_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block4_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK4_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK4_TOKEN_COUNT 32u
+ #define BLOCK4_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block4_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block4_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -412,3 +412,27 @@
+                          BLOCK5_OUTPUT_REQUANT_SHIFT,
+                          BLOCK5_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block5_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block5_ln1_forward(input, workspace->activation, &workspace->ln);
++    block5_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block5_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block5_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block5_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block5_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block5_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block5_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK5_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK5_TOKEN_COUNT 32u
+ #define BLOCK5_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block5_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block5_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -412,3 +412,27 @@
+                          BLOCK6_OUTPUT_REQUANT_SHIFT,
+                          BLOCK6_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block6_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block6_ln1_forward(input, workspace->activation, &workspace->ln);
++    block6_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block6_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block6_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block6_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block6_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block6_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block6_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK6_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK6_TOKEN_COUNT 32u
+ #define BLOCK6_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block6_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block6_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -412,3 +412,27 @@
+                          BLOCK7_OUTPUT_REQUANT_SHIFT,
+                          BLOCK7_OUTPUT_REQUANT_ZERO_POINT);
+ }
++
++void block7_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace)
++{
++    block7_ln1_forward(input, workspace->activation, &workspace->ln);
++    block7_qkv_forward(workspace->activation, workspace->query, workspace->key,
++                         workspace->value, workspace->ln.feature_i32);
++    block7_attention_forward(workspace->query, workspace->key, workspace->value,
++                               workspace->attention_output, workspace->score_workspace,
++                               workspace->ln.feature_i32);
++
++    /* Attention scores are dead; retain Part 4's residual in their buffer. */
++    block7_out_residual_forward(workspace->attention_output, input,
++                                  workspace->score_workspace, workspace->projection_output,
++                                  workspace->ln.feature_i32);
++    block7_ln2_forward(workspace->score_workspace, workspace->activation, &workspace->ln);
++    block7_mlp_gelu_forward(workspace->activation, workspace->mlp_output, &workspace->mlp);
++
++    /* Part 7 consumes the retained residual and replaces it with the final sum. */
++    block7_mlp_out_residual_forward(workspace->mlp_output, workspace->score_workspace,
++                                      workspace->score_workspace, workspace->projection_output,
++                                      workspace->ln.feature_i32);
++    block7_output_boundary_forward(workspace->score_workspace, output);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -2,6 +2,7 @@
+ #define TINYSTORIES_ALLBLOCKS_BLOCK7_H
+ #include "../layernorm.h"
+ #include "../mlp_gelu.h"
++#include "../block_workspace.h"
+ 
+ #define BLOCK7_TOKEN_COUNT 32u
+ #define BLOCK7_HIDDEN_SIZE 128u
+@@ -109,4 +110,11 @@
+  * and saturation. Input/output buffers must be valid and disjoint.
+  */
+ void block7_output_boundary_forward(const int32_t *input, int8_t *output);
++
++/* Complete block, INT8 [32,128] input and output at the exported boundary
++ * scales. Input/output/workspace must satisfy block_workspace.h's rules.
++ * No allocation or floating-point activation arithmetic is performed.
++ */
++void block7_forward(const int8_t *input, int8_t *output,
++                      TransformerBlockWorkspace *workspace);
+ #endif

@@ -1,0 +1,84 @@
+.DEFAULT_GOAL := riscv
+.DELETE_ON_ERROR:
+SHELL := /bin/bash
+
+TEST_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+EXPERIMENT_DIR := $(abspath $(TEST_DIR)/../..)
+PARAMS_DIR ?= $(EXPERIMENT_DIR)/build/parameter_export/c
+GOLDEN_DIR ?= $(EXPERIMENT_DIR)/build/fixtures/out_residual
+BUILD_DIR ?= $(EXPERIMENT_DIR)/build/tests/out_residual
+
+RISCV_PREFIX ?= riscv64-unknown-elf-
+SPIKE ?= spike
+ISA ?= rv64imc_zicsr
+CVW_ROOT ?= $(HOME)/Documents/ACompArc/cvw
+CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+
+BLOCKS := 0 1 2 3 4 5 6 7
+LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c src/gelu.c tests/out_residual/test_allblocks_out_residual.c \
+    $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+GOLDEN_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/fixtures/block$(b)_out_residual_golden.o) \
+    $(BUILD_DIR)/fixtures/out_residual_case_names.o
+RUNTIME_OBJECTS := $(BUILD_DIR)/runtime/crt.o $(BUILD_DIR)/runtime/syscalls.o
+OBJECTS := $(LOCAL_OBJECTS) $(PARAM_OBJECTS) $(GOLDEN_OBJECTS) $(RUNTIME_OBJECTS)
+DEPS := $(OBJECTS:.o=.d)
+
+CPPFLAGS += -I "$(EXPERIMENT_DIR)/src" -I "$(EXPERIMENT_DIR)/src/blocks" \
+    -I "$(PARAMS_DIR)" -I "$(GOLDEN_DIR)"
+CFLAGS := -std=gnu11 -O2 -Wall -Wextra \
+    -march=$(ISA) -mabi=lp64 -mcmodel=medany \
+    -fno-tree-loop-distribute-patterns
+LDFLAGS := -march=$(ISA) -mabi=lp64 -mcmodel=medany \
+    -nostdlib -static -T "$(CVW_COMMON)/test.ld"
+
+ELF := $(BUILD_DIR)/test_allblocks_out_residual.elf
+DISASM := $(BUILD_DIR)/test_allblocks_out_residual.dis
+
+.PHONY: all riscv run inspect disasm clean
+all: riscv
+riscv: $(ELF)
+
+$(BUILD_DIR)/src/%.o: $(EXPERIMENT_DIR)/src/%.c
+	mkdir -p "$(@D)"
+	$(RISCV_PREFIX)gcc $(CPPFLAGS) $(CFLAGS) -MMD -MP -c "$<" -o "$@"
+
+$(BUILD_DIR)/tests/%.o: $(EXPERIMENT_DIR)/tests/%.c
+	mkdir -p "$(@D)"
+	$(RISCV_PREFIX)gcc $(CPPFLAGS) $(CFLAGS) -MMD -MP -c "$<" -o "$@"
+
+$(BUILD_DIR)/params/%.o: $(PARAMS_DIR)/%.c
+	mkdir -p "$(@D)"
+	$(RISCV_PREFIX)gcc $(CPPFLAGS) $(CFLAGS) -MMD -MP -c "$<" -o "$@"
+
+$(BUILD_DIR)/fixtures/%.o: $(GOLDEN_DIR)/%.c
+	mkdir -p "$(@D)"
+	$(RISCV_PREFIX)gcc $(CPPFLAGS) $(CFLAGS) -MMD -MP -c "$<" -o "$@"
+
+$(BUILD_DIR)/runtime/crt.o: $(CVW_COMMON)/crt.S
+	mkdir -p "$(@D)"
+	$(RISCV_PREFIX)gcc $(CFLAGS) -I "$(CVW_COMMON)" -MMD -MP -c "$<" -o "$@"
+
+$(BUILD_DIR)/runtime/syscalls.o: $(CVW_COMMON)/syscalls.c
+	mkdir -p "$(@D)"
+	$(RISCV_PREFIX)gcc $(CFLAGS) -I "$(CVW_COMMON)" -MMD -MP -c "$<" -o "$@"
+
+$(ELF): $(OBJECTS) $(CVW_COMMON)/test.ld
+	$(RISCV_PREFIX)gcc $(LDFLAGS) $(OBJECTS) -lgcc -o "$@"
+
+run: $(ELF)
+	$(SPIKE) --isa=$(ISA) "$<"
+
+inspect: $(ELF)
+	$(RISCV_PREFIX)readelf -A "$<"
+	$(RISCV_PREFIX)size "$<"
+
+disasm: $(DISASM)
+$(DISASM): $(ELF)
+	$(RISCV_PREFIX)objdump -d "$<" > "$@"
+
+clean:
+	rm -f $(OBJECTS) $(DEPS) "$(ELF)" "$(DISASM)"
+
+-include $(DEPS)

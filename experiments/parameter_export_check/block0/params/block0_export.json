@@ -1,0 +1,1913 @@
+{
+  "arrays": {
+    "block0_gelu_tanh_lut": {
+      "ctype": "int32_t",
+      "elements": 256,
+      "sha256": "8c2e4dea221c618aed51273109f9f202cd434f8132ffc7bf907fca59c9a13ba3"
+    },
+    "block0_k_weights": {
+      "ctype": "int8_t",
+      "elements": 16384,
+      "sha256": "9ac26d059f7e7ca92cf0baf03d2f6fd22add3df247b4c7d9ff61312030a7f669"
+    },
+    "block0_ln1_beta": {
+      "ctype": "int32_t",
+      "elements": 128,
+      "sha256": "7b7a4d1be9ed3f3b0ed56315407152363f7dc1c745d6f5fe52d326fea9e32d85"
+    },
+    "block0_ln1_gamma": {
+      "ctype": "int32_t",
+      "elements": 128,
+      "sha256": "881a0849e3f1bc1a37edb04f6223879da4f2457f1b4285386011f54a271b6a9a"
+    },
+    "block0_ln2_beta": {
+      "ctype": "int32_t",
+      "elements": 128,
+      "sha256": "b420aded52260b7e7ea93b62596e6a5a97ed315b35aa1ea7b03b21a10169d520"
+    },
+    "block0_ln2_gamma": {
+      "ctype": "int32_t",
+      "elements": 128,
+      "sha256": "bd03a3b9b73193f250552977534df137ccabf64a743b69c4a70678d86cc78d9c"
+    },
+    "block0_mlp_expand_bias": {
+      "ctype": "int32_t",
+      "elements": 512,
+      "sha256": "3aeb4633b72a81170327d148811598f7010c0d95b64ded9c2225b5d769e017c1"
+    },
+    "block0_mlp_expand_weights": {
+      "ctype": "int8_t",
+      "elements": 65536,
+      "sha256": "a0a009b9bde36669aa5fd9bbf2b8acc49f8702a8efa125025f680467540d33b8"
+    },
+    "block0_mlp_out_bias": {
+      "ctype": "int32_t",
+      "elements": 128,
+      "sha256": "a770583e2f9c97c7a52ba71c0067b81622f1a7c07e84648a643b687a4e6f3732"
+    },
+    "block0_mlp_out_weights": {
+      "ctype": "int8_t",
+      "elements": 65536,
+      "sha256": "ef92888b8550b18ea5a3a5495e02011607bb69063d1b74ea7719e4d1281989d8"
+    },
+    "block0_out_bias": {
+      "ctype": "int32_t",
+      "elements": 128,
+      "sha256": "627c06d6814979a3f4d7040a17c8cb79f104f5812e5c3e0de91d5a0af9783681"
+    },
+    "block0_out_weights": {
+      "ctype": "int8_t",
+      "elements": 16384,
+      "sha256": "115ebd643099974bf7de71b9b4aea50b419bbbdff7fd181b4b24f4f410ce9cef"
+    },
+    "block0_q_weights": {
+      "ctype": "int8_t",
+      "elements": 16384,
+      "sha256": "57b411c51f94d1accce1913eb5a9dd6f009c7bf5b3d6756289950aea896d53d4"
+    },
+    "block0_softmax_exp_lut": {
+      "ctype": "int32_t",
+      "elements": 4097,
+      "sha256": "0b330c5527eaa94e06557cd254485b23e514267b995030f6e7938ebf1a26c886"
+    },
+    "block0_v_weights": {
+      "ctype": "int8_t",
+      "elements": 16384,
+      "sha256": "3c37ba0be3c7a1a6a3ed035154ac3033afee9abb2d1b6e34dc4ccddfe7d77062"
+    }
+  },
+  "block_index": 0,
+  "canonical_role_to_tensor": {
+    "0": 0,
+    "1": 1,
+    "10": 10,
+    "100": 100,
+    "101": 101,
+    "102": 102,
+    "103": 103,
+    "104": 104,
+    "105": 105,
+    "106": 106,
+    "107": 107,
+    "11": 11,
+    "12": 12,
+    "13": 13,
+    "14": 14,
+    "15": 15,
+    "16": 16,
+    "17": 17,
+    "18": 18,
+    "19": 19,
+    "2": 2,
+    "20": 20,
+    "21": 21,
+    "22": 22,
+    "23": 23,
+    "24": 24,
+    "25": 25,
+    "26": 26,
+    "27": 27,
+    "28": 28,
+    "29": 29,
+    "3": 3,
+    "30": 30,
+    "31": 31,
+    "32": 32,
+    "33": 33,
+    "34": 34,
+    "35": 35,
+    "36": 36,
+    "37": 37,
+    "38": 38,
+    "39": 39,
+    "4": 4,
+    "40": 40,
+    "41": 41,
+    "42": 42,
+    "43": 43,
+    "44": 44,
+    "45": 45,
+    "46": 46,
+    "47": 47,
+    "48": 48,
+    "49": 49,
+    "5": 5,
+    "50": 50,
+    "51": 51,
+    "52": 52,
+    "53": 53,
+    "54": 54,
+    "55": 55,
+    "56": 56,
+    "57": 57,
+    "58": 58,
+    "59": 59,
+    "6": 6,
+    "60": 60,
+    "61": 61,
+    "62": 62,
+    "63": 63,
+    "64": 64,
+    "65": 65,
+    "66": 66,
+    "67": 67,
+    "68": 68,
+    "69": 69,
+    "7": 7,
+    "70": 70,
+    "71": 71,
+    "72": 72,
+    "73": 73,
+    "74": 74,
+    "75": 75,
+    "76": 76,
+    "77": 77,
+    "78": 78,
+    "79": 79,
+    "8": 8,
+    "80": 80,
+    "81": 81,
+    "82": 82,
+    "83": 83,
+    "84": 84,
+    "85": 85,
+    "86": 86,
+    "87": 87,
+    "88": 88,
+    "89": 89,
+    "9": 9,
+    "90": 90,
+    "91": 91,
+    "92": 92,
+    "93": 93,
+    "94": 94,
+    "95": 95,
+    "96": 96,
+    "97": 97,
+    "98": 98,
+    "99": 99
+  },
+  "existing_comparison": {
+    "array_elements": 202241,
+    "arrays": 15,
+    "layernorm_objects": 2,
+    "macros": 94
+  },
+  "exporter": "export_tinystories_block.py",
+  "fixtures_generated": false,
+  "generated_sha256": {
+    "block0_params.c": "b6975c5416d93874a0e4cab1690efc52afbfb287918e187a3f7b82767c76829a",
+    "block0_params.h": "2638c80b3c46603f5303ab1549d9234afed0bc3320f7d3c61aa5d8528747a0fc"
+  },
+  "graph_operator_count": 74,
+  "head_dim": 8,
+  "heads": 16,
+  "macros": {
+    "BLOCK0_ATTN_CONTEXT_MULTIPLIER": 1113218944,
+    "BLOCK0_ATTN_CONTEXT_OUTPUT_ZERO_POINT": 9,
+    "BLOCK0_ATTN_CONTEXT_SHIFT": 46,
+    "BLOCK0_GELU_ADD_CUBIC_MULTIPLIER": 228467824,
+    "BLOCK0_GELU_ADD_CUBIC_ZERO_POINT": 85,
+    "BLOCK0_GELU_ADD_LINEAR_MULTIPLIER": 1916390445,
+    "BLOCK0_GELU_ADD_LINEAR_ZERO_POINT": 37,
+    "BLOCK0_GELU_ADD_OUTPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_ADD_SHIFT": 31,
+    "BLOCK0_GELU_ARGUMENT_CENTERED_CONSTANT": 255,
+    "BLOCK0_GELU_ARGUMENT_INPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_ARGUMENT_MULTIPLIER": 1077952560,
+    "BLOCK0_GELU_ARGUMENT_OUTPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_ARGUMENT_SHIFT": 38,
+    "BLOCK0_GELU_CUBE_INPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_CUBE_MULTIPLIER": 1670962322,
+    "BLOCK0_GELU_CUBE_OUTPUT_ZERO_POINT": 85,
+    "BLOCK0_GELU_CUBE_SHIFT": 45,
+    "BLOCK0_GELU_FACTOR_MULTIPLIER": 1269488229,
+    "BLOCK0_GELU_FACTOR_OUTPUT_ZERO_POINT": -128,
+    "BLOCK0_GELU_FACTOR_SHIFT": 47,
+    "BLOCK0_GELU_HALF_CENTERED_CONSTANT": 255,
+    "BLOCK0_GELU_HALF_INPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_HALF_MULTIPLIER": 1077952640,
+    "BLOCK0_GELU_HALF_OUTPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_HALF_SHIFT": 38,
+    "BLOCK0_GELU_OUTPUT_FACTOR_ZERO_POINT": -128,
+    "BLOCK0_GELU_OUTPUT_HALF_ZERO_POINT": 37,
+    "BLOCK0_GELU_OUTPUT_Q31_MULTIPLIER": 1195729761,
+    "BLOCK0_GELU_OUTPUT_SECOND_SHIFT": 6,
+    "BLOCK0_GELU_OUTPUT_ZERO_POINT": -88,
+    "BLOCK0_GELU_TANH_FRAC_BITS": 24,
+    "BLOCK0_GELU_TANH_INPUT_ZERO_POINT": 37,
+    "BLOCK0_GELU_TANH_LUT_SIZE": 256,
+    "BLOCK0_GELU_TANH_ONE": 16777216,
+    "BLOCK0_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT": 183,
+    "BLOCK0_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT": 85,
+    "BLOCK0_GELU_WEIGHTED_CUBE_MULTIPLIER": 1500813243,
+    "BLOCK0_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT": 85,
+    "BLOCK0_GELU_WEIGHTED_CUBE_SHIFT": 38,
+    "BLOCK0_K_MULTIPLIER": 1756819468,
+    "BLOCK0_K_OUTPUT_ZERO_POINT": -30,
+    "BLOCK0_LN1_BETA_ALIGNMENT": 65536,
+    "BLOCK0_LN1_EPSILON_Q": 42,
+    "BLOCK0_LN1_NORMALIZE_SHIFT": 15,
+    "BLOCK0_LN1_OUTPUT_MULTIPLIER": 974600,
+    "BLOCK0_LN1_OUTPUT_SHIFT": 47,
+    "BLOCK0_LN1_OUTPUT_ZERO_POINT": -17,
+    "BLOCK0_LN1_RSQRT_NUMERATOR": 18014398509481984,
+    "BLOCK0_LN1_SQUARE_SHIFT": 15,
+    "BLOCK0_LN2_BETA_ALIGNMENT": 65536,
+    "BLOCK0_LN2_EPSILON_Q": 10737,
+    "BLOCK0_LN2_NORMALIZE_SHIFT": 23,
+    "BLOCK0_LN2_OUTPUT_MULTIPLIER": 1009162,
+    "BLOCK0_LN2_OUTPUT_SHIFT": 47,
+    "BLOCK0_LN2_OUTPUT_ZERO_POINT": 2,
+    "BLOCK0_LN2_RSQRT_NUMERATOR": 4611686018427387904,
+    "BLOCK0_LN2_SQUARE_SHIFT": 23,
+    "BLOCK0_MLP_EXPAND_INPUT_FEATURES": 128,
+    "BLOCK0_MLP_EXPAND_INPUT_ZERO_POINT": 2,
+    "BLOCK0_MLP_EXPAND_MULTIPLIER": 1274254450,
+    "BLOCK0_MLP_EXPAND_OUTPUT_FEATURES": 512,
+    "BLOCK0_MLP_EXPAND_OUTPUT_ZERO_POINT": 37,
+    "BLOCK0_MLP_EXPAND_SHIFT": 39,
+    "BLOCK0_MLP_EXPAND_WEIGHT_COUNT": 65536,
+    "BLOCK0_MLP_OUT_INPUT_FEATURES": 512,
+    "BLOCK0_MLP_OUT_INPUT_ZERO_POINT": -88,
+    "BLOCK0_MLP_OUT_MULTIPLIER": 641059315,
+    "BLOCK0_MLP_OUT_OUTPUT_FEATURES": 128,
+    "BLOCK0_MLP_OUT_OUTPUT_ZERO_POINT": 10,
+    "BLOCK0_MLP_OUT_SHIFT": 39,
+    "BLOCK0_MLP_OUT_WEIGHT_COUNT": 65536,
+    "BLOCK0_OUT_PROJ_INPUT_ZERO_POINT": 9,
+    "BLOCK0_OUT_PROJ_MULTIPLIER": 747156156,
+    "BLOCK0_OUT_PROJ_OUTPUT_ZERO_POINT": -13,
+    "BLOCK0_OUT_PROJ_SHIFT": 39,
+    "BLOCK0_QKV_INPUT_ZERO_POINT": -17,
+    "BLOCK0_QKV_REQUANT_SHIFT": 39,
+    "BLOCK0_Q_MULTIPLIER": 1280944693,
+    "BLOCK0_Q_OUTPUT_ZERO_POINT": -12,
+    "BLOCK0_RESIDUAL1_BRANCH_MULTIPLIER": 939062400,
+    "BLOCK0_RESIDUAL1_BRANCH_SHIFT": 22,
+    "BLOCK0_RESIDUAL1_FRAC_BITS": 16,
+    "BLOCK0_RESIDUAL1_INPUT_ALIGNMENT": 256,
+    "BLOCK0_RESIDUAL1_INPUT_ZERO_POINT": 0,
+    "BLOCK0_RESIDUAL2_BRANCH_MULTIPLIER": 720118272,
+    "BLOCK0_RESIDUAL2_BRANCH_SHIFT": 22,
+    "BLOCK0_RESIDUAL2_FRAC_BITS": 16,
+    "BLOCK0_SOFTMAX_COORD_MULTIPLIER": 503030354,
+    "BLOCK0_SOFTMAX_COORD_SHIFT": 24,
+    "BLOCK0_SOFTMAX_EXP_LUT_SIZE": 4097,
+    "BLOCK0_SOFTMAX_PROB_FRAC_BITS": 16,
+    "BLOCK0_V_MULTIPLIER": 1696087205,
+    "BLOCK0_V_OUTPUT_ZERO_POINT": 4
+  },
+  "model_file": "block0_w8a8.tflite",
+  "model_sha256": "06481f6c5151a83e3c01896d314d902ee9608773d94834848777ccc7282d87a9",
+  "numpy_version": "2.5.3",
+  "orchestration_generated": false,
+  "policy": {
+    "affine_parameter_frac_bits": 16,
+    "inv_std_frac_bits": 16,
+    "ln1_input_c_type": "int8_t",
+    "ln1_input_frac_bits": 8,
+    "ln1_input_zero_point": 0,
+    "normalized_frac_bits": 16,
+    "offline_constant_rounding": "nearest, ties to even; Q31 normalization uses floor(x+0.5)",
+    "residual_frac_bits": 16,
+    "runtime_rounding": "preserves existing one-stage and two-stage C helper contracts"
+  },
+  "profile": "tinystories-gptneo-32x128-integer-v1",
+  "projections": [
+    {
+      "accumulator_bound_max": 650736,
+      "bias_tensor": null,
+      "input_scale": 0.03362198546528816,
+      "input_zero_point": -17,
+      "layout": "output_feature,input_feature",
+      "multiplier": 1280944693,
+      "name": "q",
+      "output_scale": 0.025061121210455894,
+      "output_zero_point": -12,
+      "right_shift": 39,
+      "shape": [
+        128,
+        128
+      ],
+      "weight_scale": 0.0017367515247315168,
+      "weight_tensor": 27
+    },
+    {
+      "accumulator_bound_max": 478800,
+      "bias_tensor": null,
+      "input_scale": 0.03362198546528816,
+      "input_zero_point": -17,
+      "layout": "output_feature,input_feature",
+      "multiplier": 1756819468,
+      "name": "k",
+      "output_scale": 0.018255505710840225,
+      "output_zero_point": -30,
+      "right_shift": 39,
+      "shape": [
+        128,
+        128
+      ],
+      "weight_scale": 0.0017351132119074464,
+      "weight_tensor": 25
+    },
+    {
+      "accumulator_bound_max": 484992,
+      "bias_tensor": null,
+      "input_scale": 0.03362198546528816,
+      "input_zero_point": -17,
+      "layout": "output_feature,input_feature",
+      "multiplier": 1696087205,
+      "name": "v",
+      "output_scale": 0.006938841659575701,
+      "output_zero_point": 4,
+      "right_shift": 39,
+      "shape": [
+        128,
+        128
+      ],
+      "weight_scale": 0.0006367104360833764,
+      "weight_tensor": 26
+    },
+    {
+      "accumulator_bound_max": 520195,
+      "bias_tensor": 24,
+      "input_scale": 0.006692775525152683,
+      "input_zero_point": 9,
+      "layout": "output_feature,input_feature",
+      "multiplier": 747156156,
+      "name": "out",
+      "output_scale": 0.003416289109736681,
+      "output_zero_point": -13,
+      "right_shift": 39,
+      "shape": [
+        128,
+        128
+      ],
+      "weight_scale": 0.0006937290891073644,
+      "weight_tensor": 28
+    },
+    {
+      "accumulator_bound_max": 529127,
+      "bias_tensor": 23,
+      "input_scale": 0.03247051313519478,
+      "input_zero_point": 2,
+      "layout": "output_feature,input_feature",
+      "multiplier": 1274254450,
+      "name": "mlp_expand",
+      "output_scale": 0.011252585798501968,
+      "output_zero_point": 37,
+      "right_shift": 39,
+      "shape": [
+        512,
+        128
+      ],
+      "weight_scale": 0.000803247734438628,
+      "weight_tensor": 29
+    },
+    {
+      "accumulator_bound_max": 2642866,
+      "bias_tensor": 22,
+      "input_scale": 0.004273270256817341,
+      "input_zero_point": -88,
+      "layout": "output_feature,input_feature",
+      "multiplier": 641059315,
+      "name": "mlp_out",
+      "output_scale": 0.0026197750121355057,
+      "output_zero_point": 10,
+      "right_shift": 39,
+      "shape": [
+        128,
+        512
+      ],
+      "weight_scale": 0.0007148781442083418,
+      "weight_tensor": 30
+    }
+  ],
+  "schema_backend": "ai-edge-litert 2.2.0",
+  "shape": [
+    1,
+    32,
+    128
+  ],
+  "tensors": {
+    "0": {
+      "actual_id": 0,
+      "dtype": "float32",
+      "name": "serving_default_args_0",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "1": {
+      "actual_id": 1,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;;__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        4
+      ],
+      "zero_points": []
+    },
+    "10": {
+      "actual_id": 10,
+      "dtype": "int32",
+      "name": "arith.constant6",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        2
+      ],
+      "zero_points": []
+    },
+    "100": {
+      "actual_id": 100,
+      "dtype": "float32",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;14",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": []
+    },
+    "101": {
+      "actual_id": 101,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;7",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": []
+    },
+    "102": {
+      "actual_id": 102,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;8",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": []
+    },
+    "103": {
+      "actual_id": 103,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;15",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0066078659147024155
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        -128
+      ]
+    },
+    "104": {
+      "actual_id": 104,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;9",
+      "quantized_dimension": 0,
+      "scales": [
+        0.004273270256817341
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        -88
+      ]
+    },
+    "105": {
+      "actual_id": 105,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/torch.nn.modules.linear.Linear_c_proj;1",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0026197750121355057
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        10
+      ]
+    },
+    "106": {
+      "actual_id": 106,
+      "dtype": "float32",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;16",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "107": {
+      "actual_id": 107,
+      "dtype": "float32",
+      "name": "serving_default_output_0_output",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "11": {
+      "actual_id": 11,
+      "dtype": "int32",
+      "name": "arith.constant7",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        3
+      ],
+      "zero_points": []
+    },
+    "12": {
+      "actual_id": 12,
+      "dtype": "int32",
+      "name": "arith.constant8",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        3
+      ],
+      "zero_points": []
+    },
+    "13": {
+      "actual_id": 13,
+      "dtype": "int32",
+      "name": "arith.constant9",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        4
+      ],
+      "zero_points": []
+    },
+    "14": {
+      "actual_id": 14,
+      "dtype": "int32",
+      "name": "arith.constant10",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        4
+      ],
+      "zero_points": []
+    },
+    "15": {
+      "actual_id": 15,
+      "dtype": "int32",
+      "name": "arith.constant11",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        3
+      ],
+      "zero_points": []
+    },
+    "16": {
+      "actual_id": 16,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        3
+      ],
+      "zero_points": []
+    },
+    "17": {
+      "actual_id": 17,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;1",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        4
+      ],
+      "zero_points": []
+    },
+    "18": {
+      "actual_id": 18,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;2",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [],
+      "zero_points": []
+    },
+    "19": {
+      "actual_id": 19,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;3",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        3
+      ],
+      "zero_points": []
+    },
+    "2": {
+      "actual_id": 2,
+      "dtype": "float32",
+      "name": "arith.constant",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [],
+      "zero_points": []
+    },
+    "20": {
+      "actual_id": 20,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;4",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        4
+      ],
+      "zero_points": []
+    },
+    "21": {
+      "actual_id": 21,
+      "dtype": "bool",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;5",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        1,
+        32,
+        32
+      ],
+      "zero_points": []
+    },
+    "22": {
+      "actual_id": 22,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/torch.nn.modules.linear.Linear_c_proj;",
+      "quantized_dimension": 0,
+      "scales": [
+        3.0548674203600967e-06
+      ],
+      "shape": [
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "23": {
+      "actual_id": 23,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/torch.nn.modules.linear.Linear_c_fc;",
+      "quantized_dimension": 0,
+      "scales": [
+        2.6081866963068023e-05
+      ],
+      "shape": [
+        512
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "24": {
+      "actual_id": 24,
+      "dtype": "int32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_out_proj;",
+      "quantized_dimension": 0,
+      "scales": [
+        4.642973181034904e-06
+      ],
+      "shape": [
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "25": {
+      "actual_id": 25,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0017351132119074464
+      ],
+      "shape": [
+        128,
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "26": {
+      "actual_id": 26,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;1",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0006367104360833764
+      ],
+      "shape": [
+        128,
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "27": {
+      "actual_id": 27,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;2",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0017367515247315168
+      ],
+      "shape": [
+        128,
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "28": {
+      "actual_id": 28,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;3",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0006937290891073644
+      ],
+      "shape": [
+        128,
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "29": {
+      "actual_id": 29,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;4",
+      "quantized_dimension": 0,
+      "scales": [
+        0.000803247734438628
+      ],
+      "shape": [
+        512,
+        128
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "3": {
+      "actual_id": 3,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [],
+      "zero_points": []
+    },
+    "30": {
+      "actual_id": 30,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;5",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0007148781442083418
+      ],
+      "shape": [
+        128,
+        512
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    "31": {
+      "actual_id": 31,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "32": {
+      "actual_id": 32,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;1",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        1
+      ],
+      "zero_points": []
+    },
+    "33": {
+      "actual_id": 33,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;2",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "34": {
+      "actual_id": 34,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;3",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "35": {
+      "actual_id": 35,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;4",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "36": {
+      "actual_id": 36,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;5",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "37": {
+      "actual_id": 37,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;6",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "38": {
+      "actual_id": 38,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;7",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "39": {
+      "actual_id": 39,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;8",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        1
+      ],
+      "zero_points": []
+    },
+    "4": {
+      "actual_id": 4,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;1",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [],
+      "zero_points": []
+    },
+    "40": {
+      "actual_id": 40,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;9",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "41": {
+      "actual_id": 41,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;10",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        1
+      ],
+      "zero_points": []
+    },
+    "42": {
+      "actual_id": 42,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;11",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "43": {
+      "actual_id": 43,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;12",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "44": {
+      "actual_id": 44,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_1;13",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "45": {
+      "actual_id": 45,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;6",
+      "quantized_dimension": 0,
+      "scales": [
+        0.03362198546528816
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        -17
+      ]
+    },
+    "46": {
+      "actual_id": 46,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_q_proj;",
+      "quantized_dimension": 0,
+      "scales": [
+        0.025061121210455894
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        -12
+      ]
+    },
+    "47": {
+      "actual_id": 47,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_k_proj;;__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_q_proj;",
+      "quantized_dimension": 0,
+      "scales": [
+        0.018255505710840225
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        -30
+      ]
+    },
+    "48": {
+      "actual_id": 48,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_v_proj;;__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_q_proj;",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006938841659575701
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        4
+      ]
+    },
+    "49": {
+      "actual_id": 49,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;6",
+      "quantized_dimension": 0,
+      "scales": [
+        0.025061121210455894
+      ],
+      "shape": [
+        1,
+        32,
+        16,
+        8
+      ],
+      "zero_points": [
+        -12
+      ]
+    },
+    "5": {
+      "actual_id": 5,
+      "dtype": "float32",
+      "name": "arith.constant1",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [],
+      "zero_points": []
+    },
+    "50": {
+      "actual_id": 50,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;7",
+      "quantized_dimension": 0,
+      "scales": [
+        0.025061121210455894
+      ],
+      "shape": [
+        1,
+        16,
+        32,
+        8
+      ],
+      "zero_points": [
+        -12
+      ]
+    },
+    "51": {
+      "actual_id": 51,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;8",
+      "quantized_dimension": 0,
+      "scales": [
+        0.018255505710840225
+      ],
+      "shape": [
+        1,
+        32,
+        16,
+        8
+      ],
+      "zero_points": [
+        -30
+      ]
+    },
+    "52": {
+      "actual_id": 52,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;9",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006938841659575701
+      ],
+      "shape": [
+        1,
+        32,
+        16,
+        8
+      ],
+      "zero_points": [
+        4
+      ]
+    },
+    "53": {
+      "actual_id": 53,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;10",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006938841659575701
+      ],
+      "shape": [
+        1,
+        16,
+        32,
+        8
+      ],
+      "zero_points": [
+        4
+      ]
+    },
+    "54": {
+      "actual_id": 54,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;;__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;1",
+      "quantized_dimension": 0,
+      "scales": [
+        0.018255505710840225
+      ],
+      "shape": [
+        1,
+        16,
+        8,
+        32
+      ],
+      "zero_points": [
+        -30
+      ]
+    },
+    "55": {
+      "actual_id": 55,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;11",
+      "quantized_dimension": 0,
+      "scales": [
+        0.025061121210455894
+      ],
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "zero_points": [
+        -12
+      ]
+    },
+    "56": {
+      "actual_id": 56,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;12",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "zero_points": []
+    },
+    "57": {
+      "actual_id": 57,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;13",
+      "quantized_dimension": 0,
+      "scales": [
+        0.018255505710840225
+      ],
+      "shape": [
+        16,
+        8,
+        32
+      ],
+      "zero_points": [
+        -30
+      ]
+    },
+    "58": {
+      "actual_id": 58,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;14",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        16,
+        8,
+        32
+      ],
+      "zero_points": []
+    },
+    "59": {
+      "actual_id": 59,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;15",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        16,
+        32,
+        32
+      ],
+      "zero_points": []
+    },
+    "6": {
+      "actual_id": 6,
+      "dtype": "float32",
+      "name": "arith.constant2",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        128
+      ],
+      "zero_points": []
+    },
+    "60": {
+      "actual_id": 60,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;16",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        16,
+        32,
+        32
+      ],
+      "zero_points": []
+    },
+    "61": {
+      "actual_id": 61,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;17",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        16,
+        32,
+        32
+      ],
+      "zero_points": []
+    },
+    "62": {
+      "actual_id": 62,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;18",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        16,
+        32,
+        32
+      ],
+      "zero_points": []
+    },
+    "63": {
+      "actual_id": 63,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;19",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        16,
+        32,
+        32
+      ],
+      "zero_points": []
+    },
+    "64": {
+      "actual_id": 64,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;20",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006938841659575701
+      ],
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "zero_points": [
+        4
+      ]
+    },
+    "65": {
+      "actual_id": 65,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;21",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "zero_points": []
+    },
+    "66": {
+      "actual_id": 66,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;22",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "zero_points": []
+    },
+    "67": {
+      "actual_id": 67,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;23",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006692775525152683
+      ],
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "zero_points": [
+        9
+      ]
+    },
+    "68": {
+      "actual_id": 68,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;24",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006692775525152683
+      ],
+      "shape": [
+        1,
+        16,
+        32,
+        8
+      ],
+      "zero_points": [
+        9
+      ]
+    },
+    "69": {
+      "actual_id": 69,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;25",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006692775525152683
+      ],
+      "shape": [
+        1,
+        32,
+        16,
+        8
+      ],
+      "zero_points": [
+        9
+      ]
+    },
+    "7": {
+      "actual_id": 7,
+      "dtype": "float32",
+      "name": "arith.constant3",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        128
+      ],
+      "zero_points": []
+    },
+    "70": {
+      "actual_id": 70,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention;26",
+      "quantized_dimension": 0,
+      "scales": [
+        0.006692775525152683
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        9
+      ]
+    },
+    "71": {
+      "actual_id": 71,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoAttention_attn/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoSelfAttention_attention/torch.nn.modules.linear.Linear_out_proj;1",
+      "quantized_dimension": 0,
+      "scales": [
+        0.003416289109736681
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        -13
+      ]
+    },
+    "72": {
+      "actual_id": 72,
+      "dtype": "float32",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;7",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "73": {
+      "actual_id": 73,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block;",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "74": {
+      "actual_id": 74,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "75": {
+      "actual_id": 75,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;1",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        1
+      ],
+      "zero_points": []
+    },
+    "76": {
+      "actual_id": 76,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;2",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "77": {
+      "actual_id": 77,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;3",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "78": {
+      "actual_id": 78,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;4",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "79": {
+      "actual_id": 79,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;5",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "8": {
+      "actual_id": 8,
+      "dtype": "float32",
+      "name": "arith.constant4",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        128
+      ],
+      "zero_points": []
+    },
+    "80": {
+      "actual_id": 80,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;6",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "81": {
+      "actual_id": 81,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;7",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        32
+      ],
+      "zero_points": []
+    },
+    "82": {
+      "actual_id": 82,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;8",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        1
+      ],
+      "zero_points": []
+    },
+    "83": {
+      "actual_id": 83,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;9",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "84": {
+      "actual_id": 84,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;10",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        1
+      ],
+      "zero_points": []
+    },
+    "85": {
+      "actual_id": 85,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;11",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "86": {
+      "actual_id": 86,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;12",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "87": {
+      "actual_id": 87,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/torch.nn.modules.normalization.LayerNorm_ln_2;13",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": []
+    },
+    "88": {
+      "actual_id": 88,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;8",
+      "quantized_dimension": 0,
+      "scales": [
+        0.03247051313519478
+      ],
+      "shape": [
+        1,
+        32,
+        128
+      ],
+      "zero_points": [
+        2
+      ]
+    },
+    "89": {
+      "actual_id": 89,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/torch.nn.modules.linear.Linear_c_fc;1",
+      "quantized_dimension": 0,
+      "scales": [
+        0.011252585798501968
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        37
+      ]
+    },
+    "9": {
+      "actual_id": 9,
+      "dtype": "float32",
+      "name": "arith.constant5",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        128
+      ],
+      "zero_points": []
+    },
+    "90": {
+      "actual_id": 90,
+      "dtype": "float32",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;9",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": []
+    },
+    "91": {
+      "actual_id": 91,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;10",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0019607844296842813
+      ],
+      "shape": [],
+      "zero_points": [
+        -128
+      ]
+    },
+    "92": {
+      "actual_id": 92,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;2",
+      "quantized_dimension": 0,
+      "scales": [
+        0.005626292899250984
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        37
+      ]
+    },
+    "93": {
+      "actual_id": 93,
+      "dtype": "float32",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;3",
+      "quantized_dimension": 0,
+      "scales": [],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": []
+    },
+    "94": {
+      "actual_id": 94,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;11",
+      "quantized_dimension": 0,
+      "scales": [
+        0.030001305043697357
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        85
+      ]
+    },
+    "95": {
+      "actual_id": 95,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;12",
+      "quantized_dimension": 0,
+      "scales": [
+        0.000244140625
+      ],
+      "shape": [],
+      "zero_points": [
+        -128
+      ]
+    },
+    "96": {
+      "actual_id": 96,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;4",
+      "quantized_dimension": 0,
+      "scales": [
+        0.0013415083521977067
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        85
+      ]
+    },
+    "97": {
+      "actual_id": 97,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;5",
+      "quantized_dimension": 0,
+      "scales": [
+        0.012609509751200676
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        37
+      ]
+    },
+    "98": {
+      "actual_id": 98,
+      "dtype": "int8",
+      "name": "torch.export._trace._non_strict_export.<locals>._tuplify_outputs.<locals>._aot_export_non_strict.<locals>.Wrapper;13",
+      "quantized_dimension": 0,
+      "scales": [
+        0.003128959098830819
+      ],
+      "shape": [],
+      "zero_points": [
+        -128
+      ]
+    },
+    "99": {
+      "actual_id": 99,
+      "dtype": "int8",
+      "name": "__main__.BlockExportWrapper/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoBlock_block/transformers.models.gpt_neo.modeling_gpt_neo.GPTNeoMLP_mlp/transformers.activations.NewGELUActivation_act;6",
+      "quantized_dimension": 0,
+      "scales": [
+        0.010060933418571949
+      ],
+      "shape": [
+        1,
+        32,
+        512
+      ],
+      "zero_points": [
+        37
+      ]
+    }
+  }
+}

@@ -1,0 +1,553 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block0_params.h"
+ 
+ void block0_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK0_ATTN_CONTEXT_SHIFT,
+                          BLOCK0_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block0_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK0_TOKEN_COUNT * BLOCK0_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block0_out_weights,
++                             block0_out_bias, accumulator_workspace,
++                             BLOCK0_TOKEN_COUNT, BLOCK0_HIDDEN_SIZE, BLOCK0_HIDDEN_SIZE,
++                             BLOCK0_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK0_OUT_PROJ_MULTIPLIER, BLOCK0_OUT_PROJ_SHIFT,
++                         BLOCK0_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK0_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK0_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK0_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK0_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK0_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -46,4 +46,18 @@
+ void block0_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block0_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block1_params.h"
+ 
+ void block1_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK1_ATTN_CONTEXT_SHIFT,
+                          BLOCK1_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block1_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK1_TOKEN_COUNT * BLOCK1_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block1_out_weights,
++                             block1_out_bias, accumulator_workspace,
++                             BLOCK1_TOKEN_COUNT, BLOCK1_HIDDEN_SIZE, BLOCK1_HIDDEN_SIZE,
++                             BLOCK1_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK1_OUT_PROJ_MULTIPLIER, BLOCK1_OUT_PROJ_SHIFT,
++                         BLOCK1_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK1_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK1_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK1_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK1_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK1_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -46,4 +46,18 @@
+ void block1_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block1_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block2_params.h"
+ 
+ void block2_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK2_ATTN_CONTEXT_SHIFT,
+                          BLOCK2_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block2_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK2_TOKEN_COUNT * BLOCK2_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block2_out_weights,
++                             block2_out_bias, accumulator_workspace,
++                             BLOCK2_TOKEN_COUNT, BLOCK2_HIDDEN_SIZE, BLOCK2_HIDDEN_SIZE,
++                             BLOCK2_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK2_OUT_PROJ_MULTIPLIER, BLOCK2_OUT_PROJ_SHIFT,
++                         BLOCK2_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK2_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK2_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK2_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK2_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK2_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -46,4 +46,18 @@
+ void block2_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block2_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block3_params.h"
+ 
+ void block3_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK3_ATTN_CONTEXT_SHIFT,
+                          BLOCK3_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block3_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK3_TOKEN_COUNT * BLOCK3_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block3_out_weights,
++                             block3_out_bias, accumulator_workspace,
++                             BLOCK3_TOKEN_COUNT, BLOCK3_HIDDEN_SIZE, BLOCK3_HIDDEN_SIZE,
++                             BLOCK3_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK3_OUT_PROJ_MULTIPLIER, BLOCK3_OUT_PROJ_SHIFT,
++                         BLOCK3_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK3_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK3_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK3_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK3_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK3_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -46,4 +46,18 @@
+ void block3_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block3_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block4_params.h"
+ 
+ void block4_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK4_ATTN_CONTEXT_SHIFT,
+                          BLOCK4_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block4_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK4_TOKEN_COUNT * BLOCK4_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block4_out_weights,
++                             block4_out_bias, accumulator_workspace,
++                             BLOCK4_TOKEN_COUNT, BLOCK4_HIDDEN_SIZE, BLOCK4_HIDDEN_SIZE,
++                             BLOCK4_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK4_OUT_PROJ_MULTIPLIER, BLOCK4_OUT_PROJ_SHIFT,
++                         BLOCK4_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK4_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK4_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK4_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK4_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK4_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -46,4 +46,18 @@
+ void block4_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block4_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block5_params.h"
+ 
+ void block5_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK5_ATTN_CONTEXT_SHIFT,
+                          BLOCK5_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block5_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK5_TOKEN_COUNT * BLOCK5_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block5_out_weights,
++                             block5_out_bias, accumulator_workspace,
++                             BLOCK5_TOKEN_COUNT, BLOCK5_HIDDEN_SIZE, BLOCK5_HIDDEN_SIZE,
++                             BLOCK5_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK5_OUT_PROJ_MULTIPLIER, BLOCK5_OUT_PROJ_SHIFT,
++                         BLOCK5_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK5_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK5_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK5_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK5_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK5_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -46,4 +46,18 @@
+ void block5_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block5_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block6_params.h"
+ 
+ void block6_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK6_ATTN_CONTEXT_SHIFT,
+                          BLOCK6_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block6_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK6_TOKEN_COUNT * BLOCK6_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block6_out_weights,
++                             block6_out_bias, accumulator_workspace,
++                             BLOCK6_TOKEN_COUNT, BLOCK6_HIDDEN_SIZE, BLOCK6_HIDDEN_SIZE,
++                             BLOCK6_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK6_OUT_PROJ_MULTIPLIER, BLOCK6_OUT_PROJ_SHIFT,
++                         BLOCK6_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK6_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK6_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK6_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK6_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK6_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -46,4 +46,18 @@
+ void block6_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block6_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -2,6 +2,7 @@
+ #include "../requantization.h"
+ #include "../projection.h"
+ #include "../attention.h"
++#include "../residual.h"
+ #include "block7_params.h"
+ 
+ void block7_ln1_forward(const int8_t *input, int8_t *output,
+@@ -112,3 +113,33 @@
+                          BLOCK7_ATTN_CONTEXT_SHIFT,
+                          BLOCK7_ATTN_CONTEXT_OUTPUT_ZERO_POINT);
+ }
++
++void block7_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace)
++{
++    const size_t count = BLOCK7_TOKEN_COUNT * BLOCK7_HIDDEN_SIZE;
++
++    /* XTILE computes the dot product; the shared kernel adds bias once. */
++    projection_accumulate_i8(attention_output, block7_out_weights,
++                             block7_out_bias, accumulator_workspace,
++                             BLOCK7_TOKEN_COUNT, BLOCK7_HIDDEN_SIZE, BLOCK7_HIDDEN_SIZE,
++                             BLOCK7_OUT_PROJ_INPUT_ZERO_POINT);
++
++    /* Retain the saved INT8 projection boundary (XREQUANT mode 2). */
++    requantize_i32_to_i8(accumulator_workspace, projection_workspace, count,
++                         BLOCK7_OUT_PROJ_MULTIPLIER, BLOCK7_OUT_PROJ_SHIFT,
++                         BLOCK7_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Convert that INT8 branch to INT32 at 2^-16 (XREQUANT mode 3). */
++    requantize_i8_to_i32(projection_workspace, output, count,
++                         BLOCK7_RESIDUAL1_BRANCH_MULTIPLIER,
++                         BLOCK7_RESIDUAL1_BRANCH_SHIFT,
++                         BLOCK7_OUT_PROJ_OUTPUT_ZERO_POINT);
++
++    /* Align the original block input exactly, then add without saturation. */
++    residual_add_i8_i32(residual_input, output, output, count,
++                         BLOCK7_RESIDUAL1_INPUT_ALIGNMENT,
++                         BLOCK7_RESIDUAL1_INPUT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -46,4 +46,18 @@
+ void block7_attention_forward(const int8_t *query, const int8_t *key,
+                                const int8_t *value, int8_t *output,
+                                int32_t *score_workspace, int32_t *context_workspace);
++
++/* Part 4: output projection and the first residual addition.
++ * attention_output: INT8 [32,128], saved Part-3 output quantization.
++ * residual_input: original block INT8 input, zero point 0.
++ * output: INT32 [32,128], scale 2^-16, zero point 0.
++ * projection_workspace: 4096 INT8 values, saved projection output.
++ * accumulator_workspace: 4096 INT32 values.
++ * output may equal accumulator_workspace. All other buffers must be disjoint.
++ * Caller provides valid buffers; no allocation is performed.
++ */
++void block7_out_residual_forward(const int8_t *attention_output,
++                                  const int8_t *residual_input, int32_t *output,
++                                  int8_t *projection_workspace,
++                                  int32_t *accumulator_workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/tests/ln1/Makefile
++++ b/experiments/integer_inference_allblocks/tests/ln1/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c tests/ln1/test_allblocks_ln1.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/ln1/test_allblocks_ln1.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/qkv/Makefile
++++ b/experiments/integer_inference_allblocks/tests/qkv/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c tests/qkv/test_allblocks_qkv.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/qkv/test_allblocks_qkv.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/attention/Makefile
++++ b/experiments/integer_inference_allblocks/tests/attention/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c tests/attention/test_allblocks_attention.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/attention/test_allblocks_attention.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)

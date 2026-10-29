@@ -1,0 +1,744 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -351,3 +351,64 @@
+     block0_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block0_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block0_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK0_TOKEN_COUNT * BLOCK0_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block0_mlp_out_weights,
++        block0_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK0_TOKEN_COUNT,
++        BLOCK0_MLP_OUT_INPUT_FEATURES,
++        BLOCK0_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK0_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK0_MLP_OUT_MULTIPLIER,
++        BLOCK0_MLP_OUT_SHIFT,
++        BLOCK0_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK0_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK0_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK0_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block0_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK0_TOKEN_COUNT * BLOCK0_HIDDEN_SIZE,
++                         BLOCK0_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK0_OUTPUT_REQUANT_SHIFT,
++                         BLOCK0_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -90,4 +90,23 @@
+  */
+ void block0_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block0_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block0_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -351,3 +351,64 @@
+     block1_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block1_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block1_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK1_TOKEN_COUNT * BLOCK1_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block1_mlp_out_weights,
++        block1_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK1_TOKEN_COUNT,
++        BLOCK1_MLP_OUT_INPUT_FEATURES,
++        BLOCK1_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK1_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK1_MLP_OUT_MULTIPLIER,
++        BLOCK1_MLP_OUT_SHIFT,
++        BLOCK1_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK1_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK1_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK1_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block1_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK1_TOKEN_COUNT * BLOCK1_HIDDEN_SIZE,
++                         BLOCK1_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK1_OUTPUT_REQUANT_SHIFT,
++                         BLOCK1_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -90,4 +90,23 @@
+  */
+ void block1_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block1_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block1_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -351,3 +351,64 @@
+     block2_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block2_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block2_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK2_TOKEN_COUNT * BLOCK2_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block2_mlp_out_weights,
++        block2_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK2_TOKEN_COUNT,
++        BLOCK2_MLP_OUT_INPUT_FEATURES,
++        BLOCK2_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK2_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK2_MLP_OUT_MULTIPLIER,
++        BLOCK2_MLP_OUT_SHIFT,
++        BLOCK2_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK2_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK2_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK2_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block2_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK2_TOKEN_COUNT * BLOCK2_HIDDEN_SIZE,
++                         BLOCK2_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK2_OUTPUT_REQUANT_SHIFT,
++                         BLOCK2_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -90,4 +90,23 @@
+  */
+ void block2_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block2_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block2_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -351,3 +351,64 @@
+     block3_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block3_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block3_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK3_TOKEN_COUNT * BLOCK3_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block3_mlp_out_weights,
++        block3_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK3_TOKEN_COUNT,
++        BLOCK3_MLP_OUT_INPUT_FEATURES,
++        BLOCK3_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK3_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK3_MLP_OUT_MULTIPLIER,
++        BLOCK3_MLP_OUT_SHIFT,
++        BLOCK3_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK3_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK3_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK3_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block3_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK3_TOKEN_COUNT * BLOCK3_HIDDEN_SIZE,
++                         BLOCK3_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK3_OUTPUT_REQUANT_SHIFT,
++                         BLOCK3_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -90,4 +90,23 @@
+  */
+ void block3_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block3_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block3_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -351,3 +351,64 @@
+     block4_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block4_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block4_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK4_TOKEN_COUNT * BLOCK4_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block4_mlp_out_weights,
++        block4_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK4_TOKEN_COUNT,
++        BLOCK4_MLP_OUT_INPUT_FEATURES,
++        BLOCK4_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK4_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK4_MLP_OUT_MULTIPLIER,
++        BLOCK4_MLP_OUT_SHIFT,
++        BLOCK4_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK4_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK4_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK4_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block4_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK4_TOKEN_COUNT * BLOCK4_HIDDEN_SIZE,
++                         BLOCK4_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK4_OUTPUT_REQUANT_SHIFT,
++                         BLOCK4_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -90,4 +90,23 @@
+  */
+ void block4_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block4_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block4_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -351,3 +351,64 @@
+     block5_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block5_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block5_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK5_TOKEN_COUNT * BLOCK5_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block5_mlp_out_weights,
++        block5_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK5_TOKEN_COUNT,
++        BLOCK5_MLP_OUT_INPUT_FEATURES,
++        BLOCK5_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK5_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK5_MLP_OUT_MULTIPLIER,
++        BLOCK5_MLP_OUT_SHIFT,
++        BLOCK5_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK5_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK5_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK5_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block5_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK5_TOKEN_COUNT * BLOCK5_HIDDEN_SIZE,
++                         BLOCK5_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK5_OUTPUT_REQUANT_SHIFT,
++                         BLOCK5_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -90,4 +90,23 @@
+  */
+ void block5_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block5_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block5_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -351,3 +351,64 @@
+     block6_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block6_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block6_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK6_TOKEN_COUNT * BLOCK6_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block6_mlp_out_weights,
++        block6_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK6_TOKEN_COUNT,
++        BLOCK6_MLP_OUT_INPUT_FEATURES,
++        BLOCK6_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK6_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK6_MLP_OUT_MULTIPLIER,
++        BLOCK6_MLP_OUT_SHIFT,
++        BLOCK6_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK6_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK6_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK6_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block6_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK6_TOKEN_COUNT * BLOCK6_HIDDEN_SIZE,
++                         BLOCK6_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK6_OUTPUT_REQUANT_SHIFT,
++                         BLOCK6_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -90,4 +90,23 @@
+  */
+ void block6_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block6_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block6_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -351,3 +351,64 @@
+     block7_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
+     block7_gelu_forward(workspace->t89, output, workspace);
+ }
++
++void block7_mlp_out_residual_forward(
++    const int8_t *input,
++    const int32_t *residual_input,
++    int32_t *output,
++    int8_t *projection_workspace,
++    int32_t *accumulator_workspace
++)
++{
++    const size_t count =
++        BLOCK7_TOKEN_COUNT * BLOCK7_MLP_OUT_OUTPUT_FEATURES;
++
++    /* Op 71: 512 -> 128 projection, including bias. */
++    projection_accumulate_i8(
++        input,
++        block7_mlp_out_weights,
++        block7_mlp_out_bias,
++        accumulator_workspace,
++        BLOCK7_TOKEN_COUNT,
++        BLOCK7_MLP_OUT_INPUT_FEATURES,
++        BLOCK7_MLP_OUT_OUTPUT_FEATURES,
++        BLOCK7_MLP_OUT_INPUT_ZERO_POINT
++    );
++
++    /* Preserve the INT8 T105 boundary. */
++    requantize_i32_to_i8(
++        accumulator_workspace,
++        projection_workspace,
++        count,
++        BLOCK7_MLP_OUT_MULTIPLIER,
++        BLOCK7_MLP_OUT_SHIFT,
++        BLOCK7_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 72 counterpart: T105 -> INT32 T106, scale 2^-16. */
++    requantize_i8_to_i32(
++        projection_workspace,
++        accumulator_workspace,
++        count,
++        BLOCK7_RESIDUAL2_BRANCH_MULTIPLIER,
++        BLOCK7_RESIDUAL2_BRANCH_SHIFT,
++        BLOCK7_MLP_OUT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 73: T106 + retained T73 -> T107. */
++    residual_add_i32(
++        accumulator_workspace,
++        residual_input,
++        output,
++        count
++    );
++}
++
++void block7_output_boundary_forward(const int32_t *input, int8_t *output)
++{
++    requantize_i32_to_i8(input, output,
++                         BLOCK7_TOKEN_COUNT * BLOCK7_HIDDEN_SIZE,
++                         BLOCK7_OUTPUT_REQUANT_MULTIPLIER,
++                         BLOCK7_OUTPUT_REQUANT_SHIFT,
++                         BLOCK7_OUTPUT_REQUANT_ZERO_POINT);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -90,4 +90,23 @@
+  */
+ void block7_gelu_forward(const int8_t *input, int8_t *output,
+                           MlpGeluWorkspace *workspace);
++
++/* Part 7: 512-to-128 projection and addition of the retained Part-4 residual.
++ * input: 16384 INT8 GELU values. residual_input: 4096 INT32 values at 2^-16.
++ * output: 4096 INT32 values at 2^-16. projection_workspace: 4096 INT8 values.
++ * accumulator_workspace: 4096 INT32 values.
++ * Input, residual_input and both workspaces must be valid and mutually disjoint.
++ * Output may equal residual_input or accumulator_workspace; otherwise keep it
++ * separate from every supplied buffer. No allocation is performed.
++ */
++void block7_mlp_out_residual_forward(const int8_t *input,
++                                      const int32_t *residual_input, int32_t *output,
++                                      int8_t *projection_workspace,
++                                      int32_t *accumulator_workspace);
++
++/* Final block boundary: 4096 INT32 values at 2^-16 -> INT8 at the saved
++ * output scale, zero point 0. XREQUANT mode 2 retains the profile's rounding
++ * and saturation. Input/output buffers must be valid and disjoint.
++ */
++void block7_output_boundary_forward(const int32_t *input, int8_t *output);
+ #endif

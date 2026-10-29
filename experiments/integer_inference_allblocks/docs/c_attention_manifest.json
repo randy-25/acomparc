@@ -1,0 +1,31 @@
+{
+  "copied_unchanged": {
+    "src/attention.c": "69ed8506c04a5f89d2898ab4a2ab85bac78a12ff3d692de724672afbffe5024b",
+    "src/attention.h": "df924fe24a8525aa423b4e2a0b29689117e8e8a75922ce66c400164f8885e515"
+  },
+  "existing_files_extended": [
+    "src/blocks/block0.c",
+    "src/blocks/block0.h",
+    "src/blocks/block1.c",
+    "src/blocks/block1.h",
+    "src/blocks/block2.c",
+    "src/blocks/block2.h",
+    "src/blocks/block3.c",
+    "src/blocks/block3.h",
+    "src/blocks/block4.c",
+    "src/blocks/block4.h",
+    "src/blocks/block5.c",
+    "src/blocks/block5.h",
+    "src/blocks/block6.c",
+    "src/blocks/block6.h",
+    "src/blocks/block7.c",
+    "src/blocks/block7.h",
+    "tests/ln1/Makefile",
+    "tests/qkv/Makefile"
+  ],
+  "changes": [
+    "LN1 and QKV function bodies unchanged; add software attention entry points.",
+    "Older test Makefiles link attention.c because block source files now define attention.",
+    "No change to ISA encoding, weight layout, or numerical policy."
+  ]
+}

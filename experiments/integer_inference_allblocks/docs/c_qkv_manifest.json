@@ -1,0 +1,31 @@
+{
+  "copied_unchanged": {
+    "src/projection.c": "1b775eb8ed219c16937a929908263545a6267118f3d30e5a760b99cd416ad853",
+    "src/projection.h": "65d5194ccb749f283f800033f93e49559f638b81981ab9e6db1f1e8c29bf16e2",
+    "src/xtile.h": "be722913cfa93b9fd9246c36e034fc986e5f4f8534891d621bc53d79cd02215d"
+  },
+  "existing_files_extended": [
+    "src/blocks/block0.c",
+    "src/blocks/block0.h",
+    "src/blocks/block1.c",
+    "src/blocks/block1.h",
+    "src/blocks/block2.c",
+    "src/blocks/block2.h",
+    "src/blocks/block3.c",
+    "src/blocks/block3.h",
+    "src/blocks/block4.c",
+    "src/blocks/block4.h",
+    "src/blocks/block5.c",
+    "src/blocks/block5.h",
+    "src/blocks/block6.c",
+    "src/blocks/block6.h",
+    "src/blocks/block7.c",
+    "src/blocks/block7.h",
+    "tests/ln1/Makefile"
+  ],
+  "changes": [
+    "LN1 function bodies unchanged; add block-specific QKV entry points.",
+    "LN1 Makefile links projection.c because block source files now also define QKV.",
+    "No change to ISA encodings or numeric policy."
+  ]
+}

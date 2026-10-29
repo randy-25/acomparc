@@ -1,0 +1,1791 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block0_params.h"
+ 
+ void block0_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block0_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block0_mlp_expand_weights,
++        block0_mlp_expand_bias,
++        accumulator,
++        BLOCK0_TOKEN_COUNT,
++        BLOCK0_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK0_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK0_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK0_TOKEN_COUNT * BLOCK0_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK0_MLP_EXPAND_MULTIPLIER,
++        BLOCK0_MLP_EXPAND_SHIFT,
++        BLOCK0_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block0_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK0_TOKEN_COUNT * BLOCK0_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK0_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK0_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK0_GELU_HALF_MULTIPLIER,
++        BLOCK0_GELU_HALF_SHIFT,
++        BLOCK0_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK0_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK0_GELU_CUBE_MULTIPLIER,
++        BLOCK0_GELU_CUBE_SHIFT,
++        BLOCK0_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK0_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK0_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK0_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK0_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK0_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK0_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK0_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK0_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK0_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK0_GELU_ADD_SHIFT,
++            BLOCK0_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK0_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK0_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK0_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK0_GELU_ARGUMENT_SHIFT,
++        BLOCK0_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block0_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK0_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK0_GELU_FACTOR_MULTIPLIER,
++        BLOCK0_GELU_FACTOR_SHIFT,
++        BLOCK0_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK0_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK0_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK0_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK0_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK0_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block0_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block0_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block0_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK0_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK0_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK0_TOKEN_COUNT 32u
+ #define BLOCK0_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block0_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block0_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block0_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block0_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block1_params.h"
+ 
+ void block1_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block1_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block1_mlp_expand_weights,
++        block1_mlp_expand_bias,
++        accumulator,
++        BLOCK1_TOKEN_COUNT,
++        BLOCK1_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK1_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK1_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK1_TOKEN_COUNT * BLOCK1_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK1_MLP_EXPAND_MULTIPLIER,
++        BLOCK1_MLP_EXPAND_SHIFT,
++        BLOCK1_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block1_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK1_TOKEN_COUNT * BLOCK1_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK1_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK1_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK1_GELU_HALF_MULTIPLIER,
++        BLOCK1_GELU_HALF_SHIFT,
++        BLOCK1_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK1_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK1_GELU_CUBE_MULTIPLIER,
++        BLOCK1_GELU_CUBE_SHIFT,
++        BLOCK1_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK1_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK1_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK1_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK1_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK1_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK1_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK1_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK1_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK1_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK1_GELU_ADD_SHIFT,
++            BLOCK1_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK1_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK1_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK1_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK1_GELU_ARGUMENT_SHIFT,
++        BLOCK1_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block1_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK1_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK1_GELU_FACTOR_MULTIPLIER,
++        BLOCK1_GELU_FACTOR_SHIFT,
++        BLOCK1_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK1_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK1_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK1_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK1_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK1_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block1_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block1_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block1_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK1_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK1_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK1_TOKEN_COUNT 32u
+ #define BLOCK1_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block1_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block1_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block1_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block1_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block2_params.h"
+ 
+ void block2_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block2_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block2_mlp_expand_weights,
++        block2_mlp_expand_bias,
++        accumulator,
++        BLOCK2_TOKEN_COUNT,
++        BLOCK2_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK2_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK2_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK2_TOKEN_COUNT * BLOCK2_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK2_MLP_EXPAND_MULTIPLIER,
++        BLOCK2_MLP_EXPAND_SHIFT,
++        BLOCK2_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block2_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK2_TOKEN_COUNT * BLOCK2_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK2_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK2_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK2_GELU_HALF_MULTIPLIER,
++        BLOCK2_GELU_HALF_SHIFT,
++        BLOCK2_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK2_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK2_GELU_CUBE_MULTIPLIER,
++        BLOCK2_GELU_CUBE_SHIFT,
++        BLOCK2_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK2_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK2_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK2_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK2_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK2_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK2_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK2_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK2_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK2_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK2_GELU_ADD_SHIFT,
++            BLOCK2_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK2_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK2_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK2_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK2_GELU_ARGUMENT_SHIFT,
++        BLOCK2_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block2_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK2_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK2_GELU_FACTOR_MULTIPLIER,
++        BLOCK2_GELU_FACTOR_SHIFT,
++        BLOCK2_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK2_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK2_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK2_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK2_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK2_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block2_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block2_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block2_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK2_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK2_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK2_TOKEN_COUNT 32u
+ #define BLOCK2_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block2_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block2_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block2_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block2_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block3_params.h"
+ 
+ void block3_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block3_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block3_mlp_expand_weights,
++        block3_mlp_expand_bias,
++        accumulator,
++        BLOCK3_TOKEN_COUNT,
++        BLOCK3_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK3_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK3_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK3_TOKEN_COUNT * BLOCK3_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK3_MLP_EXPAND_MULTIPLIER,
++        BLOCK3_MLP_EXPAND_SHIFT,
++        BLOCK3_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block3_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK3_TOKEN_COUNT * BLOCK3_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK3_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK3_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK3_GELU_HALF_MULTIPLIER,
++        BLOCK3_GELU_HALF_SHIFT,
++        BLOCK3_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK3_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK3_GELU_CUBE_MULTIPLIER,
++        BLOCK3_GELU_CUBE_SHIFT,
++        BLOCK3_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK3_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK3_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK3_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK3_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK3_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK3_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK3_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK3_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK3_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK3_GELU_ADD_SHIFT,
++            BLOCK3_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK3_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK3_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK3_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK3_GELU_ARGUMENT_SHIFT,
++        BLOCK3_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block3_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK3_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK3_GELU_FACTOR_MULTIPLIER,
++        BLOCK3_GELU_FACTOR_SHIFT,
++        BLOCK3_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK3_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK3_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK3_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK3_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK3_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block3_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block3_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block3_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK3_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK3_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK3_TOKEN_COUNT 32u
+ #define BLOCK3_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block3_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block3_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block3_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block3_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block4_params.h"
+ 
+ void block4_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block4_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block4_mlp_expand_weights,
++        block4_mlp_expand_bias,
++        accumulator,
++        BLOCK4_TOKEN_COUNT,
++        BLOCK4_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK4_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK4_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK4_TOKEN_COUNT * BLOCK4_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK4_MLP_EXPAND_MULTIPLIER,
++        BLOCK4_MLP_EXPAND_SHIFT,
++        BLOCK4_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block4_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK4_TOKEN_COUNT * BLOCK4_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK4_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK4_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK4_GELU_HALF_MULTIPLIER,
++        BLOCK4_GELU_HALF_SHIFT,
++        BLOCK4_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK4_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK4_GELU_CUBE_MULTIPLIER,
++        BLOCK4_GELU_CUBE_SHIFT,
++        BLOCK4_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK4_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK4_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK4_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK4_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK4_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK4_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK4_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK4_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK4_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK4_GELU_ADD_SHIFT,
++            BLOCK4_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK4_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK4_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK4_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK4_GELU_ARGUMENT_SHIFT,
++        BLOCK4_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block4_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK4_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK4_GELU_FACTOR_MULTIPLIER,
++        BLOCK4_GELU_FACTOR_SHIFT,
++        BLOCK4_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK4_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK4_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK4_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK4_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK4_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block4_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block4_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block4_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK4_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK4_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK4_TOKEN_COUNT 32u
+ #define BLOCK4_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block4_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block4_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block4_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block4_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block5_params.h"
+ 
+ void block5_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block5_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block5_mlp_expand_weights,
++        block5_mlp_expand_bias,
++        accumulator,
++        BLOCK5_TOKEN_COUNT,
++        BLOCK5_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK5_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK5_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK5_TOKEN_COUNT * BLOCK5_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK5_MLP_EXPAND_MULTIPLIER,
++        BLOCK5_MLP_EXPAND_SHIFT,
++        BLOCK5_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block5_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK5_TOKEN_COUNT * BLOCK5_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK5_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK5_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK5_GELU_HALF_MULTIPLIER,
++        BLOCK5_GELU_HALF_SHIFT,
++        BLOCK5_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK5_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK5_GELU_CUBE_MULTIPLIER,
++        BLOCK5_GELU_CUBE_SHIFT,
++        BLOCK5_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK5_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK5_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK5_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK5_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK5_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK5_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK5_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK5_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK5_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK5_GELU_ADD_SHIFT,
++            BLOCK5_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK5_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK5_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK5_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK5_GELU_ARGUMENT_SHIFT,
++        BLOCK5_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block5_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK5_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK5_GELU_FACTOR_MULTIPLIER,
++        BLOCK5_GELU_FACTOR_SHIFT,
++        BLOCK5_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK5_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK5_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK5_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK5_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK5_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block5_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block5_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block5_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK5_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK5_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK5_TOKEN_COUNT 32u
+ #define BLOCK5_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block5_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block5_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block5_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block5_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block6_params.h"
+ 
+ void block6_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block6_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block6_mlp_expand_weights,
++        block6_mlp_expand_bias,
++        accumulator,
++        BLOCK6_TOKEN_COUNT,
++        BLOCK6_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK6_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK6_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK6_TOKEN_COUNT * BLOCK6_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK6_MLP_EXPAND_MULTIPLIER,
++        BLOCK6_MLP_EXPAND_SHIFT,
++        BLOCK6_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block6_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK6_TOKEN_COUNT * BLOCK6_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK6_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK6_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK6_GELU_HALF_MULTIPLIER,
++        BLOCK6_GELU_HALF_SHIFT,
++        BLOCK6_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK6_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK6_GELU_CUBE_MULTIPLIER,
++        BLOCK6_GELU_CUBE_SHIFT,
++        BLOCK6_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK6_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK6_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK6_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK6_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK6_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK6_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK6_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK6_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK6_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK6_GELU_ADD_SHIFT,
++            BLOCK6_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK6_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK6_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK6_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK6_GELU_ARGUMENT_SHIFT,
++        BLOCK6_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block6_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK6_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK6_GELU_FACTOR_MULTIPLIER,
++        BLOCK6_GELU_FACTOR_SHIFT,
++        BLOCK6_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK6_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK6_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK6_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK6_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK6_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block6_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block6_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block6_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK6_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK6_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK6_TOKEN_COUNT 32u
+ #define BLOCK6_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block6_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block6_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block6_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block6_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -3,6 +3,7 @@
+ #include "../projection.h"
+ #include "../attention.h"
+ #include "../residual.h"
++#include "../gelu.h"
+ #include "block7_params.h"
+ 
+ void block7_ln1_forward(const int8_t *input, int8_t *output,
+@@ -181,3 +182,172 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block7_mlp_expand_forward(
++    const int8_t *input,
++    int8_t *output,
++    int32_t *accumulator
++)
++{
++    projection_accumulate_i8(
++        input,
++        block7_mlp_expand_weights,
++        block7_mlp_expand_bias,
++        accumulator,
++        BLOCK7_TOKEN_COUNT,
++        BLOCK7_MLP_EXPAND_INPUT_FEATURES,
++        BLOCK7_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK7_MLP_EXPAND_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        accumulator,
++        output,
++        BLOCK7_TOKEN_COUNT * BLOCK7_MLP_EXPAND_OUTPUT_FEATURES,
++        BLOCK7_MLP_EXPAND_MULTIPLIER,
++        BLOCK7_MLP_EXPAND_SHIFT,
++        BLOCK7_MLP_EXPAND_OUTPUT_ZERO_POINT
++    );
++}
++
++void block7_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace)
++{
++    const size_t count = BLOCK7_TOKEN_COUNT * BLOCK7_MLP_EXPAND_OUTPUT_FEATURES;
++
++    /* Op 59-60: half-input branch -> T92. */
++    gelu_multiply_scalar_i8(
++        input, workspace->product_i32, count,
++        BLOCK7_GELU_HALF_INPUT_ZERO_POINT,
++        BLOCK7_GELU_HALF_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->half, count,
++        BLOCK7_GELU_HALF_MULTIPLIER,
++        BLOCK7_GELU_HALF_SHIFT,
++        BLOCK7_GELU_HALF_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 61-62: signed cube -> T94. */
++    gelu_cube_i8(
++        input, workspace->product_i32, count,
++        BLOCK7_GELU_CUBE_INPUT_ZERO_POINT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK7_GELU_CUBE_MULTIPLIER,
++        BLOCK7_GELU_CUBE_SHIFT,
++        BLOCK7_GELU_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 63: weighted cubic term -> T96. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK7_GELU_WEIGHTED_CUBE_INPUT_ZERO_POINT,
++        BLOCK7_GELU_WEIGHTED_CUBE_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK7_GELU_WEIGHTED_CUBE_MULTIPLIER,
++        BLOCK7_GELU_WEIGHTED_CUBE_SHIFT,
++        BLOCK7_GELU_WEIGHTED_CUBE_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 64: combine branches, rounding once, in chunks -> T97. */
++    for (size_t offset = 0; offset < count;
++         offset += MLP_GELU_ADD_CHUNK_ELEMENTS) {
++        size_t chunk = count - offset;
++
++        if (chunk > MLP_GELU_ADD_CHUNK_ELEMENTS) {
++            chunk = MLP_GELU_ADD_CHUNK_ELEMENTS;
++        }
++
++        gelu_add_scaled_i8(
++            input + offset,
++            workspace->branch + offset,
++            workspace->wide_i64,
++            chunk,
++            BLOCK7_GELU_ADD_LINEAR_ZERO_POINT,
++            BLOCK7_GELU_ADD_CUBIC_ZERO_POINT,
++            BLOCK7_GELU_ADD_LINEAR_MULTIPLIER,
++            BLOCK7_GELU_ADD_CUBIC_MULTIPLIER
++        );
++
++        requantize_i64_to_i8(
++            workspace->wide_i64,
++            workspace->branch + offset,
++            chunk,
++            INT64_C(1),
++            BLOCK7_GELU_ADD_SHIFT,
++            BLOCK7_GELU_ADD_OUTPUT_ZERO_POINT
++        );
++    }
++
++    /* Op 65: quantized tanh argument -> T99. */
++    gelu_multiply_scalar_i8(
++        workspace->branch, workspace->product_i32, count,
++        BLOCK7_GELU_ARGUMENT_INPUT_ZERO_POINT,
++        BLOCK7_GELU_ARGUMENT_CENTERED_CONSTANT
++    );
++
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK7_GELU_ARGUMENT_MULTIPLIER,
++        BLOCK7_GELU_ARGUMENT_SHIFT,
++        BLOCK7_GELU_ARGUMENT_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 66-67: tanh lookup -> T101. */
++    gelu_tanh_lut_i8(
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        block7_gelu_tanh_lut
++    );
++
++    /* Op 68: add integer one -> T102. */
++    gelu_add_scalar_i32(
++        workspace->product_i32,
++        workspace->product_i32,
++        count,
++        BLOCK7_GELU_TANH_ONE
++    );
++
++    /* Op 69: quantized one-plus-tanh factor -> T103. */
++    requantize_i32_to_i8(
++        workspace->product_i32, workspace->branch, count,
++        BLOCK7_GELU_FACTOR_MULTIPLIER,
++        BLOCK7_GELU_FACTOR_SHIFT,
++        BLOCK7_GELU_FACTOR_OUTPUT_ZERO_POINT
++    );
++
++    /* Op 70: centered T92 * centered T103. */
++    gelu_multiply_i8(
++        workspace->half,
++        workspace->branch,
++        workspace->product_i32,
++        count,
++        BLOCK7_GELU_OUTPUT_HALF_ZERO_POINT,
++        BLOCK7_GELU_OUTPUT_FACTOR_ZERO_POINT
++    );
++
++    /* Selected two-stage rounding -> T104. */
++    requantize_two_round_i32_to_i8(
++        workspace->product_i32,
++        output,
++        count,
++        BLOCK7_GELU_OUTPUT_Q31_MULTIPLIER,
++        BLOCK7_GELU_OUTPUT_SECOND_SHIFT,
++        BLOCK7_GELU_OUTPUT_ZERO_POINT
++    );
++}
++
++void block7_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace)
++{
++    block7_mlp_expand_forward(input, workspace->t89, workspace->product_i32);
++    block7_gelu_forward(workspace->t89, output, workspace);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -1,6 +1,7 @@
+ #ifndef TINYSTORIES_ALLBLOCKS_BLOCK7_H
+ #define TINYSTORIES_ALLBLOCKS_BLOCK7_H
+ #include "../layernorm.h"
++#include "../mlp_gelu.h"
+ 
+ #define BLOCK7_TOKEN_COUNT 32u
+ #define BLOCK7_HIDDEN_SIZE 128u
+@@ -70,4 +71,23 @@
+  */
+ void block7_ln2_forward(const int32_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 6: 128-to-512 INT8 expansion, including bias, then staged integer GELU.
++ * input: 4096 INT8 LN2 output values; output: 16384 INT8 GELU values.
++ * All input, output and workspace buffers must be valid and disjoint.
++ * No allocation is performed. The expansion INT8 boundary is preserved.
++ */
++void block7_mlp_gelu_forward(const int8_t *input, int8_t *output,
++                              MlpGeluWorkspace *workspace);
++
++/* Expansion alone. Accumulator/output capacities: 16384 values each. */
++void block7_mlp_expand_forward(const int8_t *input, int8_t *output,
++                                int32_t *accumulator);
++
++/* GELU alone, 16384 INT8 inputs/outputs. Input may equal workspace->t89;
++ * otherwise it must be disjoint from every workspace buffer and the output.
++ * Workspace buffers and output must be mutually disjoint.
++ */
++void block7_gelu_forward(const int8_t *input, int8_t *output,
++                          MlpGeluWorkspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/tests/ln1/Makefile
++++ b/experiments/integer_inference_allblocks/tests/ln1/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/ln1/test_allblocks_ln1.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c src/gelu.c tests/ln1/test_allblocks_ln1.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/qkv/Makefile
++++ b/experiments/integer_inference_allblocks/tests/qkv/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/qkv/test_allblocks_qkv.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c src/gelu.c tests/qkv/test_allblocks_qkv.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/attention/Makefile
++++ b/experiments/integer_inference_allblocks/tests/attention/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/attention/test_allblocks_attention.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c src/gelu.c tests/attention/test_allblocks_attention.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/out_residual/Makefile
++++ b/experiments/integer_inference_allblocks/tests/out_residual/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/out_residual/test_allblocks_out_residual.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c src/gelu.c tests/out_residual/test_allblocks_out_residual.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)
+--- a/experiments/integer_inference_allblocks/tests/ln2/Makefile
++++ b/experiments/integer_inference_allblocks/tests/ln2/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c tests/ln2/test_allblocks_ln2.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c src/attention.c src/residual.c src/gelu.c tests/ln2/test_allblocks_ln2.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)

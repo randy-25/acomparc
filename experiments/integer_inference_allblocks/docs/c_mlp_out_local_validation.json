@@ -1,0 +1,54 @@
+{
+  "part7_cases_per_path_passed": 104,
+  "final_int8_outputs_per_path": 425984,
+  "paths": [
+    "standalone",
+    "Parts1-6-chained"
+  ],
+  "boundary_probes_per_block": 32,
+  "boundary_probe_buffer_elements": 4096,
+  "saved_whole_block_vector_cases_verified": 64,
+  "checked": [
+    "biased INT32 accumulator",
+    "INT8 projection boundary",
+    "INT32 branch",
+    "INT32 residual sum",
+    "final INT8 boundary",
+    "distinct output",
+    "output aliases accumulator",
+    "output aliases retained residual",
+    "rounding ties and saturation thresholds",
+    "INT32 boundary-input endpoints",
+    "input preservation",
+    "buffer guards"
+  ],
+  "part1_to_6_bodies_unchanged_for_blocks": 8,
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "local_execution": "real software kernels; temporary external XTILE/XREQUANT emulators",
+  "make_dry_runs": {
+    "mlp_gelu": {
+      "object_commands": 34,
+      "link_commands": 1
+    },
+    "mlp_out_residual": {
+      "object_commands": 34,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "RV64 build",
+    "Part-7 test on combined custom Spike"
+  ],
+  "subsequent_work": [
+    "Complete block forward entry points",
+    "Actual eight-block C chain"
+  ]
+}

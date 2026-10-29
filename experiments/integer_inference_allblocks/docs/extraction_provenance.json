@@ -1,0 +1,94 @@
+{
+  "notebook_sha256": "6fd3fbc4d12dba08e0acbdd2dc3a524902d4ebc283534a8a4f75bffd3c21ea3e",
+  "kernel_functions": {
+    "checked_integer": {
+      "cell": 12,
+      "source_sha256": "0bba774a653dae9b387fd873c843c43f1723a6e139a70fc0a2123c4a72f30380"
+    },
+    "rq_checked": {
+      "cell": 12,
+      "source_sha256": "a9bf5712f25e3410eb60a26e0260e7978991fd054cb161d349b1ed917ce58148"
+    },
+    "integer_layernorm": {
+      "cell": 14,
+      "source_sha256": "931f8bee5e513eb45b520a64efba28048ca80f47f966a4b247efe3a41337d378"
+    },
+    "integer_ln1": {
+      "cell": 14,
+      "source_sha256": "ffe111112afaafbdc5e5625457c1df6ff7e33532f1b6b514b5f7bf49dc97e26f"
+    },
+    "integer_ln2": {
+      "cell": 14,
+      "source_sha256": "32562feb7940eeae1948f49a5c9bd3602898e52d99c2045890b39e3fcedad1a4"
+    },
+    "integer_projection": {
+      "cell": 35,
+      "source_sha256": "50370dcb85cbebe43ca5fd6a29e742586f0d77cb7e04418cc56e50ddf5e33db6"
+    },
+    "integer_attention_scores": {
+      "cell": 21,
+      "source_sha256": "73024607f063950a67433c99fa30c6e7f8491e3519d3e0129aac69e612329e0a"
+    },
+    "integer_causal_softmax": {
+      "cell": 26,
+      "source_sha256": "f08ab7f34adfd3067673097f1a378e5525dec5a12321fd394fa1199ba0c9b1e4"
+    },
+    "integer_attention_context": {
+      "cell": 30,
+      "source_sha256": "e48f56a761479b54f57ea6216ffa0283d3a24d004510c49b61d03ed04783e64c"
+    },
+    "integer_out_residual": {
+      "cell": 35,
+      "source_sha256": "8a511d3aca20567e0d0ec779bb903ae3f244d3cedde0c8f61ec878604e0eeb8f"
+    },
+    "requantize_to_i8": {
+      "cell": 49,
+      "source_sha256": "efc3017ef2f7301f2be3b5cd6fc7e7626158f100643eb23f7551043353e0a916"
+    },
+    "integer_scalar_mul_i8": {
+      "cell": 49,
+      "source_sha256": "df0a44364fcaecd408d8461673e18a4406c288b8a28bc45f910615ebe858f574"
+    },
+    "integer_gelu_front": {
+      "cell": 49,
+      "source_sha256": "5988c9e31394455baa549fda26b810e52be0724cb460b9f41ded23b78485db37"
+    },
+    "requantize_two_round_i8": {
+      "cell": 52,
+      "source_sha256": "74a918eb217e216116464086e4a22b5878112d87bbc7a54b1f13161ec2a3362b"
+    },
+    "integer_gelu_back": {
+      "cell": 52,
+      "source_sha256": "989d3768acbf80036606d2ac91c14215e990fedafdadbc14735c22fda3dd85cb"
+    },
+    "integer_gelu": {
+      "cell": 52,
+      "source_sha256": "96dcffad9b2affcf6fac3561fbde9750f49f9967cdeed546f86e6cc0ea95007b"
+    },
+    "integer_mlp_out_residual": {
+      "cell": 57,
+      "source_sha256": "4354956971a5987feb5f3473ad6cdf957b1c8b42e7e7453deb191052a611398c"
+    }
+  },
+  "forward_function_cell": 61,
+  "parameter_cells": [
+    13,
+    17,
+    21,
+    25,
+    29,
+    34,
+    39,
+    44,
+    48,
+    51,
+    56
+  ],
+  "changes": [
+    "Selected final definitions only; removed IPython presentation and notebook globals.",
+    "Forward function receives an explicit per-block parameter bundle.",
+    "Projection parameter reader receives its model explicitly.",
+    "Frozen boundary exponents replace calibration-time selection during export.",
+    "Moved repeated mean_axes constant read outside the shape-constant loop."
+  ]
+}

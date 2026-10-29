@@ -1,0 +1,33 @@
+{
+  "copied_unchanged": {
+    "src/residual.c": "1b3fec9cd7e9cefb4b38d8fd5d218f615562baf2f430d363a81e104fd3479aef",
+    "src/residual.h": "5082de95fe5f451acd81143a4659226def5a35176ce418141853ddfc3782f3f0"
+  },
+  "existing_files_extended": [
+    "src/blocks/block0.c",
+    "src/blocks/block0.h",
+    "src/blocks/block1.c",
+    "src/blocks/block1.h",
+    "src/blocks/block2.c",
+    "src/blocks/block2.h",
+    "src/blocks/block3.c",
+    "src/blocks/block3.h",
+    "src/blocks/block4.c",
+    "src/blocks/block4.h",
+    "src/blocks/block5.c",
+    "src/blocks/block5.h",
+    "src/blocks/block6.c",
+    "src/blocks/block6.h",
+    "src/blocks/block7.c",
+    "src/blocks/block7.h",
+    "tests/ln1/Makefile",
+    "tests/qkv/Makefile",
+    "tests/attention/Makefile"
+  ],
+  "changes": [
+    "Part 1-3 function bodies unchanged; add per-block Part 4 entry points.",
+    "Earlier test Makefiles link residual.c because block files now also define Part 4.",
+    "Preserve projection bias, both requantization boundaries and block-specific input alignment.",
+    "No ISA or model-parameter changes."
+  ]
+}

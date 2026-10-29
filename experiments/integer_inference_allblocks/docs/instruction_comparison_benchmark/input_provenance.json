@@ -1,0 +1,14 @@
+{
+  "measurement_scope": "One benchmark case, blocks 0 through 7; actual uploaded Spike logs and RV64 objdump output.",
+  "counter": "raw minstret; no overhead subtraction",
+  "inputs": {
+    "experiments/integer_inference_allblocks/build/tests/full/custom/profile1/profile.log": "004d572c2b5a4a94844325b07651ac98f775cd4ca4f3e3bf794d28297577103d",
+    "experiments/integer_inference_allblocks/build/tests/full/custom/profile1/test_allblocks.dis": "e9ea2a030468195eef52567b14335aca8ac745c885f19fbd54b23ab1fc139a59",
+    "experiments/integer_inference_allblocks/build/tests/full/scalar/profile1/profile.log": "8f13e878ba9d1ea9e5fced5aa8b8ca77fc3df3d1ffb904f9573068a3e9da2a24",
+    "experiments/integer_inference_allblocks/build/tests/full/scalar/profile1/test_allblocks.dis": "fedd5a4de561e74956d9c1f64474bbec1bc349b074d0a8aec6d65ba349ef994e",
+    "experiments/integer_inference_allblocks/python/__pycache__/analyze_instruction_comparison.cpython-312.pyc": "36ae9a3ce488ecab3bfbbdd93b95b3f2cffdc1fbc48faf5609277b75258330eb",
+    "experiments/integer_inference_allblocks/python/analyze_instruction_comparison.py": "8279494a533e0a0364da645c1aaf8d1dc8b58e00f759cad952d2f3131af43397",
+    "experiments/integer_inference_allblocks/tests/full/test_allblocks.c": "7b2fe7712f8b1af0fec28f1e38c95071f0b156d29ebc1a243b503c21f1ba89eb"
+  },
+  "verification": "Six analyzer regression tests passed locally; corrected analyzer processed both uploaded logs and disassemblies. No laptop repository edits, target recompilation or new Spike runs were performed."
+}

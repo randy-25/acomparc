@@ -1,0 +1,36 @@
+{
+  "copied_unchanged": {
+    "src/gelu.c": "22c26e3abc569f8d266514817bc04ba07a59c896def3b162a24851c04d43cf01",
+    "src/gelu.h": "3b085b88f502dde2e907e416703e82ca272a416eeda64c68827fc99cc4140873"
+  },
+  "existing_files_extended": [
+    "src/blocks/block0.c",
+    "src/blocks/block0.h",
+    "src/blocks/block1.c",
+    "src/blocks/block1.h",
+    "src/blocks/block2.c",
+    "src/blocks/block2.h",
+    "src/blocks/block3.c",
+    "src/blocks/block3.h",
+    "src/blocks/block4.c",
+    "src/blocks/block4.h",
+    "src/blocks/block5.c",
+    "src/blocks/block5.h",
+    "src/blocks/block6.c",
+    "src/blocks/block6.h",
+    "src/blocks/block7.c",
+    "src/blocks/block7.h",
+    "tests/ln1/Makefile",
+    "tests/qkv/Makefile",
+    "tests/attention/Makefile",
+    "tests/out_residual/Makefile",
+    "tests/ln2/Makefile"
+  ],
+  "changes": [
+    "Part 1-5 function bodies unchanged; add per-block expansion, GELU-only and full Part-6 entry points.",
+    "GELU orchestration extracted from uploaded block0 function, with explicit input and shared workspace type.",
+    "Earlier Makefiles link gelu.c because block files now also define Part 6.",
+    "Preserve every quantized boundary, single-round branch sum, tanh LUT and two-round output conversion.",
+    "No ISA or parameter changes."
+  ]
+}

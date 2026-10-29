@@ -1,0 +1,59 @@
+{
+  "full_stack_cases_per_backend": 8,
+  "checked_block_boundaries_per_backend": 64,
+  "int8_boundary_values_per_backend": 262144,
+  "int32_boundary_values_per_backend": 262144,
+  "backends_locally_executed": [
+    "delivered scalar C backend",
+    "custom API with temporary external instruction emulators"
+  ],
+  "scalar_backend_additional_checks": [
+    "All eight blocks exhaustive 256-code GELU tests and 104 cases per path",
+    "All eight blocks Part-7 32 boundary probes and 104 cases per path, including output aliases"
+  ],
+  "guards_and_input_preservation": "passed",
+  "component_functions_unchanged_for_blocks": 8,
+  "accelerated_sources_unchanged_sha256": {
+    "projection.c": "1b775eb8ed219c16937a929908263545a6267118f3d30e5a760b99cd416ad853",
+    "requantization.c": "c5c91c1d9a2e934a9340b9411bf2db8dd7f2a56c5eeb5e47d7e6805a45fac234",
+    "xtile.h": "be722913cfa93b9fd9246c36e034fc986e5f4f8534891d621bc53d79cd02215d",
+    "xrequant.h": "9bdf0c85dfb8671587b3b8d08b1cdf4834219cddc717c86bbae7a0e6599ec2d6"
+  },
+  "compiler_flags": [
+    "-std=gnu11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all"
+  ],
+  "profile_logic": "C syntax checked with RV64 branches enabled; CSR assembly/counters not executed locally",
+  "analysis_parser_unit_tests_passed": 3,
+  "parser_test_data": "synthetic records only, not performance measurements",
+  "make_dry_runs": {
+    "custom/test": {
+      "object_commands": 27,
+      "link_commands": 1
+    },
+    "scalar/test": {
+      "object_commands": 27,
+      "link_commands": 1
+    },
+    "custom/profile1": {
+      "object_commands": 27,
+      "link_commands": 1
+    },
+    "scalar/profile1": {
+      "object_commands": 27,
+      "link_commands": 1
+    }
+  },
+  "pending_on_laptop": [
+    "Both RV64 integration correctness runs",
+    "Both profiling runs and actual disassemblies",
+    "Analysis of real raw-minstret logs"
+  ],
+  "counter_overhead_correction": null,
+  "hardware_cycle_speedup_claimed": false
+}

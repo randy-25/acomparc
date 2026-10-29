@@ -1,0 +1,523 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -1,5 +1,6 @@
+ #include "block0.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block0_params.h"
+ 
+ void block0_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block0_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK0_TOKEN_COUNT;
++    const size_t features = BLOCK0_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block0_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK0_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK0_Q_MULTIPLIER, BLOCK0_QKV_REQUANT_SHIFT,
++                         BLOCK0_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block0_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK0_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK0_K_MULTIPLIER, BLOCK0_QKV_REQUANT_SHIFT,
++                         BLOCK0_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block0_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK0_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK0_V_MULTIPLIER, BLOCK0_QKV_REQUANT_SHIFT,
++                         BLOCK0_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -13,4 +13,14 @@
+  */
+ void block0_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block0_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -1,5 +1,6 @@
+ #include "block1.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block1_params.h"
+ 
+ void block1_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block1_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK1_TOKEN_COUNT;
++    const size_t features = BLOCK1_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block1_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK1_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK1_Q_MULTIPLIER, BLOCK1_QKV_REQUANT_SHIFT,
++                         BLOCK1_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block1_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK1_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK1_K_MULTIPLIER, BLOCK1_QKV_REQUANT_SHIFT,
++                         BLOCK1_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block1_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK1_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK1_V_MULTIPLIER, BLOCK1_QKV_REQUANT_SHIFT,
++                         BLOCK1_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -13,4 +13,14 @@
+  */
+ void block1_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block1_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -1,5 +1,6 @@
+ #include "block2.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block2_params.h"
+ 
+ void block2_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block2_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK2_TOKEN_COUNT;
++    const size_t features = BLOCK2_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block2_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK2_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK2_Q_MULTIPLIER, BLOCK2_QKV_REQUANT_SHIFT,
++                         BLOCK2_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block2_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK2_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK2_K_MULTIPLIER, BLOCK2_QKV_REQUANT_SHIFT,
++                         BLOCK2_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block2_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK2_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK2_V_MULTIPLIER, BLOCK2_QKV_REQUANT_SHIFT,
++                         BLOCK2_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -13,4 +13,14 @@
+  */
+ void block2_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block2_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -1,5 +1,6 @@
+ #include "block3.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block3_params.h"
+ 
+ void block3_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block3_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK3_TOKEN_COUNT;
++    const size_t features = BLOCK3_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block3_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK3_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK3_Q_MULTIPLIER, BLOCK3_QKV_REQUANT_SHIFT,
++                         BLOCK3_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block3_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK3_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK3_K_MULTIPLIER, BLOCK3_QKV_REQUANT_SHIFT,
++                         BLOCK3_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block3_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK3_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK3_V_MULTIPLIER, BLOCK3_QKV_REQUANT_SHIFT,
++                         BLOCK3_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -13,4 +13,14 @@
+  */
+ void block3_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block3_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -1,5 +1,6 @@
+ #include "block4.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block4_params.h"
+ 
+ void block4_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block4_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK4_TOKEN_COUNT;
++    const size_t features = BLOCK4_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block4_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK4_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK4_Q_MULTIPLIER, BLOCK4_QKV_REQUANT_SHIFT,
++                         BLOCK4_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block4_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK4_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK4_K_MULTIPLIER, BLOCK4_QKV_REQUANT_SHIFT,
++                         BLOCK4_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block4_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK4_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK4_V_MULTIPLIER, BLOCK4_QKV_REQUANT_SHIFT,
++                         BLOCK4_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -13,4 +13,14 @@
+  */
+ void block4_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block4_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -1,5 +1,6 @@
+ #include "block5.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block5_params.h"
+ 
+ void block5_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block5_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK5_TOKEN_COUNT;
++    const size_t features = BLOCK5_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block5_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK5_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK5_Q_MULTIPLIER, BLOCK5_QKV_REQUANT_SHIFT,
++                         BLOCK5_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block5_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK5_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK5_K_MULTIPLIER, BLOCK5_QKV_REQUANT_SHIFT,
++                         BLOCK5_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block5_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK5_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK5_V_MULTIPLIER, BLOCK5_QKV_REQUANT_SHIFT,
++                         BLOCK5_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -13,4 +13,14 @@
+  */
+ void block5_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block5_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -1,5 +1,6 @@
+ #include "block6.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block6_params.h"
+ 
+ void block6_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block6_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK6_TOKEN_COUNT;
++    const size_t features = BLOCK6_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block6_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK6_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK6_Q_MULTIPLIER, BLOCK6_QKV_REQUANT_SHIFT,
++                         BLOCK6_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block6_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK6_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK6_K_MULTIPLIER, BLOCK6_QKV_REQUANT_SHIFT,
++                         BLOCK6_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block6_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK6_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK6_V_MULTIPLIER, BLOCK6_QKV_REQUANT_SHIFT,
++                         BLOCK6_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -13,4 +13,14 @@
+  */
+ void block6_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block6_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -1,5 +1,6 @@
+ #include "block7.h"
+ #include "../requantization.h"
++#include "../projection.h"
+ #include "block7_params.h"
+ 
+ void block7_ln1_forward(const int8_t *input, int8_t *output,
+@@ -38,3 +39,37 @@
+                         p->output_multiplier, p->output_shift,
+                         p->output_zero_point);
+ }
++
++void block7_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator)
++{
++    const size_t tokens = BLOCK7_TOKEN_COUNT;
++    const size_t features = BLOCK7_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++
++    /* Q: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block7_q_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK7_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, q_output, elements,
++                         BLOCK7_Q_MULTIPLIER, BLOCK7_QKV_REQUANT_SHIFT,
++                         BLOCK7_Q_OUTPUT_ZERO_POINT);
++
++    /* K: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block7_k_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK7_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, k_output, elements,
++                         BLOCK7_K_MULTIPLIER, BLOCK7_QKV_REQUANT_SHIFT,
++                         BLOCK7_K_OUTPUT_ZERO_POINT);
++
++    /* V: XTILE accumulation, then XREQUANT mode 2. No bias. */
++    projection_accumulate_i8(input, block7_v_weights, NULL, accumulator,
++                             tokens, features, features,
++                             BLOCK7_QKV_INPUT_ZERO_POINT);
++    requantize_i32_to_i8(accumulator, v_output, elements,
++                         BLOCK7_V_MULTIPLIER, BLOCK7_QKV_REQUANT_SHIFT,
++                         BLOCK7_V_OUTPUT_ZERO_POINT);
++
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -13,4 +13,14 @@
+  */
+ void block7_ln1_forward(const int8_t *input, int8_t *output,
+                          LayerNormI8Workspace *workspace);
++
++/* Part 2: Q/K/V from the block's LN1 INT8 output, [32,128].
++ * Each output contains 4096 INT8 values at its saved scale/zero point.
++ * Accumulator workspace: 4096 INT32 values, reused between Q, K and V.
++ * Input, all outputs, accumulator and parameter arrays must be disjoint.
++ * Accumulation and requantization remain separate operations.
++ */
++void block7_qkv_forward(const int8_t *input,
++                         int8_t *q_output, int8_t *k_output, int8_t *v_output,
++                         int32_t *accumulator);
+ #endif
+--- a/experiments/integer_inference_allblocks/tests/ln1/Makefile
++++ b/experiments/integer_inference_allblocks/tests/ln1/Makefile
+@@ -15,7 +15,7 @@
+ CVW_COMMON ?= $(CVW_ROOT)/examples/C/common
+ 
+ BLOCKS := 0 1 2 3 4 5 6 7
+-LOCAL_SOURCES := src/layernorm.c src/requantization.c tests/ln1/test_allblocks_ln1.c \
++LOCAL_SOURCES := src/layernorm.c src/requantization.c src/projection.c tests/ln1/test_allblocks_ln1.c \
+     $(foreach b,$(BLOCKS),src/blocks/block$(b).c)
+ LOCAL_OBJECTS := $(addprefix $(BUILD_DIR)/,$(LOCAL_SOURCES:.c=.o))
+ PARAM_OBJECTS := $(foreach b,$(BLOCKS),$(BUILD_DIR)/params/block$(b)_params.o)

@@ -1,0 +1,488 @@
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.c
+@@ -143,3 +143,41 @@
+                          BLOCK0_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK0_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block0_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK0_TOKEN_COUNT;
++    const size_t features = BLOCK0_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block0_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block0.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block0.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block0_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.c
+@@ -143,3 +143,41 @@
+                          BLOCK1_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK1_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block1_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK1_TOKEN_COUNT;
++    const size_t features = BLOCK1_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block1_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block1.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block1.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block1_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.c
+@@ -143,3 +143,41 @@
+                          BLOCK2_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK2_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block2_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK2_TOKEN_COUNT;
++    const size_t features = BLOCK2_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block2_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block2.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block2.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block2_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.c
+@@ -143,3 +143,41 @@
+                          BLOCK3_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK3_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block3_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK3_TOKEN_COUNT;
++    const size_t features = BLOCK3_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block3_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block3.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block3.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block3_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.c
+@@ -143,3 +143,41 @@
+                          BLOCK4_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK4_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block4_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK4_TOKEN_COUNT;
++    const size_t features = BLOCK4_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block4_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block4.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block4.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block4_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.c
+@@ -143,3 +143,41 @@
+                          BLOCK5_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK5_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block5_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK5_TOKEN_COUNT;
++    const size_t features = BLOCK5_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block5_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block5.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block5.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block5_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.c
+@@ -143,3 +143,41 @@
+                          BLOCK6_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK6_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block6_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK6_TOKEN_COUNT;
++    const size_t features = BLOCK6_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block6_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block6.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block6.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block6_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.c
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.c
+@@ -143,3 +143,41 @@
+                          BLOCK7_RESIDUAL1_INPUT_ALIGNMENT,
+                          BLOCK7_RESIDUAL1_INPUT_ZERO_POINT);
+ }
++
++void block7_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace)
++{
++    const size_t tokens = BLOCK7_TOKEN_COUNT;
++    const size_t features = BLOCK7_HIDDEN_SIZE;
++    const size_t elements = tokens * features;
++    const LayerNormI8Params *p = &block7_ln2_params;
++
++    /* Input scale 2^-16; feature-sum mean scale 2^-23. */
++    layernorm_sum_i32(input, workspace->mean_sum, tokens, features);
++    layernorm_squared_difference_i32(input, workspace->mean_sum,
++                                     workspace->fine_i64, tokens, features);
++
++    /* Conversion 1: square INT64 at 2^-46 -> INT32 at 2^-23, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->square_shift);
++    layernorm_variance_i32(workspace->feature_i32, workspace->variance,
++                          tokens, features);
++    layernorm_add_epsilon_i32(workspace->variance, workspace->variance,
++                             tokens, p->epsilon_q);
++    layernorm_rsqrt_i32(workspace->variance, workspace->inv_std,
++                       tokens, p->rsqrt_numerator);
++    layernorm_normalize_i32(input, workspace->mean_sum, workspace->inv_std,
++                            workspace->fine_i64, tokens, features);
++
++    /* Conversion 2: normalized INT64 at 2^-39 -> INT32 at 2^-16, mode 0. */
++    requantize_shift_i64_to_i32(workspace->fine_i64, workspace->feature_i32,
++                              elements, p->normalize_shift);
++    layernorm_affine_i32(workspace->feature_i32, p->gamma, p->beta,
++                        workspace->fine_i64, tokens, features,
++                        p->beta_alignment);
++
++    /* Conversion 3: affine INT64 at 2^-32 -> saved LN2 INT8 output, mode 1. */
++    requantize_i64_to_i8(workspace->fine_i64, output, elements,
++                        p->output_multiplier, p->output_shift,
++                        p->output_zero_point);
++}
+--- a/experiments/integer_inference_allblocks/src/blocks/block7.h
++++ b/experiments/integer_inference_allblocks/src/blocks/block7.h
+@@ -60,4 +60,14 @@
+                                   const int8_t *residual_input, int32_t *output,
+                                   int8_t *projection_workspace,
+                                   int32_t *accumulator_workspace);
++
++/* Part 5: LN2, INT32 [32,128] input at scale 2^-16, zero point 0.
++ * Output: INT8 [32,128] at the saved block-specific LN2 quantization.
++ * Row workspace arrays: 32 elements; feature arrays: 4096 elements.
++ * Input must remain available until normalization completes. Input, output
++ * and all workspace buffers must be valid and mutually disjoint.
++ * No allocation is performed. Workspace contents are overwritten.
++ */
++void block7_ln2_forward(const int32_t *input, int8_t *output,
++                         LayerNormI8Workspace *workspace);
+ #endif
