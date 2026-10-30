@@ -32,6 +32,13 @@ The W8A8 TFLite exports contain mixed INT8/FP32 operations. The bare-metal imple
 
 <i>The MAC instruction estimates and bottleneck analysis were calculated with assistance from ChatGPT using the measured Spike instruction counts and compiled disassembly.</i>
 
+## Customized Instruction Cycle Comparison
+- [Xtile Instruction Description](docs/xtile.md)
+- [Xrequant Instruction Description](docs/xrequant.md)
+- [Original Scalar Cycle Analysis](docs/scalar_cycle_analysis.md)
+- [Xtile Based Instruction Rough Analysis](docs/systolic_array_estimation_cycle.md)
+- [Rough Cycle Comparison](docs/comparison_scalar_custom.md)
+
 ## Directory layout
 
 ```text
