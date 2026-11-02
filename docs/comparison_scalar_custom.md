@@ -5,7 +5,7 @@ This comparison provides a rough estimate of the potential cycle reduction from 
 ## Scalar and Custom Engine Cycle Comparison
 
 - [Scalar cycle measurements](scalar_cycle_analysis.md)
-- [Systolic array estimation](systolic_array_estimation.md)
+- [Systolic array estimation](systolic_array_estimation_cycle.md)
 
 
 | Kernel / scope | Scalar cycles | Estimated array compute cycles | Scalar / array-compute ratio |

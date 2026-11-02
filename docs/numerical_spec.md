@@ -78,13 +78,13 @@ Store `V` as INT32 at scale `2^-(F+14)`, representing the variance.
 Encode epsilon at that same scale:
 
 $$
-\epsilon_q=\operatorname{round}_{even}(\epsilon\,2^{F+14})
+\epsilon_q=\mathrm{round}_{even}(\epsilon\,2^{F+14})
 $$
 
 ### 3. Inverse standard deviation
 
 $$
-I=\operatorname{isqrt}
+I=\mathrm{isqrt}
 \left(
 \left\lfloor\frac{2^{F+46}}{V+\epsilon_q}\right\rfloor
 \right)
@@ -117,9 +117,9 @@ Store `n` as INT32 at scale `2^-16`.
 Offline parameter encoding:
 
 $$
-\gamma_q=\operatorname{round}_{even}(\gamma\,2^{16}),
+\gamma_q=\mathrm{round}_{even}(\gamma\,2^{16}),
 \qquad
-\beta_q=\operatorname{round}_{even}(\beta\,2^{16})
+\beta_q=\mathrm{round}_{even}(\beta\,2^{16})
 $$
 
 Runtime affine calculation:
@@ -139,7 +139,7 @@ Let `s_out` and `z_out` be this block’s saved TFLite LN1 output scale and zero
 Prepare the multiplier offline:
 
 $$
-M=\operatorname{round}_{even}
+M=\mathrm{round}_{even}
 \left(
 \frac{2^{-32}}{s_{\mathrm{out}}}\,2^{47}
 \right)
@@ -150,7 +150,7 @@ $$
 $$
 q_{\mathrm{out}}[k]
 =
-\operatorname{clip}_{[-128,127]}
+\mathrm{clip}_{[-128,127]}
 \left(RQ(a[k],M,47)+z_{\mathrm{out}}\right)
 $$
 
@@ -209,7 +209,7 @@ $$
 Use the common right shift `r = 39`:
 
 $$
-M_p=\operatorname{round}_{even}
+M_p=\mathrm{round}_{even}
 \left(
 \frac{s_xs_{W_p}}{s_{\mathrm{out},p}}\,2^{39}
 \right)
@@ -233,7 +233,7 @@ This is nearest rounding, with ties toward positive infinity.
 
 $$
 q_p[t,o]=
-\operatorname{clip}_{[-128,127]}
+\mathrm{clip}_{[-128,127]}
 \left(
 RQ(A_p[t,o],M_p,39)+z_{\mathrm{out},p}
 \right)
@@ -315,7 +315,7 @@ Prepare the multiplier offline:
 
 $$
 M_{\mathrm{coord}}
-=\operatorname{round}_{even}(s_S\,2^{16}\,2^{24})
+=\mathrm{round}_{even}(s_S\,2^{16}\,2^{24})
 $$
 
 **Rounded coordinate conversion:**
@@ -332,7 +332,7 @@ The multiplier and product use checked INT64 arithmetic.
 Shared offline table:
 
 $$
-L[i]=\operatorname{round}_{even}
+L[i]=\mathrm{round}_{even}
 \left(e^{-i/256}2^{30}\right),
 \qquad i=0,\ldots,4096
 $$
@@ -409,7 +409,7 @@ Let `s_out` and `z_out` be the saved context-output quantization.
 Prepare offline:
 
 $$
-M_C=\operatorname{round}_{even}
+M_C=\mathrm{round}_{even}
 \left(\frac{2^{-16}s_V}{s_{\mathrm{out}}}2^{46}\right)
 $$
 
@@ -418,7 +418,7 @@ $$
 $$
 q_{\mathrm{out}}
 =
-\operatorname{clip}_{[-128,127]}
+\mathrm{clip}_{[-128,127]}
 \left(RQ(C,M_C,46)+z_{\mathrm{out}}\right)
 $$
 
@@ -486,7 +486,7 @@ $$
 Prepare the multiplier offline:
 
 $$
-M_P=\operatorname{round}_{even}
+M_P=\mathrm{round}_{even}
 \left(\frac{s_A}{s_P}2^{39}\right)
 $$
 
@@ -494,7 +494,7 @@ $$
 
 $$
 q_P=
-\operatorname{clip}_{[-128,127]}
+\mathrm{clip}_{[-128,127]}
 \left(RQ(A,M_P,39)+z_P\right)
 $$
 
@@ -514,7 +514,7 @@ $$
 Prepare offline:
 
 $$
-M_R=\operatorname{round}_{even}
+M_R=\mathrm{round}_{even}
 \left(s_P\,2^{16}\,2^{22}\right)
 $$
 
@@ -651,7 +651,7 @@ Store `V` as INT32 at scale `2^-30`, representing variance.
 ### 3. Inverse standard deviation
 
 $$
-I=\operatorname{isqrt}
+I=\mathrm{isqrt}
 \left(
 \left\lfloor\frac{2^{62}}{V+10737}\right\rfloor
 \right)
@@ -677,9 +677,9 @@ Store `n` as INT32 at scale `2^-16`.
 Offline encoding:
 
 $$
-\gamma_q=\operatorname{round}_{even}(\gamma2^{16}),
+\gamma_q=\mathrm{round}_{even}(\gamma2^{16}),
 \qquad
-\beta_q=\operatorname{round}_{even}(\beta2^{16})
+\beta_q=\mathrm{round}_{even}(\beta2^{16})
 $$
 
 Runtime affine calculation:
@@ -698,7 +698,7 @@ Read `s_out` and `z_out` from the block’s saved LN2 output metadata.
 Prepare offline:
 
 $$
-M=\operatorname{round}_{even}
+M=\mathrm{round}_{even}
 \left(\frac{2^{-32}}{s_{\mathrm{out}}}2^{47}\right)
 $$
 
@@ -706,7 +706,7 @@ $$
 
 $$
 q_{\mathrm{out}}=
-\operatorname{clip}_{[-128,127]}
+\mathrm{clip}_{[-128,127]}
 \left(RQ(a,M,47)+z_{\mathrm{out}}\right)
 $$
 
@@ -764,11 +764,11 @@ XTILE computes the dot products; software adds bias.
 **Requantize after accumulation and bias:**
 
 $$
-q_U=\operatorname{clip}_{INT8}(RQ(A,M_U,39)+z_U)
+q_U=\mathrm{clip}_{INT8}(RQ(A,M_U,39)+z_U)
 $$
 
 $$
-M_U=\operatorname{round}_{even}
+M_U=\mathrm{round}_{even}
 \left(\frac{s_xs_W}{s_U}2^{39}\right)
 $$
 
@@ -796,7 +796,7 @@ Products, rounding additions, and stored results must fit their intended types.
 For each INT8 argument code `q`:
 
 $$
-L[q+128]=\operatorname{round}_{even}
+L[q+128]=\mathrm{round}_{even}
 \left(\tanh((q-z_a)s_a)2^{24}\right)
 $$
 
@@ -866,14 +866,14 @@ Products, partial sums, and bias addition must fit INT32.
 Prepare offline:
 
 $$
-M_P=\operatorname{round}_{even}
+M_P=\mathrm{round}_{even}
 \left(\frac{s_A}{s_P}2^{39}\right)
 $$
 
 **Requantization 1 — after accumulation and bias:**
 
 $$
-q_P=\operatorname{clip}_{[-128,127]}
+q_P=\mathrm{clip}_{[-128,127]}
 \left(RQ(A,M_P,39)+z_P\right)
 $$
 
@@ -885,7 +885,7 @@ The C implementation uses XREQUANT mode 2.
 Prepare offline:
 
 $$
-M_R=\operatorname{round}_{even}(s_P2^{16}2^{22})
+M_R=\mathrm{round}_{even}(s_P2^{16}2^{22})
 $$
 
 **Requantization 2 — before residual addition:**
@@ -918,7 +918,7 @@ For selected boundary scale `2^-F_out`:
 $$
 q_{\mathrm{block,out}}
 =
-\operatorname{clip}_{[-128,127]}
+\mathrm{clip}_{[-128,127]}
 \left(RQ(q_Y,1,16-F_{\mathrm{out}})\right)
 $$
 

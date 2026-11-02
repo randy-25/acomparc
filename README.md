@@ -2,6 +2,8 @@
 
 ### Name: Randy Revaldo Pratama / 阮金鴻 <br> Student ID: 115165425
 
+PresentationSlides = [PPTSlides](PPTSlides/)
+
 ## Description
 This project implements integer inference for TinyStories-3M’s eight transformer blocks on bare-metal RV64IMC. Two custom instructions,
 XTILE for matrix accumulation and XREQUANT for fixed-point requantization, accelerate the computation. A modified Spike simulator verifies correctness and compares retired-instruction counts against the scalar C implementation.
