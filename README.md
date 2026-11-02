@@ -2,7 +2,7 @@
 
 ### Name: Randy Revaldo Pratama / 阮金鴻 <br> Student ID: 115165425
 
-PresentationSlides = [PPTSlides](PPTSlides/)
+Presentation Slides = [Click here to go to the folder](PPTSlides/)
 
 ## Description
 This project implements integer inference for TinyStories-3M’s eight transformer blocks on bare-metal RV64IMC. Two custom instructions,

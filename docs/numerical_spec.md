@@ -84,10 +84,7 @@ $$
 ### 3. Inverse standard deviation
 
 $$
-I=\mathrm{isqrt}
-\left(
-\left\lfloor\frac{2^{F+46}}{V+\epsilon_q}\right\rfloor
-\right)
+I=\mathrm{isqrt} \left( \left\lfloor\frac{2^{F+46}}{V+\epsilon_q}\right\rfloor \right)
 $$
 
 `isqrt` returns the floor integer square root.
@@ -117,9 +114,7 @@ Store `n` as INT32 at scale `2^-16`.
 Offline parameter encoding:
 
 $$
-\gamma_q=\mathrm{round}_{even}(\gamma\,2^{16}),
-\qquad
-\beta_q=\mathrm{round}_{even}(\beta\,2^{16})
+\gamma_q=\mathrm{round}_{even}(\gamma\,2^{16}), \qquad \beta_q=\mathrm{round}_{even}(\beta\,2^{16})
 $$
 
 Runtime affine calculation:
@@ -139,19 +134,13 @@ Let `s_out` and `z_out` be this block’s saved TFLite LN1 output scale and zero
 Prepare the multiplier offline:
 
 $$
-M=\mathrm{round}_{even}
-\left(
-\frac{2^{-32}}{s_{\mathrm{out}}}\,2^{47}
-\right)
+M=\mathrm{round}_{even} \left( \frac{2^{-32}}{s_{\mathrm{out}}}\,2^{47} \right)
 $$
 
 **Requantization 3 — after the affine calculation:**
 
 $$
-q_{\mathrm{out}}[k]
-=
-\mathrm{clip}_{[-128,127]}
-\left(RQ(a[k],M,47)+z_{\mathrm{out}}\right)
+q_{\mathrm{out}}[k] = \mathrm{clip}_{[-128,127]} \left(RQ(a[k],M,47)+z_{\mathrm{out}}\right)
 $$
 
 This INT8 output feeds all three Q/K/V projections.
@@ -209,10 +198,7 @@ $$
 Use the common right shift `r = 39`:
 
 $$
-M_p=\mathrm{round}_{even}
-\left(
-\frac{s_xs_{W_p}}{s_{\mathrm{out},p}}\,2^{39}
-\right)
+M_p=\mathrm{round}_{even} \left( \frac{s_xs_{W_p}}{s_{\mathrm{out},p}}\,2^{39} \right)
 $$
 
 Store the multiplier as INT64. It may exceed positive INT32.
@@ -232,11 +218,7 @@ This is nearest rounding, with ties toward positive infinity.
 **Requantization point — after each completed projection:**
 
 $$
-q_p[t,o]=
-\mathrm{clip}_{[-128,127]}
-\left(
-RQ(A_p[t,o],M_p,39)+z_{\mathrm{out},p}
-\right)
+q_p[t,o]= \mathrm{clip}_{[-128,127]} \left( RQ(A_p[t,o],M_p,39)+z_{\mathrm{out},p} \right)
 $$
 
 The C implementation uses XREQUANT mode 2: INT32 → INT8.
@@ -278,8 +260,7 @@ Current results across eight blocks and eight cases per block:
 For each head:
 
 $$
-S[h,t,j]=\sum_{d=0}^{7}
-(q_Q[h,t,d]-z_Q)(q_K[h,j,d]-z_K)
+S[h,t,j]=\sum_{d=0}^{7} (q_Q[h,t,d]-z_Q)(q_K[h,j,d]-z_K)
 $$
 
 Store scores as INT32 `[16,32,32]` at scale:
@@ -314,8 +295,7 @@ Masked entries must contribute zero probability.
 Prepare the multiplier offline:
 
 $$
-M_{\mathrm{coord}}
-=\mathrm{round}_{even}(s_S\,2^{16}\,2^{24})
+M_{\mathrm{coord}} =\mathrm{round}_{even}(s_S\,2^{16}\,2^{24})
 $$
 
 **Rounded coordinate conversion:**
@@ -332,9 +312,7 @@ The multiplier and product use checked INT64 arithmetic.
 Shared offline table:
 
 $$
-L[i]=\mathrm{round}_{even}
-\left(e^{-i/256}2^{30}\right),
-\qquad i=0,\ldots,4096
+L[i]=\mathrm{round}_{even} \left(e^{-i/256}2^{30}\right), \qquad i=0,\ldots,4096
 $$
 
 For allowed entries:
@@ -343,7 +321,7 @@ For allowed entries:
 - Otherwise, calculate:
 
 $$
-i=c\gg8,\qquad f=c\mathbin{\&}255
+i=\left\lfloor\frac{c}{256}\right\rfloor,\qquad f=c-256i
 $$
 
 $$
@@ -368,12 +346,7 @@ The denominator must be positive.
 Compute independently rounded probabilities:
 
 $$
-P_q[h,t,j]
-=
-\left\lfloor
-\frac{E[h,t,j]2^{16}+\lfloor Z[h,t]/2\rfloor}
-{Z[h,t]}
-\right\rfloor
+P_q[h,t,j] = \left\lfloor \frac{E[h,t,j]2^{16}+\lfloor Z[h,t]/2\rfloor} {Z[h,t]} \right\rfloor
 $$
 
 Store probabilities as INT32 at scale `2^-16`.
@@ -385,9 +358,7 @@ Store probabilities as INT32 at scale `2^-16`.
 ### 6. Compute probability × V
 
 $$
-C[h,t,d]
-=\sum_{j=0}^{31}
-P_q[h,t,j](q_V[h,j,d]-z_V)
+C[h,t,d] =\sum_{j=0}^{31} P_q[h,t,j](q_V[h,j,d]-z_V)
 $$
 
 Store context accumulators as INT32 at scale:
@@ -409,17 +380,13 @@ Let `s_out` and `z_out` be the saved context-output quantization.
 Prepare offline:
 
 $$
-M_C=\mathrm{round}_{even}
-\left(\frac{2^{-16}s_V}{s_{\mathrm{out}}}2^{46}\right)
+M_C=\mathrm{round}_{even} \left(\frac{2^{-16}s_V}{s_{\mathrm{out}}}2^{46}\right)
 $$
 
 **Final context requantization:**
 
 $$
-q_{\mathrm{out}}
-=
-\mathrm{clip}_{[-128,127]}
-\left(RQ(C,M_C,46)+z_{\mathrm{out}}\right)
+q_{\mathrm{out}} = \mathrm{clip}_{[-128,127]} \left(RQ(C,M_C,46)+z_{\mathrm{out}}\right)
 $$
 
 Use an INT64 multiplier and checked INT64 product/rounding addition.
@@ -463,11 +430,7 @@ Each block supplies its own weights, bias, quantization metadata, and multiplier
 ### 1. Projection accumulation and bias
 
 $$
-A[t,o]
-=
-\sum_{k=0}^{127}(q_{\mathrm{attention}}[t,k]-z_{\mathrm{attention}})
-q_W[o,k]
-+b_q[o]
+A[t,o] = \sum_{k=0}^{127}(q_{\mathrm{attention}}[t,k]-z_{\mathrm{attention}}) q_W[o,k] +b_q[o]
 $$
 
 The accumulator scale is:
@@ -486,16 +449,13 @@ $$
 Prepare the multiplier offline:
 
 $$
-M_P=\mathrm{round}_{even}
-\left(\frac{s_A}{s_P}2^{39}\right)
+M_P=\mathrm{round}_{even} \left(\frac{s_A}{s_P}2^{39}\right)
 $$
 
 **Requantization 1 — after accumulation and bias:**
 
 $$
-q_P=
-\mathrm{clip}_{[-128,127]}
-\left(RQ(A,M_P,39)+z_P\right)
+q_P= \mathrm{clip}_{[-128,127]} \left(RQ(A,M_P,39)+z_P\right)
 $$
 
 Here `s_P` and `z_P` are the saved TFLite projection-output quantization.
@@ -514,8 +474,7 @@ $$
 Prepare offline:
 
 $$
-M_R=\mathrm{round}_{even}
-\left(s_P\,2^{16}\,2^{22}\right)
+M_R=\mathrm{round}_{even} \left(s_P\,2^{16}\,2^{22}\right)
 $$
 
 **Requantization 2 — before residual addition:**
@@ -651,10 +610,7 @@ Store `V` as INT32 at scale `2^-30`, representing variance.
 ### 3. Inverse standard deviation
 
 $$
-I=\mathrm{isqrt}
-\left(
-\left\lfloor\frac{2^{62}}{V+10737}\right\rfloor
-\right)
+I=\mathrm{isqrt} \left( \left\lfloor\frac{2^{62}}{V+10737}\right\rfloor \right)
 $$
 
 The denominator must be positive.
@@ -677,9 +633,7 @@ Store `n` as INT32 at scale `2^-16`.
 Offline encoding:
 
 $$
-\gamma_q=\mathrm{round}_{even}(\gamma2^{16}),
-\qquad
-\beta_q=\mathrm{round}_{even}(\beta2^{16})
+\gamma_q=\mathrm{round}_{even}(\gamma2^{16}), \qquad \beta_q=\mathrm{round}_{even}(\beta2^{16})
 $$
 
 Runtime affine calculation:
@@ -698,16 +652,13 @@ Read `s_out` and `z_out` from the block’s saved LN2 output metadata.
 Prepare offline:
 
 $$
-M=\mathrm{round}_{even}
-\left(\frac{2^{-32}}{s_{\mathrm{out}}}2^{47}\right)
+M=\mathrm{round}_{even} \left(\frac{2^{-32}}{s_{\mathrm{out}}}2^{47}\right)
 $$
 
 **Requantization 3 — after the affine calculation:**
 
 $$
-q_{\mathrm{out}}=
-\mathrm{clip}_{[-128,127]}
-\left(RQ(a,M,47)+z_{\mathrm{out}}\right)
+q_{\mathrm{out}}= \mathrm{clip}_{[-128,127]} \left(RQ(a,M,47)+z_{\mathrm{out}}\right)
 $$
 
 This output feeds Part 6’s MLP expansion.
@@ -768,8 +719,7 @@ q_U=\mathrm{clip}_{INT8}(RQ(A,M_U,39)+z_U)
 $$
 
 $$
-M_U=\mathrm{round}_{even}
-\left(\frac{s_xs_W}{s_U}2^{39}\right)
+M_U=\mathrm{round}_{even} \left(\frac{s_xs_W}{s_U}2^{39}\right)
 $$
 
 ### GELU sequence and conversion points
@@ -796,8 +746,7 @@ Products, rounding additions, and stored results must fit their intended types.
 For each INT8 argument code `q`:
 
 $$
-L[q+128]=\mathrm{round}_{even}
-\left(\tanh((q-z_a)s_a)2^{24}\right)
+L[q+128]=\mathrm{round}_{even} \left(\tanh((q-z_a)s_a)2^{24}\right)
 $$
 
 Each block has a 256-entry INT32 table based on its own argument quantization.
@@ -807,8 +756,7 @@ Each block has a 256-entry INT32 table based on its own argument quantization.
 Approximate the final product scale ratio as:
 
 $$
-\frac{s_{\mathrm{half}}s_{\mathrm{factor}}}{s_{\mathrm{GELU}}}
-\approx M_{31}2^{-31}2^{-r}
+\frac{s_{\mathrm{half}}s_{\mathrm{factor}}}{s_{\mathrm{GELU}}} \approx M_{31}2^{-31}2^{-r}
 $$
 
 Runtime:
@@ -847,9 +795,7 @@ Complete multi-block integer inference validation remains pending.
 ### 1. Project 512 → 128
 
 $$
-A[t,o]
-=
-\sum_{k=0}^{511}(q_G[t,k]-z_G)q_W[o,k]+b_q[o]
+A[t,o] = \sum_{k=0}^{511}(q_G[t,k]-z_G)q_W[o,k]+b_q[o]
 $$
 
 The accumulator scale is:
@@ -866,15 +812,13 @@ Products, partial sums, and bias addition must fit INT32.
 Prepare offline:
 
 $$
-M_P=\mathrm{round}_{even}
-\left(\frac{s_A}{s_P}2^{39}\right)
+M_P=\mathrm{round}_{even} \left(\frac{s_A}{s_P}2^{39}\right)
 $$
 
 **Requantization 1 — after accumulation and bias:**
 
 $$
-q_P=\mathrm{clip}_{[-128,127]}
-\left(RQ(A,M_P,39)+z_P\right)
+q_P=\mathrm{clip}_{[-128,127]} \left(RQ(A,M_P,39)+z_P\right)
 $$
 
 Use the block’s saved projection-output scale and zero point.
@@ -916,10 +860,7 @@ For selected boundary scale `2^-F_out`:
 **Requantization 3 — after the final residual addition:**
 
 $$
-q_{\mathrm{block,out}}
-=
-\mathrm{clip}_{[-128,127]}
-\left(RQ(q_Y,1,16-F_{\mathrm{out}})\right)
+q_{\mathrm{block,out}} = \mathrm{clip}_{[-128,127]} \left(RQ(q_Y,1,16-F_{\mathrm{out}})\right)
 $$
 
 | Blocks | Output scale | Rounded right shift |
