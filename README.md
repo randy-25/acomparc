@@ -290,6 +290,38 @@ Expected for each backend:
 
 Build outputs are separated by backend and mode under `build/tests/full/`.
 
+## Retired-instruction profiling
+
+Run profiling for input case 0 across all eight blocks:
+
+```bash
+# Scalar backend
+make -C tests/sw/full \
+    BACKEND=scalar MODE=profile PROFILE_CASES=1 \
+    CVW_ROOT="$CVW_ROOT" SPIKE=spike run
+
+# Custom backend
+make -C tests/sw/full \
+    BACKEND=custom MODE=profile PROFILE_CASES=1 \
+    CVW_ROOT="$CVW_ROOT" SPIKE="$SPIKE_CUSTOM" run
+```
+
+`SPIKE_CUSTOM` must point to the modified Spike executable.
+
+Output format:
+
+```text
+PROFILE,backend,case,block,region,raw_minstret
+```
+
+Counts measure retired instructions, not clock cycles. `chain` measures
+the complete eight-block execution; `forward` measures one block.
+Stage measurements are reported separately. Block `-1` identifies
+chain-level records.
+
+For stage comparisons, sum each stage across blocks 0–7. Use the
+directly measured `chain` count for the whole-chain comparison.
+
 ## Export new W8A8 TFLite blocks
 
 ```bash
@@ -316,10 +348,9 @@ This is a Python host workflow using FP32 embedding and final-head computations 
 
 Use `--help` on each script for its available options.
 
-## Numerical policy and verification
+## AI Usage
 
-See [the numerical specification](docs/numerical_spec.md) for equations,
-integer formats, rounding rules, and requantization points.
+ChatGPT was used to assist with code generation and retired-instruction count analysis.
 
 
 
