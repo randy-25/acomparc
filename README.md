@@ -5,8 +5,10 @@
 Presentation Slides = [Click here to go to the folder](PPTSlides/)
 
 ## Description
-This project implements integer inference for TinyStories-3M’s eight transformer blocks on bare-metal RV64IMC. Two custom instructions,
-XTILE for matrix accumulation and XREQUANT for fixed-point requantization, accelerate the computation. A modified Spike simulator verifies correctness and compares retired-instruction counts against the scalar C implementation.
+This project implements integer inference for TinyStories-3M’s eight transformer blocks on bare-metal RV64IMC. Two custom instructions, XTILE for matrix accumulation and XREQUANT for fixed-point requantization, accelerate the computation. A modified Spike simulator verifies correctness and compares retired-instruction counts against the scalar C implementation.
+
+## Work Environment
+All the scripts and codes are executed with **Ubuntu 24.04** operating system. 
 
 ## Model and execution scope
 
